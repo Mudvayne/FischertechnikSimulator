@@ -1,0 +1,32 @@
+# depslib dependency file v1.0
+1448446803 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\main.c
+	<stdio.h>
+	<stdlib.h>
+	"model.h"
+
+1448446396 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\threadmill.h
+
+1448446874 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simlightbarrier.c
+	"lightBarrier.h"
+
+1448445770 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simpusher.c
+
+1448445528 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simthreadmill.c
+	"threadmill.h"
+
+1448446009 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simtool.c
+
+1448446183 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\model.h
+	"threadmill.h"
+	"lightBarrier.h"
+	"pusher.h"
+	"tool.h"
+
+1448446217 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\lightbarrier.h
+
+1448446430 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\pusher.h
+
+1448446371 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\tool.h
+
+1448446556 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\model.c
+
