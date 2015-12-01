@@ -1,5 +1,11 @@
 # FischertechnikSimulator
 
+The goal of this project ist to simulate a Fischertechnik constuction with 4 threadmills, 2 pushers, 2 tools and 5 lightbarriers. It can be used as a alternative target for executing the code that can operate the real construction.
+
+![construction](http://abload.de/img/fischertechnikanlageunuz6.png)
+
+---
+
 General timings:
 * Each threadmill needs 5000ms for processing one item
 * So each threadmill can be devided in zones, defined by the runtime per item
