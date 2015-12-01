@@ -11,7 +11,7 @@ COORD coord = {0, 0};
 
 //speeds
 double msPerSimStep = 50;
-double simulationSpeed = 1;
+double simulationSpeed = 0.5;
 double pusherStepSpeed = 0.025;
 double threadmillStepSpeed = 50; // one step per ms
 
@@ -65,10 +65,10 @@ void printSimulationInformations()
     printf("          |                                          |\n");
     printf("          +                                          v\n");
 
-    printf("\nThreadmill 1 item runtime: %d ms                          \n", firstThreadMillRunTime);
-    printf("Threadmill 2 item runtime: %d ms                          \n", secondThreadMillRunTime);
-    printf("Threadmill 3 item runtime: %d ms                          \n", thirdThreadMillRunTime);
-    printf("Threadmill 4 item runtime: %d ms                          \n\n", fourthThreadMillRunTime);
+    printf("\nTreadmill 1 item runtime: %d ms                          \n", firstThreadMillRunTime);
+    printf("Treadmill 2 item runtime: %d ms                          \n", secondThreadMillRunTime);
+    printf("Treadmill 3 item runtime: %d ms                          \n", thirdThreadMillRunTime);
+    printf("Treadmill 4 item runtime: %d ms                          \n\n", fourthThreadMillRunTime);
 }
 
 int main()
