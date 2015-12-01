@@ -10,8 +10,11 @@
 COORD coord = {0, 0};
 
 //speeds
-double simulationSpeed = 0.5;
+double msPerSimStep = 50;
+double simulationSpeed = 1;
 double pusherStepSpeed = 0.025;
+double threadmillStepSpeed = 50; // one step per ms
+
 
 //item runtimes
 int firstThreadMillRunTime = 0;
@@ -94,7 +97,7 @@ int main()
 */
     while(1)
     {
-        Sleep(50);
+        Sleep(msPerSimStep);
 
         if(getFirstLightBarrier()->isBlocked == 1)
         {
@@ -104,7 +107,7 @@ int main()
         //First Threadmill
         if(predictThreadmillOne == 1 && getFirstThreadmill()->isRunning == 1)
         {
-            firstThreadMillRunTime += 50*simulationSpeed;
+            firstThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
         }
         else
         {
@@ -121,7 +124,7 @@ int main()
             getFirstLightBarrier()->isBlocked = 0;
         }
 
-        if (predictThreadmillOne && firstThreadMillRunTime >= 3000 && firstThreadMillRunTime <= 4000)
+        if(predictThreadmillOne && firstThreadMillRunTime >= 3000 && firstThreadMillRunTime <= 4000)
         {
             getSecondLightBarrier()->isBlocked = 1;
         }
@@ -186,7 +189,7 @@ int main()
         //Second Threadmill
         if(predictThreadmillTwo == 1 && getSecondThreadmill()->isRunning == 1)
         {
-            secondThreadMillRunTime += 50*simulationSpeed;
+            secondThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
         }
         if(predictThreadmillTwo && secondThreadMillRunTime >= 2000 && secondThreadMillRunTime <= 3000)
         {
@@ -201,13 +204,13 @@ int main()
             secondThreadMillRunTime = 0;
             predictThreadmillTwo = 0;
             predictThreadmillThree = 1;
-            //collision?
+            //TODO: collision?
         }
 
         //Third Threadmill
         if(predictThreadmillThree == 1 && getThirdThreadmill()->isRunning == 1)
         {
-            thirdThreadMillRunTime += 50*simulationSpeed;
+            thirdThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
         }
         if(predictThreadmillThree && thirdThreadMillRunTime >= 2000 && thirdThreadMillRunTime <= 3000)
         {
@@ -273,7 +276,7 @@ int main()
         //Fourth Threadmill
         if(predictThreadmillFour == 1 && getFourthThreadmill()->isRunning == 1)
         {
-            fourthThreadMillRunTime += 50*simulationSpeed;
+            fourthThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
         }
         if(predictThreadmillFour && fourthThreadMillRunTime >= 4000 && fourthThreadMillRunTime <= 5000)
         {
@@ -285,7 +288,7 @@ int main()
         }
         if(predictThreadmillFour == 1 && fourthThreadMillRunTime >= 5000)
         {
-            //TODO
+            //TODO "voll"
         }
 
         printSimulationInformations();
