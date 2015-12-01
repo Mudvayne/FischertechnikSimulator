@@ -2,7 +2,7 @@
 
 void runForwardPusher(Pusher *pusher)
 {
-    pusher->runningDirection = FORWARD;
+    pusher->runningDirection = FORWARDS;
 }
 void runBackwardsPusher(Pusher *pusher)
 {

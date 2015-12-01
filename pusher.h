@@ -1,7 +1,7 @@
 typedef enum {
     BACKWARDS,
     INACTIVE,
-    FORWARD
+    FORWARDS
 } RunningDirection;
 
 typedef struct {
