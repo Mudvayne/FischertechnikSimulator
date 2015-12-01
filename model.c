@@ -5,17 +5,17 @@ Threadmill secondThreadmill = {.isRunning=0};
 Threadmill thirdThreadmill = {.isRunning=0};
 Threadmill fourthThreadmill = {.isRunning=0};
 
-Pusher firstPusher;
-Pusher secondPusher;
+Pusher firstPusher = {.runningDirection=INACTIVE};
+Pusher secondPusher = {.runningDirection=INACTIVE};
 
-LightBarrier firstLightBarrier;
-LightBarrier secondLightBarrier;
-LightBarrier thirdLightBarrier;
-LightBarrier fourthLightBarrier;
-LightBarrier fifthLightBarrier;
+LightBarrier firstLightBarrier = {.isBlocked = 0};
+LightBarrier secondLightBarrier = {.isBlocked = 0};
+LightBarrier thirdLightBarrier = {.isBlocked = 0};
+LightBarrier fourthLightBarrier = {.isBlocked = 0};
+LightBarrier fifthLightBarrier = {.isBlocked = 0};
 
-Tool firstTool;
-Tool secondTool;
+Tool firstTool = {.isRunning=0};
+Tool secondTool = {.isRunning=0};
 
 Threadmill* getFirstThreadmill()
 {
