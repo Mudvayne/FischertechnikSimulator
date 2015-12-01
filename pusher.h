@@ -1,4 +1,4 @@
-typedef enum{
+typedef enum {
     BACKWARDS,
     INACTIVE,
     FORWARD
