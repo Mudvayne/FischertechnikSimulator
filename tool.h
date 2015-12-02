@@ -1,7 +1,10 @@
+#ifndef __TOOL
+#define __TOOL
 typedef struct {
     short isRunning;
 } Tool;
+#endif // __TOOL
 
-void startTool(Tool *tool);
-void stopTool(Tool *tool);
+extern void startTool(Tool *tool);
+extern void stopTool(Tool *tool);
 

@@ -1,7 +1,9 @@
+#ifndef __LIGHT_BARRIER
+#define __LIGHT_BARRIER
 typedef struct {
     short isBlocked;
 } LightBarrier;
+#endif // __LIGHT_BARRIER
 
-void setBlocked(LightBarrier *lightBarrier);
-void setUnblocked(LightBarrier *lightBarrier);
-
+extern void setBlocked(LightBarrier *lightBarrier);
+extern void setUnblocked(LightBarrier *lightBarrier);

@@ -1,11 +1,11 @@
 #include "treadmill.h"
 
-void run(Treadmill *treadmill)
+void startTreadmill(Treadmill *treadmill)
 {
     treadmill->isRunning = 1;
 }
 
-void stop(Treadmill *treadmill)
+void stopTreadmill(Treadmill *treadmill)
 {
     treadmill->isRunning = 0;
 }

@@ -1,3 +1,5 @@
+#ifndef __PUSHER
+#define __PUSHER
 typedef enum {
     BACKWARDS,
     INACTIVE,
@@ -9,7 +11,8 @@ typedef struct {
     short isFrontTriggerActivated;
     short isBackTriggerActivated;
 } Pusher;
+#endif // __PUSHER
 
-void runForwardPusher(Pusher *pusher);
-void runBackwardsPusher(Pusher *pusher);
-void stopPusher(Pusher *pusher);
+extern void runForwardPusher(Pusher *pusher);
+extern void runBackwardsPusher(Pusher *pusher);
+extern void stopPusher(Pusher *pusher);

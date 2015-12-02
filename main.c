@@ -5,6 +5,7 @@
 #include <conio.h>
 
 #include "model.h"
+#include "program.h"
 
 //for painting
 COORD coord = {0, 0};
@@ -100,6 +101,8 @@ int main()
     getFourthTreadmill()->isRunning = 1;
     predictTreadmillFour = 1;
 */
+    getFirstLightBarrier()->isBlocked = 1;
+
     while(1)
     {
 
@@ -346,6 +349,8 @@ int main()
         }
 
         printSimulationInformations();
+
+        executeProgram();
     }
     return 0;
 }

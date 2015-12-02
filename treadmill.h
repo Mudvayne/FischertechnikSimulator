@@ -1,6 +1,9 @@
+#ifndef __TREADMILL
+#define __TREADMILL
 typedef struct {
     short isRunning;
 } Treadmill;
+#endif // __TREADMILL
 
-void startTreadmill(Treadmill *treadmill);
-void stopTreadmill(Treadmill *treadmill);
+extern void startTreadmill(Treadmill *treadmill);
+extern void stopTreadmill(Treadmill *treadmill);

@@ -3,20 +3,19 @@
 #include "pusher.h"
 #include "tool.h"
 
-Treadmill* getFirstTreadmill();
-Treadmill* getSecondTreadmill();
-Treadmill* getThirdTreadmill();
-Treadmill* getFourthTreadmill();
+extern Treadmill* getFirstTreadmill();
+extern Treadmill* getSecondTreadmill();
+extern Treadmill* getThirdTreadmill();
+extern Treadmill* getFourthTreadmill();
 
-Pusher* getFirstPusher();
-Pusher* getSecondPusher();
+extern Pusher* getFirstPusher();
+extern Pusher* getSecondPusher();
 
-Tool* getFirstTool();
-Tool* getSecondTool();
+extern Tool* getFirstTool();
+extern Tool* getSecondTool();
 
-LightBarrier* getFirstLightBarrier();
-LightBarrier* getSecondLightBarrier();
-LightBarrier* getThirdLightBarrier();
-LightBarrier* getFourthLightBarrier();
-LightBarrier* getFifthLightBarrier();
-
+extern LightBarrier* getFirstLightBarrier();
+extern LightBarrier* getSecondLightBarrier();
+extern LightBarrier* getThirdLightBarrier();
+extern LightBarrier* getFourthLightBarrier();
+extern LightBarrier* getFifthLightBarrier();
