@@ -26,8 +26,6 @@ int fourthTreadMillRunTime = 0;
 double firstPusherPos = 0;
 double secondPusherPos = 0;
 
-
-
 //predictions
 short predictTreadmillOne = 0;
 short predictTreadmillTwo = 0;
@@ -47,9 +45,9 @@ void printSimulationInformations()
 {
     gotoxy(0,0);
 
-    printf("                   XXXXX              XXXXX\n");
-    printf("                   XXXXX on: %d        XXXXX on: %d\n", getFirstTool()->isRunning, getSecondTool()->isRunning);
-    printf("                   XXXXX              XXXXX\n");
+    printf("                   XXXXX              XXXXX         \n");
+    printf("                   XXXXX on: %d        XXXXX on: %d         \n", getFirstTool()->isRunning, getSecondTool()->isRunning);
+    printf("                   XXXXX              XXXXX         \n");
     printf("pos: %.2f                                                pos: %.2f\n", firstPusherPos, secondPusherPos);
     printf("dir: %d  +---+ on: %d  +  pre: %d   on: %d  +  pre: %d  +---+ dir: %d\n", getFirstPusher()->runningDirection, getSecondTreadmill()->isRunning,
            predictTreadmillTwo, getThirdTreadmill()->isRunning, predictTreadmillThree, getSecondPusher()->runningDirection);
@@ -79,6 +77,12 @@ int main()
     getchar();
     system("cls");
 
+    getFirstTreadmill()->isRunning = 1;
+    getSecondTreadmill()->isRunning = 1;
+    getThirdTreadmill()->isRunning = 1;
+    getFourthTreadmill()->isRunning = 1;
+
+
 /*
     //Testing
     //first threadmill
@@ -98,6 +102,37 @@ int main()
 */
     while(1)
     {
+
+        printf("Press i to insert a item into the System.");
+        if(kbhit())
+        {
+            fseek(stdin,0,SEEK_END);
+
+            system("cls");
+            printf("INSERT ITEM\n\n");
+            printf("1\tFirst Threadmill \n");
+            printf("2\tFirst Plate \n");
+            printf("3\tSecond Threadmill \n");
+            printf("4\tThird Threadmill \n");
+            printf("5\tSecond Plate \n");
+            printf("6\tFourth Threadmill \n");
+
+            int input = 0;
+            scanf("%d",&input);
+
+            switch(input)
+            {
+                case 1: getFirstLightBarrier()->isBlocked = 1; break;
+                case 2: predictPlateOne = 1; break;
+                case 3: predictTreadmillTwo = 1; break;
+                case 4: predictTreadmillThree = 1; break;
+                case 5: predictPlateTwo = 1; break;
+                case 6: predictTreadmillFour = 1; break;
+                default: printf("\nOnly inputs 1-6 allowed."); getchar();
+            }
+        }
+
+
         Sleep(msPerSimStep);
 
         if(getFirstLightBarrier()->isBlocked == 1)

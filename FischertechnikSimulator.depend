@@ -1,25 +1,6 @@
 # depslib dependency file v1.0
-1449048841 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\main.c
-	<stdio.h>
-	<stdlib.h>
-	<windows.h>
-	<time.h>
-	<conio.h>
+1449048864 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\model.c
 	"model.h"
-
-1448446396 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\threadmill.h
-
-1448454874 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simlightbarrier.c
-	"lightBarrier.h"
-
-1449047355 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simpusher.c
-	"pusher.h"
-
-1448454837 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simthreadmill.c
-	"threadmill.h"
-
-1448455068 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simtool.c
-	"tool.h"
 
 1449048554 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\model.h
 	"treadmill.h"
@@ -27,54 +8,31 @@
 	"pusher.h"
 	"tool.h"
 
+1449048627 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\treadmill.h
+
 1448446217 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\lightbarrier.h
 
 1449047283 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\pusher.h
 
 1448446371 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\tool.h
 
-1449048864 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\model.c
-	"model.h"
+1448454874 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simlightbarrier.c
+	"lightBarrier.h"
 
-1448995912 source:d:\fast uni\embedded\workspace\main.c
+1449047355 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simpusher.c
+	"pusher.h"
+
+1448455068 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simtool.c
+	"tool.h"
+
+1449048934 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simtreadmill.c
+	"treadmill.h"
+
+1449056303 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\main.c
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
 	<time.h>
 	<conio.h>
 	"model.h"
-
-1448963355 d:\fast uni\embedded\workspace\model.h
-	"threadmill.h"
-	"lightBarrier.h"
-	"pusher.h"
-	"tool.h"
-
-1448963355 d:\fast uni\embedded\workspace\threadmill.h
-
-1448963355 d:\fast uni\embedded\workspace\lightbarrier.h
-
-1448972105 d:\fast uni\embedded\workspace\pusher.h
-
-1448963355 d:\fast uni\embedded\workspace\tool.h
-
-1448985197 source:d:\fast uni\embedded\workspace\model.c
-	"model.h"
-
-1448963355 source:d:\fast uni\embedded\workspace\simlightbarrier.c
-	"lightBarrier.h"
-
-1448971312 source:d:\fast uni\embedded\workspace\simpusher.c
-	"pusher.h"
-
-1448963355 source:d:\fast uni\embedded\workspace\simthreadmill.c
-	"threadmill.h"
-
-1448963355 source:d:\fast uni\embedded\workspace\simtool.c
-	"tool.h"
-
-1449048627 d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\treadmill.h
-
-1449048934 source:d:\uni\master\semester_3\embedded_workspace\fischertechniksimulator\simtreadmill.c
-	"treadmill.h"
 
