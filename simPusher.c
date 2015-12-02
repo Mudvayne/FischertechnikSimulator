@@ -12,12 +12,3 @@ void stopPusher(Pusher *pusher)
 {
     pusher->runningDirection = INACTIVE;
 }
-
-void triggerTrigger(Pusher *pusher)
-{
-    pusher->isTriggerActivated = 1;
-}
-void untriggerTrigger(Pusher *pusher)
-{
-    pusher->isTriggerActivated = 0;
-}

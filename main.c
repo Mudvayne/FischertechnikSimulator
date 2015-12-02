@@ -12,7 +12,7 @@ COORD coord = {0, 0};
 //speeds
 double msPerSimStep = 50;
 double simulationSpeed = 0.5;
-double pusherStepSpeed = 0.025;
+double pusherStepSpeed = 0.015;
 double threadmillStepSpeed = 50; // one step per ms
 
 
@@ -25,6 +25,8 @@ int fourthThreadMillRunTime = 0;
 //pushers
 double firstPusherPos = 0;
 double secondPusherPos = 0;
+
+
 
 //predictions
 short predictThreadmillOne = 0;
@@ -51,9 +53,9 @@ void printSimulationInformations()
     printf("pos: %.2f                                                pos: %.2f\n", firstPusherPos, secondPusherPos);
     printf("dir: %d  +---+ on: %d  +  pre: %d   on: %d  +  pre: %d  +---+ dir: %d\n", getFirstPusher()->runningDirection, getSecondThreadmill()->isRunning,
            predictThreadmillTwo, getThirdThreadmill()->isRunning, predictThreadmillThree, getSecondPusher()->runningDirection);
-    printf("tri: %d  |   +--------|--------->--------|--------->+   | tri: %d\n", getFirstPusher()->isTriggerActivated, getSecondPusher()->isTriggerActivated);
-    printf("pre: %d  +-+-+        +                  +          +-+-+ pre: %d\n", predictPlateOne, predictPlateTwo);
-    printf("          ^          %d                  %d            |\n", getThirdLightBarrier()->isBlocked, getFourthLightBarrier()->isBlocked);
+    printf("trf: %d  |   +--------|--------->--------|--------->+   | trf: %d\n", getFirstPusher()->isFrontTriggerActivated, getSecondPusher()->isFrontTriggerActivated);
+    printf("trb: %d  +-+-+        +                  +          +-+-+ trb: %d\n", getFirstPusher()->isBackTriggerActivated, getSecondPusher()->isBackTriggerActivated);
+    printf("pre: %d    ^          %d                  %d            |   pre: %d\n", predictPlateOne, getThirdLightBarrier()->isBlocked, getFourthLightBarrier()->isBlocked, predictPlateTwo);
     printf("         +-+ %d                                       |\n", getSecondLightBarrier()->isBlocked);
     printf("          |                                          |\n");
     printf("          |                                          |\n");
@@ -77,13 +79,11 @@ int main()
     getchar();
     system("cls");
 
-
     //Testing
     //first threadmill
     getFirstThreadmill()->isRunning = 1;
     getFirstLightBarrier()->isBlocked = 1;
 
-/*
     //second threadmill
     getSecondThreadmill()->isRunning = 1;
     predictThreadmillTwo = 1;
@@ -94,7 +94,7 @@ int main()
     //fourth threadmill
     getFourthThreadmill()->isRunning = 1;
     predictThreadmillFour = 1;
-*/
+
     while(1)
     {
         Sleep(msPerSimStep);
@@ -158,11 +158,20 @@ int main()
         //First Plate
         if(firstPusherPos>=1.0 && firstPusherPos <= 1.1)
         {
-            getFirstPusher()->isTriggerActivated = 1;
+            getFirstPusher()->isFrontTriggerActivated = 1;
         }
         else
         {
-            getFirstPusher()->isTriggerActivated = 0;
+            getFirstPusher()->isFrontTriggerActivated = 0;
+        }
+
+        if(firstPusherPos >= -0.1 && firstPusherPos <= 0.0)
+        {
+            getFirstPusher()->isBackTriggerActivated = 1;
+        }
+        else
+        {
+            getFirstPusher()->isBackTriggerActivated = 0;
         }
 
         if(getFirstPusher()->runningDirection == FORWARDS)
@@ -245,11 +254,19 @@ int main()
         //Second Plate
         if(secondPusherPos>=1.0 && secondPusherPos <= 1.1)
         {
-            getSecondPusher()->isTriggerActivated = 1;
+            getSecondPusher()->isFrontTriggerActivated = 1;
         }
         else
         {
-            getSecondPusher()->isTriggerActivated = 0;
+            getSecondPusher()->isFrontTriggerActivated = 0;
+        }
+        if(secondPusherPos >= -0.1 && secondPusherPos <= 0.0)
+        {
+            getSecondPusher()->isBackTriggerActivated = 1;
+        }
+        else
+        {
+            getSecondPusher()->isBackTriggerActivated = 0;
         }
 
         if(getSecondPusher()->runningDirection == FORWARDS)
@@ -278,6 +295,7 @@ int main()
         {
             fourthThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
         }
+
         if(predictThreadmillFour && fourthThreadMillRunTime >= 4000 && fourthThreadMillRunTime <= 5000)
         {
             getFifthLightBarrier()->isBlocked = 1;
