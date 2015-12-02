@@ -79,6 +79,7 @@ int main()
     getchar();
     system("cls");
 
+/*
     //Testing
     //first threadmill
     getFirstTreadmill()->isRunning = 1;
@@ -94,7 +95,7 @@ int main()
     //fourth threadmill
     getFourthTreadmill()->isRunning = 1;
     predictTreadmillFour = 1;
-
+*/
     while(1)
     {
         Sleep(msPerSimStep);
@@ -311,6 +312,5 @@ int main()
 
         printSimulationInformations();
     }
-
     return 0;
 }

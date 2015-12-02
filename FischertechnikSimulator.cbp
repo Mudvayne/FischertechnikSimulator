@@ -46,14 +46,14 @@
 		<Unit filename="simPusher.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="simThreadmill.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="simTool.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="threadmill.h" />
+		<Unit filename="simTreadmill.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="tool.h" />
+		<Unit filename="treadmill.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
