@@ -34,8 +34,6 @@ int main()
 
     while(1)
     {
-
-
         simulate();
         executeProgram();
     }
