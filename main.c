@@ -13,14 +13,14 @@ COORD coord = {0, 0};
 double msPerSimStep = 50;
 double simulationSpeed = 0.5;
 double pusherStepSpeed = 0.015;
-double threadmillStepSpeed = 50; // one step per ms
+double treadmillStepSpeed = 50; // one step per ms
 
 
 //item runtimes
-int firstThreadMillRunTime = 0;
-int secondThreadMillRunTime = 0;
-int thirdThreadMillRunTime = 0;
-int fourthThreadMillRunTime = 0;
+int firstTreadMillRunTime = 0;
+int secondTreadMillRunTime = 0;
+int thirdTreadMillRunTime = 0;
+int fourthTreadMillRunTime = 0;
 
 //pushers
 double firstPusherPos = 0;
@@ -29,10 +29,10 @@ double secondPusherPos = 0;
 
 
 //predictions
-short predictThreadmillOne = 0;
-short predictThreadmillTwo = 0;
-short predictThreadmillThree = 0;
-short predictThreadmillFour = 0;
+short predictTreadmillOne = 0;
+short predictTreadmillTwo = 0;
+short predictTreadmillThree = 0;
+short predictTreadmillFour = 0;
 short predictPlateOne = 0;
 short predictPlateTwo = 0;
 
@@ -51,26 +51,26 @@ void printSimulationInformations()
     printf("                   XXXXX on: %d        XXXXX on: %d\n", getFirstTool()->isRunning, getSecondTool()->isRunning);
     printf("                   XXXXX              XXXXX\n");
     printf("pos: %.2f                                                pos: %.2f\n", firstPusherPos, secondPusherPos);
-    printf("dir: %d  +---+ on: %d  +  pre: %d   on: %d  +  pre: %d  +---+ dir: %d\n", getFirstPusher()->runningDirection, getSecondThreadmill()->isRunning,
-           predictThreadmillTwo, getThirdThreadmill()->isRunning, predictThreadmillThree, getSecondPusher()->runningDirection);
+    printf("dir: %d  +---+ on: %d  +  pre: %d   on: %d  +  pre: %d  +---+ dir: %d\n", getFirstPusher()->runningDirection, getSecondTreadmill()->isRunning,
+           predictTreadmillTwo, getThirdTreadmill()->isRunning, predictTreadmillThree, getSecondPusher()->runningDirection);
     printf("trf: %d  |   +--------|--------->--------|--------->+   | trf: %d\n", getFirstPusher()->isFrontTriggerActivated, getSecondPusher()->isFrontTriggerActivated);
     printf("trb: %d  +-+-+        +                  +          +-+-+ trb: %d\n", getFirstPusher()->isBackTriggerActivated, getSecondPusher()->isBackTriggerActivated);
     printf("pre: %d    ^          %d                  %d            |   pre: %d\n", predictPlateOne, getThirdLightBarrier()->isBlocked, getFourthLightBarrier()->isBlocked, predictPlateTwo);
     printf("         +-+ %d                                       |\n", getSecondLightBarrier()->isBlocked);
     printf("          |                                          |\n");
     printf("          |                                          |\n");
-    printf("          | on: %d                                    | on: %d\n", getFirstThreadmill()->isRunning, getFourthThreadmill()->isRunning);
-    printf("          |pre: %d                                    |pre: %d\n", predictThreadmillOne, predictThreadmillFour);
+    printf("          | on: %d                                    | on: %d\n", getFirstTreadmill()->isRunning, getFourthTreadmill()->isRunning);
+    printf("          |pre: %d                                    |pre: %d\n", predictTreadmillOne, predictTreadmillFour);
     printf("          |                                          |\n");
     printf("          |                                          |\n");
     printf("         +-+ %d                                      +-+ %d\n", getFirstLightBarrier()->isBlocked, getFifthLightBarrier()->isBlocked);
     printf("          |                                          |\n");
     printf("          +                                          v\n");
 
-    printf("\nTreadmill 1 item runtime: %d ms                          \n", firstThreadMillRunTime);
-    printf("Treadmill 2 item runtime: %d ms                          \n", secondThreadMillRunTime);
-    printf("Treadmill 3 item runtime: %d ms                          \n", thirdThreadMillRunTime);
-    printf("Treadmill 4 item runtime: %d ms                          \n\n", fourthThreadMillRunTime);
+    printf("\nTreadmill 1 item runtime: %d ms                          \n", firstTreadMillRunTime);
+    printf("Treadmill 2 item runtime: %d ms                          \n", secondTreadMillRunTime);
+    printf("Treadmill 3 item runtime: %d ms                          \n", thirdTreadMillRunTime);
+    printf("Treadmill 4 item runtime: %d ms                          \n\n", fourthTreadMillRunTime);
 }
 
 int main()
@@ -81,19 +81,19 @@ int main()
 
     //Testing
     //first threadmill
-    getFirstThreadmill()->isRunning = 1;
+    getFirstTreadmill()->isRunning = 1;
     getFirstLightBarrier()->isBlocked = 1;
 
     //second threadmill
-    getSecondThreadmill()->isRunning = 1;
-    predictThreadmillTwo = 1;
+    getSecondTreadmill()->isRunning = 1;
+    predictTreadmillTwo = 1;
 
     //third threadmill
-    getThirdThreadmill()->isRunning = 1;
+    getThirdTreadmill()->isRunning = 1;
 
     //fourth threadmill
-    getFourthThreadmill()->isRunning = 1;
-    predictThreadmillFour = 1;
+    getFourthTreadmill()->isRunning = 1;
+    predictTreadmillFour = 1;
 
     while(1)
     {
@@ -101,40 +101,40 @@ int main()
 
         if(getFirstLightBarrier()->isBlocked == 1)
         {
-            predictThreadmillOne = 1;
+            predictTreadmillOne = 1;
         }
 
         //First Threadmill
-        if(predictThreadmillOne == 1 && getFirstThreadmill()->isRunning == 1)
+        if(predictTreadmillOne == 1 && getFirstTreadmill()->isRunning == 1)
         {
-            firstThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
+            firstTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
         }
         else
         {
-            firstThreadMillRunTime = 0;
+            firstTreadMillRunTime = 0;
         }
 
-        if(predictThreadmillOne && firstThreadMillRunTime <= 500)
+        if(predictTreadmillOne && firstTreadMillRunTime <= 500)
         {
             getFirstLightBarrier()->isBlocked = 1;
         }
 
-        if(predictThreadmillOne && firstThreadMillRunTime > 500 && firstThreadMillRunTime < 3000)
+        if(predictTreadmillOne && firstTreadMillRunTime > 500 && firstTreadMillRunTime < 3000)
         {
             getFirstLightBarrier()->isBlocked = 0;
         }
 
-        if(predictThreadmillOne && firstThreadMillRunTime >= 3000 && firstThreadMillRunTime <= 4000)
+        if(predictTreadmillOne && firstTreadMillRunTime >= 3000 && firstTreadMillRunTime <= 4000)
         {
             getSecondLightBarrier()->isBlocked = 1;
         }
 
-        if(predictThreadmillOne && firstThreadMillRunTime > 4000)
+        if(predictTreadmillOne && firstTreadMillRunTime > 4000)
         {
             getSecondLightBarrier()->isBlocked = 0;
         }
 
-        if(predictThreadmillOne && firstThreadMillRunTime > 5000)
+        if(predictTreadmillOne && firstTreadMillRunTime > 5000)
         {
             if(firstPusherPos > 0)
             {
@@ -150,9 +150,9 @@ int main()
                 getchar();
                 return 0;
             }
-            predictThreadmillOne = 0;
+            predictTreadmillOne = 0;
             predictPlateOne = 1;
-            firstThreadMillRunTime = 0;
+            firstTreadMillRunTime = 0;
         }
 
         //First Plate
@@ -192,15 +192,15 @@ int main()
         if(firstPusherPos >= 9.0 && predictPlateOne == 1)
         {
             predictPlateOne = 0;
-            predictThreadmillTwo = 1;
+            predictTreadmillTwo = 1;
         }
 
         //Second Threadmill
-        if(predictThreadmillTwo == 1 && getSecondThreadmill()->isRunning == 1)
+        if(predictTreadmillTwo == 1 && getSecondTreadmill()->isRunning == 1)
         {
-            secondThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
+            secondTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
         }
-        if(predictThreadmillTwo && secondThreadMillRunTime >= 2000 && secondThreadMillRunTime <= 3000)
+        if(predictTreadmillTwo && secondTreadMillRunTime >= 2000 && secondTreadMillRunTime <= 3000)
         {
             getThirdLightBarrier()->isBlocked = 1;
         }
@@ -208,20 +208,20 @@ int main()
         {
             getThirdLightBarrier()->isBlocked = 0;
         }
-        if(predictThreadmillTwo == 1 && secondThreadMillRunTime >= 5000)
+        if(predictTreadmillTwo == 1 && secondTreadMillRunTime >= 5000)
         {
-            secondThreadMillRunTime = 0;
-            predictThreadmillTwo = 0;
-            predictThreadmillThree = 1;
+            secondTreadMillRunTime = 0;
+            predictTreadmillTwo = 0;
+            predictTreadmillThree = 1;
             //TODO: collision?
         }
 
         //Third Threadmill
-        if(predictThreadmillThree == 1 && getThirdThreadmill()->isRunning == 1)
+        if(predictTreadmillThree == 1 && getThirdTreadmill()->isRunning == 1)
         {
-            thirdThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
+            thirdTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
         }
-        if(predictThreadmillThree && thirdThreadMillRunTime >= 2000 && thirdThreadMillRunTime <= 3000)
+        if(predictTreadmillThree && thirdTreadMillRunTime >= 2000 && thirdTreadMillRunTime <= 3000)
         {
             getFourthLightBarrier()->isBlocked = 1;
         }
@@ -229,7 +229,7 @@ int main()
         {
             getFourthLightBarrier()->isBlocked = 0;
         }
-        if(predictThreadmillThree == 1 && thirdThreadMillRunTime >= 5000)
+        if(predictTreadmillThree == 1 && thirdTreadMillRunTime >= 5000)
         {
             if(secondPusherPos > 0)
             {
@@ -246,8 +246,8 @@ int main()
                 return 0;
             }
 
-            thirdThreadMillRunTime = 0;
-            predictThreadmillThree = 0;
+            thirdTreadMillRunTime = 0;
+            predictTreadmillThree = 0;
             predictPlateTwo = 1;
         }
 
@@ -287,16 +287,16 @@ int main()
         if(secondPusherPos >= 9.0 && predictPlateTwo == 1)
         {
             predictPlateTwo = 0;
-            predictThreadmillFour = 1;
+            predictTreadmillFour = 1;
         }
 
         //Fourth Threadmill
-        if(predictThreadmillFour == 1 && getFourthThreadmill()->isRunning == 1)
+        if(predictTreadmillFour == 1 && getFourthTreadmill()->isRunning == 1)
         {
-            fourthThreadMillRunTime += threadmillStepSpeed*simulationSpeed;
+            fourthTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
         }
 
-        if(predictThreadmillFour && fourthThreadMillRunTime >= 4000 && fourthThreadMillRunTime <= 5000)
+        if(predictTreadmillFour && fourthTreadMillRunTime >= 4000 && fourthTreadMillRunTime <= 5000)
         {
             getFifthLightBarrier()->isBlocked = 1;
         }
@@ -304,7 +304,7 @@ int main()
         {
             getFifthLightBarrier()->isBlocked = 0;
         }
-        if(predictThreadmillFour == 1 && fourthThreadMillRunTime >= 5000)
+        if(predictTreadmillFour == 1 && fourthTreadMillRunTime >= 5000)
         {
             //TODO "voll"
         }

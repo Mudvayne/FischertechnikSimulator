@@ -1,12 +1,12 @@
-#include "threadmill.h"
+#include "treadmill.h"
 #include "lightBarrier.h"
 #include "pusher.h"
 #include "tool.h"
 
-Threadmill* getFirstThreadmill();
-Threadmill* getSecondThreadmill();
-Threadmill* getThirdThreadmill();
-Threadmill* getFourthThreadmill();
+Treadmill* getFirstTreadmill();
+Treadmill* getSecondTreadmill();
+Treadmill* getThirdTreadmill();
+Treadmill* getFourthTreadmill();
 
 Pusher* getFirstPusher();
 Pusher* getSecondPusher();

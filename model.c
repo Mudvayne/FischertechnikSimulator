@@ -1,9 +1,9 @@
 #include "model.h"
 
-Threadmill firstThreadmill = {.isRunning=0};
-Threadmill secondThreadmill = {.isRunning=0};
-Threadmill thirdThreadmill = {.isRunning=0};
-Threadmill fourthThreadmill = {.isRunning=0};
+Treadmill firstTreadmill = {.isRunning=0};
+Treadmill secondTreadmill = {.isRunning=0};
+Treadmill thirdTreadmill = {.isRunning=0};
+Treadmill fourthTreadmill = {.isRunning=0};
 
 Pusher firstPusher = {.runningDirection=INACTIVE};
 Pusher secondPusher = {.runningDirection=INACTIVE};
@@ -17,24 +17,24 @@ LightBarrier fifthLightBarrier = {.isBlocked = 0};
 Tool firstTool = {.isRunning=0};
 Tool secondTool = {.isRunning=0};
 
-Threadmill* getFirstThreadmill()
+Treadmill* getFirstTreadmill()
 {
-    return &firstThreadmill;
+    return &firstTreadmill;
 }
 
-Threadmill* getSecondThreadmill()
+Treadmill* getSecondTreadmill()
 {
-    return &secondThreadmill;
+    return &secondTreadmill;
 }
 
-Threadmill* getThirdThreadmill()
+Treadmill* getThirdTreadmill()
 {
-    return &thirdThreadmill;
+    return &thirdTreadmill;
 }
 
-Threadmill* getFourthThreadmill()
+Treadmill* getFourthTreadmill()
 {
-    return &fourthThreadmill;
+    return &fourthTreadmill;
 }
 
 Pusher* getFirstPusher()
