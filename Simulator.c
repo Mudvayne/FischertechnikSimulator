@@ -4,11 +4,10 @@
 COORD coord = {0, 0};
 
 //speeds
-double msPerSimStep = 50;
-double simulationSpeed = 0.5;
+double msPerSimStep = 5;
+double simulationSpeed = 0.2;
 double pusherStepSpeed = 0.015;
 double treadmillStepSpeed = 50; // one step per ms
-
 
 //item runtimes
 int firstTreadMillRunTime = 0;
@@ -67,7 +66,7 @@ void printSimulationInformations()
 
 void simulate()
 {
-    printf("Press i to insert a item into the System.");
+    printf("Press 1-6 to insert a item into the System.");
     if(kbhit())
     {
         fseek(stdin,0,SEEK_END);
@@ -86,7 +85,7 @@ void simulate()
 
         switch(input)
         {
-            //case 1: getFirstLightBarrier()->isBlocked = 1; break;
+            case 1: getFirstLightBarrier()->isBlocked = 1; break;
             case 2: predictPlateOne = 1; break;
             case 3: predictTreadmillTwo = 1; break;
             case 4: predictTreadmillThree = 1; break;
@@ -109,7 +108,7 @@ void simulate()
     {
         firstTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
     }
-    else
+    else if(predictTreadmillOne != 1)
     {
         firstTreadMillRunTime = 0;
     }
@@ -134,7 +133,7 @@ void simulate()
         getSecondLightBarrier()->isBlocked = 0;
     }
 
-    if(predictTreadmillOne && firstTreadMillRunTime > 5000)
+    if(predictTreadmillOne && firstTreadMillRunTime >= 5000)
     {
         if(firstPusherPos > 0)
         {
@@ -189,7 +188,7 @@ void simulate()
         getchar();
         return 0;
     }
-    if(firstPusherPos >= 9.0 && predictPlateOne == 1)
+    if(firstPusherPos >= 0.9 && predictPlateOne == 1)
     {
         predictPlateOne = 0;
         predictTreadmillTwo = 1;
@@ -284,7 +283,7 @@ void simulate()
         getchar();
         return 0;
     }
-    if(secondPusherPos >= 9.0 && predictPlateTwo == 1)
+    if(secondPusherPos >= 0.9 && predictPlateTwo == 1)
     {
         predictPlateTwo = 0;
         predictTreadmillFour = 1;

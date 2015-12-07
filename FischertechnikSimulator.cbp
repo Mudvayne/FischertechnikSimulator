@@ -60,6 +60,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="simulator.h" />
+		<Unit filename="timeUtil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="timeUtil.h" />
 		<Unit filename="tool.h" />
 		<Unit filename="treadmill.h" />
 		<Extensions>
