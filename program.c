@@ -3,16 +3,22 @@
 #include "treadmill.h"
 #include "lightBarrier.h"
 
+static int TRAVERSE_TIME_AFTER_FIRST_LB = 1100;
+static int TRAVERSE_TIME_AFTER_CENTERED_LB = 500;
+
 //"Automats" are here temporary, refactor into model.
 int automatTmp = 0;
 int automatTmp2 = 0;
 
 void aggregateSensors() {
-    LightBarrier *startLightBarrier = getFirstLightBarrier();
-    LightBarrier *endLightBarrier = getSecondLightBarrier();
+    LightBarrier *firstLightBarrier = getFirstLightBarrier();
+    LightBarrier *secondLightBarrier = getSecondLightBarrier();
+    LightBarrier *thridLightBarrier = getThirdLightBarrier();
+    LightBarrier *fourthLightBarrier = getFourthLightBarrier();
+    LightBarrier *fifthLightBarrier = getFifthLightBarrier();
 
-    automatTmp = startLightBarrier->isBlocked;
-    automatTmp2 = endLightBarrier->isBlocked;
+    automatTmp = firstLightBarrier->isBlocked;
+    automatTmp2 = secondLightBarrier->isBlocked;
 }
 
 void computeActions() {
