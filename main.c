@@ -4,9 +4,6 @@
 #include "program.h"
 #import "simulator.h"
 
-
-
-
 int main()
 {
     system("cls");

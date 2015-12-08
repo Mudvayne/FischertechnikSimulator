@@ -7,7 +7,7 @@ COORD coord = {0, 0};
 double msPerSimStep = 5;
 double simulationSpeed = 0.2;
 double pusherStepSpeed = 0.015;
-double treadmillStepSpeed = 50; // one step per ms
+double treadmillStepSpeed = 50;
 
 //item runtimes
 int firstTreadMillRunTime = 0;
@@ -61,12 +61,12 @@ void printSimulationInformations()
     printf("\nTreadmill 1 item runtime: %d ms                          \n", firstTreadMillRunTime);
     printf("Treadmill 2 item runtime: %d ms                          \n", secondTreadMillRunTime);
     printf("Treadmill 3 item runtime: %d ms                          \n", thirdTreadMillRunTime);
-    printf("Treadmill 4 item runtime: %d ms                          \n\n", fourthTreadMillRunTime);
+    //printf("Treadmill 4 item runtime: %d ms                          \n\n", fourthTreadMillRunTime);
 }
 
 void simulate()
 {
-    printf("Press 1-6 to insert a item into the System.");
+    //printf("Press 1-6 to insert a item into the System.");
     if(kbhit())
     {
         fseek(stdin,0,SEEK_END);
