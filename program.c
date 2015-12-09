@@ -4,9 +4,9 @@
 #include "lightBarrier.h"
 #include "timeUtil.h"
 
-#define TRAVERSE_TIME_AFTER_SECOND_LB               1500
+#define TRAVERSE_TIME_AFTER_SECOND_LB               1800
 #define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     3000
-#define TRAVERSE_TIME_AFTER_CENTERED_LB             500
+#define TRAVERSE_TIME_AFTER_CENTERED_LB             700
 #define WAIT_BEFORE_TOOLING                         500
 #define WAIT_AFTER_TOOLING                          500
 #define TOOL_TIME                                   3000
