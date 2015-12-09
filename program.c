@@ -5,7 +5,7 @@
 #include "timeUtil.h"
 
 #define TRAVERSE_TIME_AFTER_SECOND_LB               1800
-#define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     3000
+#define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     4000
 #define TRAVERSE_TIME_AFTER_CENTERED_LB             700
 #define WAIT_BEFORE_TOOLING                         500
 #define WAIT_AFTER_TOOLING                          500
@@ -151,6 +151,7 @@ void computeSecondTreadmill()
             {
                 //switched off right now!
                 thirdLightBarrierBefore = 0;
+                remainingTimeFirstTool = -1000;
             }
         }
         if(thirdLightBarrierBlockTime >= TRAVERSE_TIME_AFTER_CENTERED_LB + WAIT_BEFORE_TOOLING)
@@ -162,7 +163,17 @@ void computeSecondTreadmill()
             }
             else
             {
-
+                if(remainingTimeFirstTool <= 0)
+                {
+                    remainingTimeSecondTM = TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB;
+                }
+            }
+        }
+        if(remainingTimeSecondTM <= 0)
+        {
+            if(itemsInSystem - (itemCountFirstTM + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
+            {
+                itemCountThirdTM++;
             }
         }
     }
