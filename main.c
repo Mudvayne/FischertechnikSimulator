@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "program.h"
-#import "simulator.h"
+#include "simulator.h"
 
 int main()
 {

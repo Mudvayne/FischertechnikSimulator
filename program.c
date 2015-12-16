@@ -9,7 +9,6 @@
 //must be adjusted
 #define TRAVERSE_TIME_ONE_TM                        1500
 #define RUN_LONGER_THAN_THEORETICALLY_NEEDED        500
-#define WAIT_POSITION                               TRAVERSE_TIME_ONE_TM * 0.8
 #define EMPTY_SPACE_TO_BE_READY                     1200
 
 #define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     4000
@@ -22,9 +21,8 @@
 #else
 
 //must be adjusted
-#define TRAVERSE_TIME_ONE_TM                        5000
+#define TRAVERSE_TIME_ONE_TM                        7000
 #define RUN_LONGER_THAN_THEORETICALLY_NEEDED        1000
-#define WAIT_POSITION                               TRAVERSE_TIME_ONE_TM * 0.8
 #define EMPTY_SPACE_TO_BE_READY                     1200
 
 #define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     4000
@@ -36,9 +34,9 @@
 
 #endif
 
-//************************************
-//****** VARIABLES FOR AUTOMAT *******
-//************************************
+//******************************************
+//****** VARIABLES FOR STATE MACHINE *******
+//******************************************
 
 typedef struct
 {
@@ -57,12 +55,26 @@ typedef struct
     short isReady;
 } StageOne;
 
+typedef struct
+{
+    short pusherDir;
+    short isOccupied;
+    short isReady;
+} StageTwo;
+
+typedef struct
+{
+    short itemCount;
+    int itemPositions[3];
+
+    short isReady;
+} StageThree;
+
 TotalSystem totalSystem = {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
 StageOne stageOne = {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}};
+StageTwo stageTwo = {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
+StageThree stageThree = {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0};
 
-//STAGE 2 (PLATE 1)
-int firstPusherDir = 1;
-int isItemOnFirstPlate = 0;
 
 //STAGE 3 (TREADMILL 2)
 int remainingTimeSecondTM = 0;
@@ -93,7 +105,7 @@ void aggregateSensors() {
 
     updatePusher(getFirstPusher());
     updatePusher(getSecondPusher());
-    
+
     updateLightBarrier(getFirstLightBarrier());
     updateLightBarrier(getSecondLightBarrier());
     updateLightBarrier(getThirdLightBarrier());
@@ -139,7 +151,7 @@ void computeFirstTreadmill()
 
     // is next stage ready?
     short isNextStageReady = 1;
-    if(isItemOnFirstPlate == 1 || getFirstPusher()->isBackTriggerActivated != 1)
+    if(stageTwo.isOccupied || getFirstPusher()->isBackTriggerActivated != 1)
     {
         isNextStageReady = 0;
     }
@@ -175,7 +187,7 @@ void computeFirstTreadmill()
         i = 0;
         for( i ; i < 3 ; i++)
         {
-            if(stageOne.itemPositions[i] >= (WAIT_POSITION) && !isNextStageReady)
+            if(getSecondLightBarrier()->isBlocked && !isNextStageReady)
             {
                 stageOne.isRunning = 0;
                 break;
@@ -189,7 +201,7 @@ void computeFirstTreadmill()
     {
         if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED))
         {
-            isItemOnFirstPlate = 1;
+            stageTwo.isOccupied = 1;
             stageOne.itemPositions[i] = -1;
             stageOne.itemCount --;
             break;
@@ -199,27 +211,28 @@ void computeFirstTreadmill()
 
 void computeFirstPlate()
 {
-    //isItemOnFirstPlate = 1;
-
-    if(isItemOnFirstPlate)
+    if(stageTwo.isOccupied && stageThree.isReady)
     {
         if(getFirstPusher()->isBackTriggerActivated)
         {
-            //TODO: Is second treadmill ready?
-            firstPusherDir = 2; //forwards
+            stageTwo.pusherDir = 2; //forwards
         }
     }
     else if(getFirstPusher()->isBackTriggerActivated)
     {
-        firstPusherDir = 1; //incative
+        stageTwo.pusherDir = 1; //incative
     }
+
     if(getFirstPusher()->isFrontTriggerActivated)
     {
-        firstPusherDir = 0; //backwards
-        isItemOnFirstPlate = 0;
-        if(totalSystem.itemsInSystem - (stageOne.itemCount + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
+        stageTwo.pusherDir = 0; //backwards
+        stageTwo.isOccupied = 0;
+        if(totalSystem.itemsInSystem - (stageOne.itemCount + stageThree.itemCount + itemCountThirdTM + itemCountFourthTM + isItemOnSecondPlate) > 0)
         {
-            itemCountSecondTM++;
+            //stageThree.itemCount++; new
+            //todo: set item pos in stage 3
+
+            itemCountSecondTM ++;
         }
     }
 }
@@ -273,7 +286,7 @@ void computeSecondTreadmill()
         }
         if(remainingTimeSecondTM <= 0)
         {
-            if(totalSystem.itemsInSystem - (stageOne.itemCount + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
+            if(totalSystem.itemsInSystem - (stageOne.itemCount + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnSecondPlate) > 0)
             {
                 itemCountThirdTM++;
             }
@@ -311,7 +324,7 @@ void handleAktors() {
 
     //second stage
     Pusher *firstPusher = getFirstPusher();
-    switch(firstPusherDir)
+    switch(stageTwo.pusherDir)
     {
         case 0: runBackwardsPusher(firstPusher); break;
         case 1: stopPusher(firstPusher); break;
