@@ -4,6 +4,23 @@
 #include "lightBarrier.h"
 #include "timeUtil.h"
 
+#ifdef ON_TARGET
+
+//must be adjusted
+#define TRAVERSE_TIME_ONE_TM                        1500
+#define RUN_LONGER_THAN_THEORETICALLY_NEEDED        500
+#define WAIT_POSITION                               TRAVERSE_TIME_ONE_TM * 0.8
+#define EMPTY_SPACE_TO_BE_READY                     1200
+
+#define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     4000
+#define TRAVERSE_TIME_AFTER_CENTERED_LB             50
+#define WAIT_BEFORE_TOOLING                         500
+#define WAIT_AFTER_TOOLING                          500
+#define TOOL_TIME                                   3000
+#define TIMEOUT                                     10000
+
+#else
+
 //must be adjusted
 #define TRAVERSE_TIME_ONE_TM                        5000
 #define RUN_LONGER_THAN_THEORETICALLY_NEEDED        1000
@@ -16,6 +33,8 @@
 #define WAIT_AFTER_TOOLING                          500
 #define TOOL_TIME                                   3000
 #define TIMEOUT                                     10000
+
+#endif
 
 //************************************
 //****** VARIABLES FOR AUTOMAT *******
@@ -84,11 +103,13 @@ void aggregateSensors() {
 
 void computeFirstTreadmill()
 {
+		#ifndef ON_TARGET
     // debug
     printf("items: %d, %d, %d                   ", stageOne.itemPositions[0], stageOne.itemPositions[1], stageOne.itemPositions[2]);
     printf("\nitem count: %d                   ", stageOne.itemCount);
     printf("\nisRunning: %d                   ", stageOne.isRunning);
     printf("\nisReady: %d                   ", stageOne.isReady);
+		#endif
 
     //new items in stage?
     if(getFirstLightBarrier()->isBlocked == 1)
