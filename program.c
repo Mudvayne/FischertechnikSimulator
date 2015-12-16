@@ -4,10 +4,12 @@
 #include "lightBarrier.h"
 #include "timeUtil.h"
 
-#define TRAVERSE_TIME_ONE_TM                        5000 //must be ajusted
-#define TRAVERSE_TIME_ONE_TM_OFFSET                 1000 //must be ajusted
+//must be adjusted
+#define TRAVERSE_TIME_ONE_TM                        5000
+#define RUN_LONGER_THAN_THEORETICALLY_NEEDED        1000
+#define WAIT_POSITION                               TRAVERSE_TIME_ONE_TM * 0.8
 #define EMPTY_SPACE_TO_BE_READY                     1200
-#define TRAVERSE_TIME_AFTER_SECOND_LB               1800
+
 #define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     4000
 #define TRAVERSE_TIME_AFTER_CENTERED_LB             700
 #define WAIT_BEFORE_TOOLING                         500
@@ -19,12 +21,14 @@
 //****** VARIABLES FOR AUTOMAT *******
 //************************************
 
-typedef struct{
+typedef struct
+{
     short itemsInSystem;
     long long timeDiffSinceLastCall;
 } TotalSystem;
 
-typedef struct {
+typedef struct
+{
     short itemCount;
     int itemPositions[3];
     short firstLightBarrierBefore;
@@ -77,6 +81,7 @@ void computeFirstTreadmill()
     printf("\nisRunning: %d                   ", stageOne.isRunning);
     printf("\nisReady: %d                   ", stageOne.isReady);
 
+    //new items in stage?
     if(getFirstLightBarrier()->isBlocked == 1)
     {
         if(stageOne.firstLightBarrierBefore == 0)
@@ -102,20 +107,19 @@ void computeFirstTreadmill()
         stageOne.firstLightBarrierBefore = 0;
     }
 
+    // is next stage ready?
     short isNextStageReady = 1;
     if(isItemOnFirstPlate == 1 || getFirstPusher()->isBackTriggerActivated != 1)
     {
         isNextStageReady = 0;
     }
 
-    /////////////////// STATE MACHINE ///////////////////
-
-    //is ready?
+    //is this stage ready for more items? (not really necessary in stage one, just a prototype for the next stages)
     int i = 0;
-    for( i ; i < 3 ; i++)
+    if(stageOne.itemCount > 0)
     {
-        if(stageOne.itemCount > 0){
-
+        for( i ; i < 3 ; i++)
+        {
             int pos = stageOne.itemPositions[i];
             if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
             {
@@ -127,20 +131,21 @@ void computeFirstTreadmill()
                 stageOne.isReady = 1;
             }
         }
-        else
-        {
-            stageOne.isReady = 1;
-        }
+    }
+    else
+    {
+        stageOne.isReady = 1;
     }
 
     //should it run?
     stageOne.isRunning = 0;
-    if(stageOne.itemCount > 0){
+    if(stageOne.itemCount > 0)
+    {
         stageOne.isRunning = 1;
         i = 0;
         for( i ; i < 3 ; i++)
         {
-            if(stageOne.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM - TRAVERSE_TIME_ONE_TM_OFFSET) && !isNextStageReady)
+            if(stageOne.itemPositions[i] >= (WAIT_POSITION) && !isNextStageReady)
             {
                 stageOne.isRunning = 0;
                 break;
@@ -152,7 +157,7 @@ void computeFirstTreadmill()
     i = 0;
     for( i ; i < 3; i++)
     {
-        if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + TRAVERSE_TIME_ONE_TM_OFFSET))
+        if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED))
         {
             isItemOnFirstPlate = 1;
             stageOne.itemPositions[i] = -1;
