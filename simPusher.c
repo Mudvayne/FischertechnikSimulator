@@ -12,3 +12,8 @@ void stopPusher(Pusher *pusher)
 {
     pusher->runningDirection = INACTIVE;
 }
+
+void updatePusher(Pusher *pusher)
+{
+	
+}

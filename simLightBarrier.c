@@ -8,3 +8,8 @@ void setUnblocked(LightBarrier *lightBarrier)
 {
     lightBarrier->isBlocked=0;
 }
+
+void updateLightBarrier(LightBarrier *lightBarrier)
+{
+	
+}

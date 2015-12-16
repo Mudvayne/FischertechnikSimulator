@@ -1,3 +1,5 @@
+///os.c the task definition needed for FreeRTOS.
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -9,9 +11,9 @@
 #include "program.h"
 
 void wuberTechnik(void *parameters) {
-	const uint32_t delay = 10; // Block for 100ms
+	const uint32_t delay = 10; // Block for 10ms
 	
-	//Anlage erhält erste Inputs.
+	//Init Program
 	initPins();
 	initTimer();
 	

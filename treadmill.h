@@ -1,6 +1,7 @@
 #ifndef __TREADMILL
 #define __TREADMILL
 typedef struct {
+	short id;
     short isRunning;
 } Treadmill;
 #endif // __TREADMILL

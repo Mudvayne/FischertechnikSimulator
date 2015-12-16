@@ -1,12 +1,12 @@
-#include <stdio.h>
+/// fischertechnik.c is the component to implement everything needed to
+/// execute the Program on the target device.
+/// Files which methods being here defined:
+/// - All actors/sensor header files
+/// - timeUtil.h
+
 #include <stdint.h>
 
 #include "../bricklib/drivers/pio/pio.h"
-
-#include "../bricklib/drivers/usart/uart_console.h"
-#include "../bricklib/utility/util_definitions.h"
-
-#include "../bricklib/free_rtos/include/FreeRTOS.h"
 #include "../bricklib/free_rtos/include/task.h"
 
 #include "lightBarrier.h"
@@ -16,7 +16,7 @@
 
 #include "timeUtil.h"
 
-/// See Fischertechnik_HW.pdf (in moodle) for explanation.
+/// Array for all pins used in site. See Fischertechnik_HW.pdf (found in moodle) for explanation.
 Pin pins[] = {
 	{1 << 10, PIOC, ID_PIOC, PIO_OUTPUT_1, PIO_DEFAULT}, 	//Q1,	0
 	{1 << 29, PIOC, ID_PIOC, PIO_OUTPUT_1, PIO_DEFAULT}, 	//Q2,	1
@@ -55,6 +55,16 @@ const uint32_t toolIndex[] = { 6, 8 };
 void initPins() {
 	uint32_t size = sizeof(pins) / sizeof(Pin);
 	PIO_Configure(pins, size);
+}
+
+void deactivatePin(Pin *pin) {
+	//Deactivate pin.
+	PIO_Set(pin);
+}
+
+void activatePin(Pin *pin) {
+	//Activate pin.
+	PIO_Clear(pin);
 }
 
 // ##################################
@@ -147,15 +157,13 @@ void updatePusher(Pusher *pusher) {
 void startTreadmill(Treadmill *treadmill) {
 	Pin *pin = &pins[treadmillsIndex[treadmill->id]];
 	
-	//Activate treadmill.
-	PIO_Clear(pin);
+	activatePin(pin);
 }
 
 void stopTreadmill(Treadmill *treadmill) {
 	Pin *pin = &pins[treadmillsIndex[treadmill->id]];
 	
-	//Deactivate threadmill.
-	PIO_Set(pin);
+	deactivatePin(pin);
 }
 
 // ##################################
@@ -166,15 +174,13 @@ void stopTreadmill(Treadmill *treadmill) {
 void startTool(Tool *tool) {
 	Pin *pin = &pins[toolIndex[treadmill->id]];
 	
-	//Activate Tool.
-	PIO_Clear(pin);
+	activatePin(pin);
 }
 
 void stopTool(Tool *tool) {
 	Pin *pin = &pins[toolIndex[treadmill->id]];
 	
-	//Deactivate Tool.
-	PIO_Set(pin);
+	deactivatePin(pin);
 }
 
 // ##################################

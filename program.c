@@ -57,6 +57,15 @@ int itemCountFourthTM = 0;
 
 void aggregateSensors() {
     timeDiffSinceLastCall = calculateTimeDiffSinceLastCall();
+    
+    updatePusher(getFirstPusher());
+    updatePusher(getSecondPusher());
+    
+    updateLightBarrier(getFirstLightBarrier());
+    updateLightBarrier(getSecondLightBarrier());
+    updateLightBarrier(getThirdLightBarrier());
+    updateLightBarrier(getFourthLightBarrier());
+    updateLightBarrier(getFifthLightBarrier());
 }
 
 void computeFirstTreadmill()
