@@ -4,7 +4,12 @@
 #include "lightBarrier.h"
 #include "timeUtil.h"
 
-#define TRAVERSE_TIME_AFTER_SECOND_LB               1800
+//must be adjusted
+#define TRAVERSE_TIME_ONE_TM                        5000
+#define RUN_LONGER_THAN_THEORETICALLY_NEEDED        1000
+#define WAIT_POSITION                               TRAVERSE_TIME_ONE_TM * 0.8
+#define EMPTY_SPACE_TO_BE_READY                     1200
+
 #define TRAVERSE_TIME_AFTER_THIRD_AND_FOURTH_LB     4000
 #define TRAVERSE_TIME_AFTER_CENTERED_LB             700
 #define WAIT_BEFORE_TOOLING                         500
@@ -16,15 +21,25 @@
 //****** VARIABLES FOR AUTOMAT *******
 //************************************
 
-//SYSTEM
-int itemsInSystem = 0;
-long long timeDiffSinceLastCall = 0;
+typedef struct
+{
+    short itemsInSystem;
+    long long timeDiffSinceLastCall;
+} TotalSystem;
 
-//STAGE 1 (TREADMILL 1)
-int remainingTimeFirstTM = 0;
-int itemCountFirstTM = 0;
-int isFirstTmStopped = 0;
-int firstLightBarrierBefore = 0;
+typedef struct
+{
+    short itemCount;
+    int itemPositions[3];
+    short firstLightBarrierBefore;
+    short secondLightBarrierBefore;
+
+    short isRunning;
+    short isReady;
+} StageOne;
+
+TotalSystem totalSystem = {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
+StageOne stageOne = {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}};
 
 //STAGE 2 (PLATE 1)
 int firstPusherDir = 1;
@@ -54,10 +69,9 @@ int isItemOnSecondPlate = 0;
 int isFourthTmStopped = 0;
 int itemCountFourthTM = 0;
 
-
 void aggregateSensors() {
-    timeDiffSinceLastCall = calculateTimeDiffSinceLastCall();
-    
+    totalSystem.timeDiffSinceLastCall = calculateTimeDiffSinceLastCall();
+
     updatePusher(getFirstPusher());
     updatePusher(getSecondPusher());
     
@@ -70,44 +84,102 @@ void aggregateSensors() {
 
 void computeFirstTreadmill()
 {
-    if(itemCountFirstTM > 0 && remainingTimeFirstTM <= 0)
-    {
-        itemCountFirstTM --;
-        isItemOnFirstPlate = 1;
-    }
+    // debug
+    printf("items: %d, %d, %d                   ", stageOne.itemPositions[0], stageOne.itemPositions[1], stageOne.itemPositions[2]);
+    printf("\nitem count: %d                   ", stageOne.itemCount);
+    printf("\nisRunning: %d                   ", stageOne.isRunning);
+    printf("\nisReady: %d                   ", stageOne.isReady);
 
+    //new items in stage?
     if(getFirstLightBarrier()->isBlocked == 1)
     {
-        if(firstLightBarrierBefore == 0)
+        if(stageOne.firstLightBarrierBefore == 0)
         {
-            remainingTimeFirstTM = TIMEOUT;
-            itemCountFirstTM ++;
-            itemsInSystem ++;
-            firstLightBarrierBefore = 1;
+            stageOne.firstLightBarrierBefore = 1;
+            // new item in LB 1
+            totalSystem.itemsInSystem++;
+            stageOne.itemCount++;
+            int i = 0;
+            for( i ; i < 3; i++)
+            {
+                if(stageOne.itemPositions[i] == -1)
+                {
+                    stageOne.itemPositions[i] = 0;
+                    break;
+                }
+            }
         }
-
     }
-    else if(firstLightBarrierBefore == 1)
+    else if(stageOne.firstLightBarrierBefore == 1)
     {
-        firstLightBarrierBefore = 0;
+        //item left first light barrier
+        stageOne.firstLightBarrierBefore = 0;
     }
 
-    if(getSecondLightBarrier()->isBlocked == 1)
+    // is next stage ready?
+    short isNextStageReady = 1;
+    if(isItemOnFirstPlate == 1 || getFirstPusher()->isBackTriggerActivated != 1)
     {
-        remainingTimeFirstTM = TRAVERSE_TIME_AFTER_SECOND_LB;
-        if(isItemOnFirstPlate == 1 || getFirstPusher()->isBackTriggerActivated != 1)
+        isNextStageReady = 0;
+    }
+
+    //is this stage ready for more items? (not really necessary in stage one, just a prototype for the next stages)
+    int i = 0;
+    if(stageOne.itemCount > 0)
+    {
+        for( i ; i < 3 ; i++)
         {
-            isFirstTmStopped = 1;
+            int pos = stageOne.itemPositions[i];
+            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
+            {
+                stageOne.isReady = 0;
+                break;
+            }
+            else
+            {
+                stageOne.isReady = 1;
+            }
         }
-        else
+    }
+    else
+    {
+        stageOne.isReady = 1;
+    }
+
+    //should it run?
+    stageOne.isRunning = 0;
+    if(stageOne.itemCount > 0)
+    {
+        stageOne.isRunning = 1;
+        i = 0;
+        for( i ; i < 3 ; i++)
         {
-            isFirstTmStopped = 0;
+            if(stageOne.itemPositions[i] >= (WAIT_POSITION) && !isNextStageReady)
+            {
+                stageOne.isRunning = 0;
+                break;
+            }
+        }
+    }
+
+    //item left stage?
+    i = 0;
+    for( i ; i < 3; i++)
+    {
+        if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED))
+        {
+            isItemOnFirstPlate = 1;
+            stageOne.itemPositions[i] = -1;
+            stageOne.itemCount --;
+            break;
         }
     }
 }
 
 void computeFirstPlate()
 {
+    //isItemOnFirstPlate = 1;
+
     if(isItemOnFirstPlate)
     {
         if(getFirstPusher()->isBackTriggerActivated)
@@ -124,7 +196,7 @@ void computeFirstPlate()
     {
         firstPusherDir = 0; //backwards
         isItemOnFirstPlate = 0;
-        if(itemsInSystem - (itemCountFirstTM + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
+        if(totalSystem.itemsInSystem - (stageOne.itemCount + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
         {
             itemCountSecondTM++;
         }
@@ -133,7 +205,7 @@ void computeFirstPlate()
 
 void computeSecondTreadmill()
 {
-    printf("ITEMS: %d, TIMETOSTOP: %d, TOOLTIME: %d, TOOLACTIVE: %d, ITEMSINSYS: %d                  ", itemCountSecondTM, remainingTimeSecondTM, remainingTimeFirstTool, isSecondToolActive, itemsInSystem);
+    //printf("ITEMS: %d, TIMETOSTOP: %d, TOOLTIME: %d, TOOLACTIVE: %d, ITEMSINSYS: %d                  ", itemCountSecondTM, remainingTimeSecondTM, remainingTimeFirstTool, isSecondToolActive, totalSystem.itemsInSystem);
 
     if(itemCountSecondTM > 0)
     {
@@ -145,7 +217,7 @@ void computeSecondTreadmill()
         }
         if(getThirdLightBarrier()->isBlocked)
         {
-            thirdLightBarrierBlockTime += timeDiffSinceLastCall;
+            thirdLightBarrierBlockTime += totalSystem.timeDiffSinceLastCall;
             if(thirdLightBarrierBefore == 0)
             {
                 //switched on right now!
@@ -180,7 +252,7 @@ void computeSecondTreadmill()
         }
         if(remainingTimeSecondTM <= 0)
         {
-            if(itemsInSystem - (itemCountFirstTM + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
+            if(totalSystem.itemsInSystem - (stageOne.itemCount + itemCountSecondTM + itemCountThirdTM + itemCountFourthTM + isItemOnFirstPlate + isItemOnSecondPlate) > 0)
             {
                 itemCountThirdTM++;
             }
@@ -199,12 +271,19 @@ void handleAktors() {
     Tool *tools[2] = {getFirstTool(), getSecondTool()};
 
     //first stage
-    if(remainingTimeFirstTM > 0 && isFirstTmStopped == 0)
+    if(stageOne.isRunning)
     {
         startTreadmill(treadmills[0]);
-        remainingTimeFirstTM -= timeDiffSinceLastCall;
+        int i = 0;
+        for(i; i < 3; i++)
+        {
+            if(stageOne.itemPositions[i] > -1)
+            {
+                stageOne.itemPositions[i] += totalSystem.timeDiffSinceLastCall;
+            }
+        }
     }
-    else if(remainingTimeFirstTM <= 0 || isFirstTmStopped == 1)
+    else
     {
         stopTreadmill(treadmills[0]);
     }
@@ -222,7 +301,7 @@ void handleAktors() {
     if(remainingTimeSecondTM > 0)
     {
         startTreadmill(treadmills[1]);
-        remainingTimeSecondTM -= timeDiffSinceLastCall;
+        remainingTimeSecondTM -= totalSystem.timeDiffSinceLastCall;
     }
     else
     {
@@ -232,7 +311,7 @@ void handleAktors() {
     if(remainingTimeFirstTool > 0)
     {
         startTool(tools[0]);
-        remainingTimeFirstTool -= timeDiffSinceLastCall;
+        remainingTimeFirstTool -= totalSystem.timeDiffSinceLastCall;
     }
     else
     {
