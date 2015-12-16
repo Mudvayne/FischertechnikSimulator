@@ -7,7 +7,7 @@
 #include "../bricklib/free_rtos/include/FreeRTOS.h"
 #include "../bricklib/free_rtos/include/task.h"
 
-#include "fischertechnik.c"
+#include "fischertechnik.h"
 #include "program.h"
 
 void wuberTechnik(void *parameters) {

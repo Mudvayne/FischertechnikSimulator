@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "../bricklib/drivers/pio/pio.h"
+#include "bricklib/free_rtos/include/FreeRTOS.h"
 #include "../bricklib/free_rtos/include/task.h"
 
 #include "lightBarrier.h"
@@ -80,7 +81,7 @@ void setUnblocked(LightBarrier *lightBarrier) {
 }
 
 void updateLightBarrier(LightBarrier *lightBarrier) {
-	Pin *pin = &pins[lightBarrierIndex[lightBarrier->id]]
+	Pin *pin = &pins[lightBarrierIndex[lightBarrier->id]];
 	
 	if(PIO_Get(pin)) {
 		setBlocked(lightBarrier);
@@ -111,9 +112,9 @@ void runBackwardsPusher(Pusher *pusher) {
 	Pin *backwardPin = &pins[pusherBackwardsIndex[pusher->id]];
 	
 	//Make sure Forward-Pin is OFF.
-	PIO_Set(forward);
+	PIO_Set(forwardPin);
 	//Then Go Backward.
-	PIO_Clear(backward);
+	PIO_Clear(backwardPin);
 	
 	pusher->runningDirection = BACKWARDS;
 }
@@ -124,7 +125,7 @@ void stopPusher(Pusher *pusher) {
 	
 	//Deactivate all pins
 	PIO_Set(backwardPin);
-	PIO_Set(forward);
+	PIO_Set(forwardPin);
 	
 	pusher->runningDirection = INACTIVE;
 }
@@ -133,8 +134,6 @@ void updatePusher(Pusher *pusher) {
 	Pin *upperSensor = &pins[pusherUpperSensorIndex[pusher->id]];
 	Pin *lowerSensor = &pins[pusherLowerSensorIndex[pusher->id]];
 	
-	uint8_t current = PIO_Get(pin);
-
 	//Check for change.
 	if(PIO_Get(upperSensor)) {
 		pusher->isFrontTriggerActivated = 1;
@@ -171,13 +170,13 @@ void stopTreadmill(Treadmill *treadmill) {
 // BEGIN TOOL IMPLEMENTATION
 // ##################################
 
-void startTool(Tool *tool) {
+void startTool(Tool *treadmill) {
 	Pin *pin = &pins[toolIndex[treadmill->id]];
 	
 	activatePin(pin);
 }
 
-void stopTool(Tool *tool) {
+void stopTool(Tool *treadmill) {
 	Pin *pin = &pins[toolIndex[treadmill->id]];
 	
 	deactivatePin(pin);
@@ -195,7 +194,7 @@ void initTimer() {
 }
 
 long long calculateTimeDiffSinceLastCall() {
-	unsigned long currentTicks = xTasksGetTickCount();
+	unsigned long currentTicks = xTaskGetTickCount();
 	long long difference = currentTicks - lastTicks;
 	lastTicks = currentTicks;
 	

@@ -1,0 +1,5 @@
+
+
+void initPins();
+
+void initTimer();

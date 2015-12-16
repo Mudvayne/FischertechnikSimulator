@@ -1,0 +1,1 @@
+void wuberTechnik(void *parameters);
