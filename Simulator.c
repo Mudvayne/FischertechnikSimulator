@@ -4,10 +4,10 @@
 COORD coord = {0, 0};
 
 //speeds
-double msPerSimStep = 5;
-double simulationSpeed = 0.2;
-double pusherStepSpeed = 0.015;
-double treadmillStepSpeed = 50;
+double msPerSimStep = 10;
+double simulationSpeed = 1;
+double pusherStepSpeed = 0.003;
+double treadmillStepSpeed = 10;
 
 //item runtimes
 int firstTreadMillRunTime = 0;

@@ -7,6 +7,7 @@
 int main()
 {
     system("cls");
+
     while(1)
     {
         simulate();
