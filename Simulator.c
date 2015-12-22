@@ -97,7 +97,6 @@ void simulate()
         }
     }
 
-
     Sleep(msPerSimStep);
 
     if(getFirstLightBarrier()->isBlocked == 1)
