@@ -58,7 +58,7 @@ void printSimulationInformations()
     printf("          |                                          |\n");
     printf("          +                                          v\n");
 
-/*
+    /*
     printf("\nTreadmill 1 item runtime: %d ms                          \n", firstTreadMillRunTime);
     printf("Treadmill 2 item runtime: %d ms                          \n", secondTreadMillRunTime);
     printf("Treadmill 3 item runtime: %d ms                          \n", thirdTreadMillRunTime);
