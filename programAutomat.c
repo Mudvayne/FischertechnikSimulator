@@ -1,20 +1,42 @@
 #include "programAutomat.h"
 
 extern void runningComputeActions();
-extern void runningHandleAktros();
+extern void runningHandleActors();
+
+extern void debugComputeActions();
+extern void debugHandleActors();
+
+extern void panicComputeActions();
+extern void panicHandleActors();
 
 void (*resolveComputeActionsFor(SiteState currentState))(void) {
     switch(currentState) {
     case RUNNING:
         return &runningComputeActions;
         break;
+    case DEBUG:
+        return &debugComputeActions;
+        break;
+
+    case PANIC_SWITCH:
+    default:
+        setSiteState(PANIC_SWITCH);
+        return &panicComputeActions;
     }
 }
 
-void (*resolveHandleAktorsFor(SiteState currentState))(void) {
+void (*resolveHandleActorsFor(SiteState currentState))(void) {
     switch(currentState) {
     case RUNNING:
-        return &runningHandleAktros;
+        return &runningHandleActors;
         break;
+    case DEBUG:
+        return &debugHandleActors;
+        break;
+
+    case PANIC_SWITCH:
+    default:
+        setSiteState(PANIC_SWITCH);
+        return &panicHandleActors;
     }
 }

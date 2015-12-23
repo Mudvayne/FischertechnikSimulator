@@ -45,7 +45,7 @@ void debug()
 
 void executeProgram() {
     void (*computeActions)(void) = resolveComputeActionsFor(getSiteState());
-    void (*handleActors) (void) = resolveHandleAktorsFor(getSiteState());
+    void (*handleActors) (void) = resolveHandleActorsFor(getSiteState());
 
     totalSystem.timeDiffSinceLastCall = calculateTimeDiffSinceLastCall();
 

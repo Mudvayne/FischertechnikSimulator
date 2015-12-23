@@ -558,7 +558,7 @@ void computeFourthTredmill()
     }
 }
 
-void runningHandleAktros() {
+void runningHandleActors() {
     Treadmill *treadmills[4] = {getFirstTreadmill(), getSecondTreadmill(), getThirdTreadmill(), getFourthTreadmill()};
     Tool *tools[2] = {getFirstTool(), getSecondTool()};
 
