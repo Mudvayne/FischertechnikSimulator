@@ -223,6 +223,7 @@ void computeFirstTreadmill()
             stageTwo.isOccupied = 1;
             stageOne.itemPositions[i] = -1;
             stageOne.itemCount --;
+            stageOne.hasItemPassedSecondLB = 0;
             break;
         }
     }
