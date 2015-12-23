@@ -47,6 +47,19 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="program.h" />
+		<Unit filename="programAutomat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="programAutomat.h" />
+		<Unit filename="programDebug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="programPanic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="programRunning.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="pusher.h" />
 		<Unit filename="simLightBarrier.c">
 			<Option compilerVar="CC" />
@@ -61,6 +74,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="simulator.h" />
+		<Unit filename="site.h" />
 		<Unit filename="timeUtil.c">
 			<Option compilerVar="CC" />
 		</Unit>
