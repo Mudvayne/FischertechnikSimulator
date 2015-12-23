@@ -21,7 +21,7 @@
 
 //must be adjusted
 #define TRAVERSE_TIME_ONE_TM                        5000
-#define RUN_LONGER_THAN_THEORETICALLY_NEEDED        2000
+#define RUN_LONGER_THAN_THEORETICALLY_NEEDED        500
 #define EMPTY_SPACE_TO_BE_READY                     1200
 #define TRAVERSE_TIME_AFTER_CENTERED_LB             700
 #define TOOL_TIME                                   3000

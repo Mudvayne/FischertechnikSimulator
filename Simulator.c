@@ -4,10 +4,8 @@
 COORD coord = {0, 0};
 
 //speeds
-double msPerSimStep = 10;
-double simulationSpeed = 1;
-double pusherStepSpeed = 0.003;
-double treadmillStepSpeed = 10;
+double sleepTime = 10;
+double pusherSpeedPerMS = 0.0002;
 
 //item runtimes
 int firstTreadMillRunTime = 0;
@@ -68,6 +66,8 @@ void printSimulationInformations()
 
 void simulate()
 {
+    long long timeSinceLastCall = calculateTimeDiffSinceLastCallSimulator();
+
     //printf("Press 1-6 to insert a item into the System.");
     if(kbhit())
     {
@@ -97,7 +97,7 @@ void simulate()
         }
     }
 
-    Sleep(msPerSimStep);
+    Sleep(sleepTime);
 
     if(getFirstLightBarrier()->isBlocked == 1)
     {
@@ -107,7 +107,8 @@ void simulate()
     //First Threadmill
     if(predictTreadmillOne == 1 && getFirstTreadmill()->isRunning == 1)
     {
-        firstTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
+        //firstTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
+        firstTreadMillRunTime += timeSinceLastCall;
     }
     else if(predictTreadmillOne != 1)
     {
@@ -176,11 +177,11 @@ void simulate()
 
     if(getFirstPusher()->runningDirection == FORWARDS)
     {
-        firstPusherPos += pusherStepSpeed*simulationSpeed;
+        firstPusherPos += timeSinceLastCall * pusherSpeedPerMS;
     }
     if(getFirstPusher()->runningDirection == BACKWARDS)
     {
-        firstPusherPos -= pusherStepSpeed*simulationSpeed;
+        firstPusherPos -= timeSinceLastCall * pusherSpeedPerMS;
     }
     if(firstPusherPos <= -0.2 || firstPusherPos >= 1.2)
     {
@@ -198,7 +199,7 @@ void simulate()
     //Second Threadmill
     if(predictTreadmillTwo == 1 && getSecondTreadmill()->isRunning == 1)
     {
-        secondTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
+        secondTreadMillRunTime += timeSinceLastCall;
     }
     if(predictTreadmillTwo && secondTreadMillRunTime >= 2000 && secondTreadMillRunTime <= 3000)
     {
@@ -219,7 +220,7 @@ void simulate()
     //Third Threadmill
     if(predictTreadmillThree == 1 && getThirdTreadmill()->isRunning == 1)
     {
-        thirdTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
+        thirdTreadMillRunTime += timeSinceLastCall;
     }
     if(predictTreadmillThree && thirdTreadMillRunTime >= 2000 && thirdTreadMillRunTime <= 3000)
     {
@@ -271,11 +272,11 @@ void simulate()
 
     if(getSecondPusher()->runningDirection == FORWARDS)
     {
-        secondPusherPos += pusherStepSpeed*simulationSpeed;
+        secondPusherPos += timeSinceLastCall*pusherSpeedPerMS;
     }
     if(getSecondPusher()->runningDirection == BACKWARDS)
     {
-        secondPusherPos -= pusherStepSpeed*simulationSpeed;
+        secondPusherPos -= timeSinceLastCall*pusherSpeedPerMS;
     }
     if(secondPusherPos <= -0.2 || secondPusherPos >= 1.2)
     {
@@ -293,7 +294,7 @@ void simulate()
     //Fourth Threadmill
     if(predictTreadmillFour == 1 && getFourthTreadmill()->isRunning == 1)
     {
-        fourthTreadMillRunTime += treadmillStepSpeed*simulationSpeed;
+        fourthTreadMillRunTime += timeSinceLastCall;
     }
 
     if(predictTreadmillFour && fourthTreadMillRunTime >= 4000 && fourthTreadMillRunTime <= 5000)
