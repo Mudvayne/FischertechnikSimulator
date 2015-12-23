@@ -12,7 +12,7 @@
 #define EMPTY_SPACE_TO_BE_READY                     1200
 #define TRAVERSE_TIME_AFTER_CENTERED_LB             50
 #define TOOL_TIME                                   3000
-#define TIMEOUT                                     10000
+#define TIMEOUT                                     7000
 #define STAGE_SIX_LB_CHECK_FULL_TIME                3000
 #define STAGE_SIX_CHECK_INTERVAL                    3000
 #define STAGE_SIX_RUN_TM_TOO_CHECK_IF_ITEM_WAS_REMOVED_TIME     2000
@@ -25,7 +25,7 @@
 #define EMPTY_SPACE_TO_BE_READY                     1200
 #define TRAVERSE_TIME_AFTER_CENTERED_LB             700
 #define TOOL_TIME                                   3000
-#define TIMEOUT                                     10000
+#define TIMEOUT                                     15000 //from LB to LB
 #define STAGE_SIX_LB_CHECK_FULL_TIME                3000
 #define STAGE_SIX_CHECK_INTERVAL                    3000
 #define STAGE_SIX_RUN_TM_TOO_CHECK_IF_ITEM_WAS_REMOVED_TIME     2000
@@ -51,6 +51,7 @@ typedef struct
 
     short isRunning;
     short isReady;
+    short timeout;
 } StageOne;
 
 typedef struct
@@ -72,6 +73,7 @@ typedef struct
     short toolRuntimeLeft;
     short isTMRunning;
     short isToolRunning;
+    short timeout;
 } ToolStage;
 
 typedef struct
@@ -85,20 +87,21 @@ typedef struct
     short tMRuntimeLeftForChecking;
     short isFull;
     short wasFullBefore;
+    short timeout;
 } StageSix;
 
 TotalSystem totalSystem =   {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
-StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}};
+StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0};
 PusherState stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 ToolStage stageThree =      {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
-                             .isTMRunning = 0, .isToolRunning = 0};
+                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0};
 ToolStage stageFour =       {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
-                             .isTMRunning = 0, .isToolRunning = 0};
+                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0};
 PusherState stageFive =     {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 StageSix stageSix =         {.isReady = 1, .itemCount = 0, .isRunning = 0, .lightBarrierBefore = 0, .lightBarrierBlockedTime = 0,
-                             .timeLeftForNextEmptyCheck = -1, .tMRuntimeLeftForChecking = 0, .isFull = 0, .wasFullBefore = 0};
+                             .timeLeftForNextEmptyCheck = -1, .tMRuntimeLeftForChecking = 0, .isFull = 0, .wasFullBefore = 0, .timeout = 0};
 
 void aggregateSensors() {
     updatePusher(getFirstPusher());
@@ -110,8 +113,29 @@ void aggregateSensors() {
     updateLightBarrier(getFifthLightBarrier());
 }
 
+void timeout(int stage)
+{
+    system("cls");
+    printf("Stage %d expected an item which never arrived.", stage);
+    getchar();
+}
+
 void computeFirstTreadmill()
 {
+    // check if timeout
+    if(getSecondLightBarrier()->isBlocked)
+    {
+        stageOne.timeout = 0;
+        stageThree.timeout = 1;
+    }
+    if(stageOne.timeout > 0)
+    {
+        stageOne.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageOne.timeout >= TIMEOUT)
+    {
+        timeout(1);
+    }
     //new items in stage?
     if(getFirstLightBarrier()->isBlocked == 1)
     {
@@ -136,6 +160,7 @@ void computeFirstTreadmill()
     {
         //item left first light barrier
         stageOne.firstLightBarrierBefore = 0;
+        stageOne.timeout += 1;
     }
 
     // is next stage ready?
@@ -225,6 +250,20 @@ void computeFirstPlate()
 
 void computeSecondTreadmill()
 {
+    // check if timeout
+    if(getThirdLightBarrier()->isBlocked)
+    {
+        stageThree.timeout = 0;
+    }
+    if(stageThree.timeout > 0)
+    {
+        stageThree.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageThree.timeout >= TIMEOUT)
+    {
+        timeout(3);
+    }
+
     // check if new item
     if(stageThree.itemCount > stageThree.itemCountBefore)
     {
@@ -262,6 +301,7 @@ void computeSecondTreadmill()
                     stageThree.toolRuntimeLeft = 0;
                     stageThree.isTMRunning = 1;
                     stageThree.tMRuntimeLeftForCentering = 0;
+                    stageFour.timeout = 1;
                 }
             }
         }
@@ -319,6 +359,20 @@ void computeSecondTreadmill()
 
 void computeThirdTreadmill()
 {
+    // check if timeout
+    if(getFourthLightBarrier()->isBlocked)
+    {
+        stageFour.timeout = 0;
+    }
+    if(stageFour.timeout > 0)
+    {
+        stageFour.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageFour.timeout >= TIMEOUT)
+    {
+        timeout(4);
+    }
+
     // check if new item
     if(stageFour.itemCount > stageFour.itemCountBefore)
     {
@@ -356,6 +410,7 @@ void computeThirdTreadmill()
                     stageFour.toolRuntimeLeft = 0;
                     stageFour.isTMRunning = 1;
                     stageFour.tMRuntimeLeftForCentering = 0;
+                    stageSix.timeout = 1;
                 }
             }
         }
@@ -438,6 +493,20 @@ void computeSecondPlate()
 
 computeFourthTredmill()
 {
+    // check if timeout
+    if(getFifthLightBarrier()->isBlocked)
+    {
+        stageSix.timeout = 0;
+    }
+    if(stageSix.timeout > 0)
+    {
+        stageSix.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageSix.timeout >= TIMEOUT)
+    {
+        timeout(6);
+    }
+
     if(stageSix.itemCount > 0) // not empty?
     {
         if(stageSix.lightBarrierBlockedTime >= STAGE_SIX_LB_CHECK_FULL_TIME) //to long blocked?
@@ -641,7 +710,7 @@ void computeActions() {
 
 void debug()
 {
-    printf("ITEM COUNT SYSTEM: %d", totalSystem.itemsInSystem);
+    printf("ITEMS IN SYSTEM: %d, TOs MAX %ds: 1 = %d, 3 = %d, 4 = %d, 6 = %d          ", totalSystem.itemsInSystem, TIMEOUT/1000, stageOne.timeout, stageThree.timeout, stageFour.timeout, stageSix.timeout);
     printf("\nSTAGE 1: items = %d, pos = %d %d %d, running = %d, ready = %d \t", stageOne.itemCount, stageOne.itemPositions[0], stageOne.itemPositions[1], stageOne.itemPositions[2], stageOne.isRunning, stageOne.isReady);
     printf("\nSTAGE 2: occupied = %d, dir = %d,  ready = %d\t\t", stageTwo.isOccupied, stageTwo.pusherDir, stageTwo.isReady);
     printf("\nSTAGE 3: items = %d, pos = %d %d %d, TM = %d, toolLeft = %d, ready = %d    ", stageThree.itemCount, stageThree.itemPositions[0], stageThree.itemPositions[1], stageThree.itemPositions[2], stageThree.isTMRunning, stageThree.toolRuntimeLeft, stageThree.isReady);
