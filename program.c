@@ -27,6 +27,7 @@ typedef struct
     short isRunning;
     short isReady;
     short timeout;
+    short hasItemPassedSecondLB;
 } StageOne;
 
 typedef struct
@@ -66,7 +67,8 @@ typedef struct
 } StageSix;
 
 TotalSystem totalSystem =   {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
-StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0};
+StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0,
+                             .hasItemPassedSecondLB = 0};
 PusherState stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 ToolStage stageThree =      {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
@@ -93,17 +95,17 @@ void timeout(int stage)
 	#ifndef ON_TARGET
     system("cls");
 	#endif
-	
+
   printf("Stage %d expected an item which never arrived.\n", stage);
-		
+
 	stopTreadmill(getFirstTreadmill());
 	stopTreadmill(getSecondTreadmill());
 	stopTreadmill(getThirdTreadmill());
 	stopTreadmill(getFourthTreadmill());
-	
+
 	stopTool(getFirstTool());
 	stopTool(getSecondTool());
-	
+
 	#ifndef ON_TARGET
     getchar();
 	#endif
@@ -198,11 +200,25 @@ void computeFirstTreadmill()
         }
     }
 
+    //has a item passed the LB2?
+    if(getSecondLightBarrier()->isBlocked == 0)
+    {
+        if(stageOne.secondLightBarrierBefore == 1)
+        {
+            stageOne.secondLightBarrierBefore = 0;
+            stageOne.hasItemPassedSecondLB = 1;
+        }
+    }
+    else
+    {
+        stageOne.secondLightBarrierBefore = 1;
+    }
+
     //item left stage?
     i = 0;
     for( i ; i < 3; i++)
     {
-        if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED))
+        if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED) && stageOne.hasItemPassedSecondLB)
         {
             stageTwo.isOccupied = 1;
             stageOne.itemPositions[i] = -1;
