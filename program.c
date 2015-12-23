@@ -90,9 +90,23 @@ void aggregateSensors() {
 
 void timeout(int stage)
 {
+	#ifndef ON_TARGET
     system("cls");
-    printf("Stage %d expected an item which never arrived.", stage);
+	#endif
+	
+  printf("Stage %d expected an item which never arrived.\n", stage);
+		
+	stopTreadmill(getFirstTreadmill());
+	stopTreadmill(getSecondTreadmill());
+	stopTreadmill(getThirdTreadmill());
+	stopTreadmill(getFourthTreadmill());
+	
+	stopTool(getFirstTool());
+	stopTool(getSecondTool());
+	
+	#ifndef ON_TARGET
     getchar();
+	#endif
 }
 
 void computeFirstTreadmill()
