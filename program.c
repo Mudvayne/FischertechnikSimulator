@@ -49,6 +49,7 @@ typedef struct
     short isTMRunning;
     short isToolRunning;
     short timeout;
+    short isWaiting;
 } ToolStage;
 
 typedef struct
@@ -71,10 +72,10 @@ StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isRe
 PusherStage stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 ToolStage stageThree =      {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
-                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0, .hasItemPassedLightBarrier = 0};
+                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0, .hasItemPassedLightBarrier = 0, .isWaiting = 0};
 ToolStage stageFour =       {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
-                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0, .hasItemPassedLightBarrier = 0};
+                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0, .hasItemPassedLightBarrier = 0, .isWaiting = 0};
 PusherStage stageFive =     {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 StageSix stageSix =         {.isReady = 1, .itemCount = 0, .isRunning = 0, .lightBarrierBefore = 0, .lightBarrierBlockedTime = 0,
                              .timeLeftForNextEmptyCheck = -1, .tMRuntimeLeftForChecking = 0, .isFull = 0, .wasFullBefore = 0, .timeout = 0};
@@ -272,29 +273,6 @@ void computeSecondTreadmill()
         timeout(3);
     }
 
-    //is this stage ready for more items?
-    int i = 0;
-    if(stageThree.itemCount > 0)
-    {
-        for( i ; i < 3 ; i++)
-        {
-            int pos = stageThree.itemPositions[i];
-            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
-            {
-                stageThree.isReady = 0;
-                break;
-            }
-            else
-            {
-                stageThree.isReady = 1;
-            }
-        }
-    }
-    else
-    {
-        stageThree.isReady = 1;
-    }
-
     // check if new item
     if(stageThree.itemCount > stageThree.itemCountBefore)
     {
@@ -330,12 +308,17 @@ void computeSecondTreadmill()
                     {
                         //done with tooltime
                         stageThree.isToolTime = 0;
-                        stageThree.isToolRunning = 0;
-                        stageThree.toolRuntimeLeft = 0;
                         stageThree.isTMRunning = 1;
                         stageThree.tMRuntimeLeftForCentering = 0;
                         stageFour.timeout = 1;
+                        stageThree.isWaiting = 0;
                     }
+                    else
+                    {
+                        stageThree.isWaiting = 1;
+                    }
+                    stageThree.isToolRunning = 0;
+                    stageThree.toolRuntimeLeft = 0;
                 }
             }
         }
@@ -379,6 +362,29 @@ void computeSecondTreadmill()
     {
         stageThree.isTMRunning = 0;
     }
+
+    //is this stage ready for more items?
+    int i = 0;
+    if(stageThree.itemCount > 0)
+    {
+        for( i ; i < 3 ; i++)
+        {
+            int pos = stageThree.itemPositions[i];
+            if((pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY) || stageThree.isWaiting)
+            {
+                stageThree.isReady = 0;
+                break;
+            }
+            else
+            {
+                stageThree.isReady = 1;
+            }
+        }
+    }
+    else
+    {
+        stageThree.isReady = 1;
+    }
 }
 
 void computeThirdTreadmill()
@@ -395,29 +401,6 @@ void computeThirdTreadmill()
     if(stageFour.timeout >= TIMEOUT)
     {
         timeout(4);
-    }
-
-    //is this stage ready for more items?
-    int i = 0;
-    if(stageFour.itemCount > 0)
-    {
-        for( i ; i < 3 ; i++)
-        {
-            int pos = stageFour.itemPositions[i];
-            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
-            {
-                stageFour.isReady = 0;
-                break;
-            }
-            else
-            {
-                stageFour.isReady = 1;
-            }
-        }
-    }
-    else
-    {
-        stageFour.isReady = 1;
     }
 
     // check if new item
@@ -455,12 +438,17 @@ void computeThirdTreadmill()
                     if(stageFive.isReady)
                     {
                         stageFour.isToolTime = 0;
-                        stageFour.isToolRunning = 0;
-                        stageFour.toolRuntimeLeft = 0;
                         stageFour.isTMRunning = 1;
                         stageFour.tMRuntimeLeftForCentering = 0;
                         stageSix.timeout = 1;
+                        stageFour.isWaiting = 0;
                     }
+                    else
+                    {
+                        stageFour.isWaiting = 1;
+                    }
+                    stageFour.isToolRunning = 0;
+                    stageFour.toolRuntimeLeft = 0;
                 }
             }
         }
@@ -505,6 +493,29 @@ void computeThirdTreadmill()
     else
     {
         stageFour.isTMRunning = 0;
+    }
+
+    //is this stage ready for more items?
+    int i = 0;
+    if(stageFour.itemCount > 0)
+    {
+        for( i ; i < 3 ; i++)
+        {
+            int pos = stageFour.itemPositions[i];
+            if((pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY) || stageFour.isWaiting)
+            {
+                stageFour.isReady = 0;
+                break;
+            }
+            else
+            {
+                stageFour.isReady = 1;
+            }
+        }
+    }
+    else
+    {
+        stageFour.isReady = 1;
     }
 }
 
