@@ -1,11 +1,8 @@
 #import "simulator.h"
+#import "defines.h"
 
 //for painting
 COORD coord = {0, 0};
-
-//speeds
-double sleepTime = 10;
-double pusherSpeedPerMS = 0.0002;
 
 //item runtimes
 int firstTreadMillRunTime = 0;
@@ -97,7 +94,7 @@ void simulate()
         }
     }
 
-    Sleep(sleepTime);
+    Sleep(SLEEP_TIME);
 
     if(getFirstLightBarrier()->isBlocked == 1)
     {
@@ -177,11 +174,11 @@ void simulate()
 
     if(getFirstPusher()->runningDirection == FORWARDS)
     {
-        firstPusherPos += timeSinceLastCall * pusherSpeedPerMS;
+        firstPusherPos += timeSinceLastCall * PUSHER_SPEED_PER_MS;
     }
     if(getFirstPusher()->runningDirection == BACKWARDS)
     {
-        firstPusherPos -= timeSinceLastCall * pusherSpeedPerMS;
+        firstPusherPos -= timeSinceLastCall * PUSHER_SPEED_PER_MS;
     }
     if(firstPusherPos <= -0.2 || firstPusherPos >= 1.2)
     {
@@ -272,11 +269,11 @@ void simulate()
 
     if(getSecondPusher()->runningDirection == FORWARDS)
     {
-        secondPusherPos += timeSinceLastCall*pusherSpeedPerMS;
+        secondPusherPos += timeSinceLastCall*PUSHER_SPEED_PER_MS;
     }
     if(getSecondPusher()->runningDirection == BACKWARDS)
     {
-        secondPusherPos -= timeSinceLastCall*pusherSpeedPerMS;
+        secondPusherPos -= timeSinceLastCall*PUSHER_SPEED_PER_MS;
     }
     if(secondPusherPos <= -0.2 || secondPusherPos >= 1.2)
     {
