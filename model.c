@@ -17,6 +17,8 @@ LightBarrier fifthLightBarrier = {.id=4, .isBlocked = 0};
 Tool firstTool = {.id=0, .isRunning=0};
 Tool secondTool = {.id=1, .isRunning=0};
 
+SiteState currentState = RUNNING;
+
 Treadmill* getFirstTreadmill()
 {
     return &firstTreadmill;
@@ -80,4 +82,14 @@ Tool* getFirstTool()
 Tool* getSecondTool()
 {
     return &secondTool;
+}
+
+SiteState getSiteState()
+{
+    return currentState;
+}
+
+void setSiteState(SiteState newState)
+{
+    currentState = newState;
 }

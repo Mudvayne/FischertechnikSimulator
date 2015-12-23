@@ -2,6 +2,7 @@
 #include "lightBarrier.h"
 #include "pusher.h"
 #include "tool.h"
+#include "site.h"
 
 extern Treadmill* getFirstTreadmill();
 extern Treadmill* getSecondTreadmill();
@@ -19,3 +20,6 @@ extern LightBarrier* getSecondLightBarrier();
 extern LightBarrier* getThirdLightBarrier();
 extern LightBarrier* getFourthLightBarrier();
 extern LightBarrier* getFifthLightBarrier();
+
+extern SiteState getSiteState();
+extern void setSiteState(SiteState newState);
