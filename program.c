@@ -35,7 +35,7 @@ typedef struct
     short pusherDir;
     short isOccupied;
     short isReady;
-} PusherState;
+} PusherStage;
 
 typedef struct
 {
@@ -44,6 +44,7 @@ typedef struct
     int itemPositions[3];
     short isReady;
     short lightBarrierBefore;
+		short hasItemPassedLightBarrier;
     short isToolTime; //centering and tooling
     short tMRuntimeLeftForCentering;
     short toolRuntimeLeft;
@@ -69,14 +70,14 @@ typedef struct
 TotalSystem totalSystem =   {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
 StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0,
                              .hasItemPassedSecondLB = 0};
-PusherState stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
+PusherStage stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 ToolStage stageThree =      {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
-                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0};
+                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0, .hasItemPassedLightBarrier = 0};
 ToolStage stageFour =       {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
-                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0};
-PusherState stageFive =     {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
+                             .isTMRunning = 0, .isToolRunning = 0, .timeout = 0, .hasItemPassedLightBarrier = 0};
+PusherStage stageFive =     {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 StageSix stageSix =         {.isReady = 1, .itemCount = 0, .isRunning = 0, .lightBarrierBefore = 0, .lightBarrierBlockedTime = 0,
                              .timeLeftForNextEmptyCheck = -1, .tMRuntimeLeftForChecking = 0, .isFull = 0, .wasFullBefore = 0, .timeout = 0};
 
@@ -325,6 +326,22 @@ void computeSecondTreadmill()
                 {
                     stageThree.isReady = 1;
                 }
+								
+								/*
+		//has a item passed the LB3?
+    if(getThirdLightBarrier()->isBlocked == 0)
+    {
+        if(stageThree.lightBarrierBefore == 1)
+        {
+            stageThree.lightBarrierBefore = 0;
+            stageThree.hasItemPassedLightBarrier = 1;
+        }
+    }
+    else
+    {
+        stageThree.lightBarrierBefore = 1;
+    }
+								*/
 
                 // check if tool time
                 if(getThirdLightBarrier()->isBlocked)
@@ -342,10 +359,11 @@ void computeSecondTreadmill()
                 {
                     stageThree.lightBarrierBefore = 0;
                     stageThree.isTMRunning = 1;
+										stageThree.hasItemPassedLightBarrier = 1;
                 }
 
                 // check if item leaves
-                if(stageThree.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED))
+                if((stageThree.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageThree.hasItemPassedLightBarrier)
                 {
                     stageThree.itemCount--;
                     stageThree.itemCountBefore--;
@@ -353,6 +371,7 @@ void computeSecondTreadmill()
 
                     // TODO: wait if next stage is not ready
                     stageFour.itemCount++;
+										stageThree.hasItemPassedLightBarrier = 0;
                 }
             }
         }
@@ -451,10 +470,11 @@ void computeThirdTreadmill()
                 {
                     stageFour.lightBarrierBefore = 0;
                     stageFour.isTMRunning = 1;
+										stageThree.hasItemPassedLightBarrier = 1;
                 }
 
                 // check if item leaves
-                if(stageFour.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED))
+                if((stageFour.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageThree.hasItemPassedLightBarrier)
                 {
                     stageFour.itemCount--;
                     stageFour.itemCountBefore--;
@@ -462,6 +482,7 @@ void computeThirdTreadmill()
 
                     // TODO: give it to next stage
                     stageFive.isOccupied = 1;
+										stageThree.hasItemPassedLightBarrier = 0;
                 }
             }
         }
