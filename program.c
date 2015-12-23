@@ -5,8 +5,6 @@
 #include "timeUtil.h"
 #include "defines.h"
 
-
-
 //******************************************
 //****** VARIABLES FOR STATE MACHINE *******
 //******************************************
@@ -155,14 +153,7 @@ void computeFirstTreadmill()
         stageOne.timeout += 1;
     }
 
-    // is next stage ready?
-    short isNextStageReady = 1;
-    if(stageTwo.isOccupied || getFirstPusher()->isBackTriggerActivated != 1)
-    {
-        isNextStageReady = 0;
-    }
-
-    //is this stage ready for more items? (not really necessary in stage one, just a prototype for the next stages)
+    //is this stage ready for more items?
     int i = 0;
     if(stageOne.itemCount > 0)
     {
@@ -193,7 +184,7 @@ void computeFirstTreadmill()
         i = 0;
         for( i ; i < 3 ; i++)
         {
-            if(getSecondLightBarrier()->isBlocked && !isNextStageReady)
+            if(getSecondLightBarrier()->isBlocked && stageTwo.isReady == 0)
             {
                 stageOne.isRunning = 0;
                 break;
@@ -232,6 +223,16 @@ void computeFirstTreadmill()
 
 void computeFirstPlate()
 {
+    // is stage ready?
+    if(stageTwo.isOccupied || getFirstPusher()->isBackTriggerActivated != 1)
+    {
+        stageTwo.isReady = 0;
+    }
+    else
+    {
+        stageTwo.isReady = 1;
+    }
+
     if(stageTwo.isOccupied && stageThree.isReady)
     {
         if(getFirstPusher()->isBackTriggerActivated)
@@ -271,6 +272,29 @@ void computeSecondTreadmill()
         timeout(3);
     }
 
+    //is this stage ready for more items?
+    int i = 0;
+    if(stageThree.itemCount > 0)
+    {
+        for( i ; i < 3 ; i++)
+        {
+            int pos = stageThree.itemPositions[i];
+            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
+            {
+                stageThree.isReady = 0;
+                break;
+            }
+            else
+            {
+                stageThree.isReady = 1;
+            }
+        }
+    }
+    else
+    {
+        stageThree.isReady = 1;
+    }
+
     // check if new item
     if(stageThree.itemCount > stageThree.itemCountBefore)
     {
@@ -302,13 +326,16 @@ void computeSecondTreadmill()
                 }
                 else
                 {
-                    //done with tooltime
-                    stageThree.isToolTime = 0;
-                    stageThree.isToolRunning = 0;
-                    stageThree.toolRuntimeLeft = 0;
-                    stageThree.isTMRunning = 1;
-                    stageThree.tMRuntimeLeftForCentering = 0;
-                    stageFour.timeout = 1;
+                    if(stageFour.isReady)
+                    {
+                        //done with tooltime
+                        stageThree.isToolTime = 0;
+                        stageThree.isToolRunning = 0;
+                        stageThree.toolRuntimeLeft = 0;
+                        stageThree.isTMRunning = 1;
+                        stageThree.tMRuntimeLeftForCentering = 0;
+                        stageFour.timeout = 1;
+                    }
                 }
             }
         }
@@ -317,32 +344,6 @@ void computeSecondTreadmill()
             int i = 0;
             for( i ; i < 3 ; i++)
             {
-                // check if ready
-                if((stageThree.itemPositions[i] >= 0 && stageThree.itemPositions <= EMPTY_SPACE_TO_BE_READY) || stageThree.itemCount >= 3)
-                {
-                    stageThree.isReady = 0;
-                }
-                else
-                {
-                    stageThree.isReady = 1;
-                }
-								
-								/*
-		//has a item passed the LB3?
-    if(getThirdLightBarrier()->isBlocked == 0)
-    {
-        if(stageThree.lightBarrierBefore == 1)
-        {
-            stageThree.lightBarrierBefore = 0;
-            stageThree.hasItemPassedLightBarrier = 1;
-        }
-    }
-    else
-    {
-        stageThree.lightBarrierBefore = 1;
-    }
-								*/
-
                 // check if tool time
                 if(getThirdLightBarrier()->isBlocked)
                 {
@@ -359,7 +360,7 @@ void computeSecondTreadmill()
                 {
                     stageThree.lightBarrierBefore = 0;
                     stageThree.isTMRunning = 1;
-										stageThree.hasItemPassedLightBarrier = 1;
+                    stageThree.hasItemPassedLightBarrier = 1;
                 }
 
                 // check if item leaves
@@ -368,10 +369,8 @@ void computeSecondTreadmill()
                     stageThree.itemCount--;
                     stageThree.itemCountBefore--;
                     stageThree.itemPositions[i] = -1;
-
-                    // TODO: wait if next stage is not ready
                     stageFour.itemCount++;
-										stageThree.hasItemPassedLightBarrier = 0;
+                    stageThree.hasItemPassedLightBarrier = 0;
                 }
             }
         }
@@ -396,6 +395,29 @@ void computeThirdTreadmill()
     if(stageFour.timeout >= TIMEOUT)
     {
         timeout(4);
+    }
+
+    //is this stage ready for more items?
+    int i = 0;
+    if(stageFour.itemCount > 0)
+    {
+        for( i ; i < 3 ; i++)
+        {
+            int pos = stageFour.itemPositions[i];
+            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
+            {
+                stageFour.isReady = 0;
+                break;
+            }
+            else
+            {
+                stageFour.isReady = 1;
+            }
+        }
+    }
+    else
+    {
+        stageFour.isReady = 1;
     }
 
     // check if new item
@@ -430,12 +452,15 @@ void computeThirdTreadmill()
                 else
                 {
                     //done with tooltime
-                    stageFour.isToolTime = 0;
-                    stageFour.isToolRunning = 0;
-                    stageFour.toolRuntimeLeft = 0;
-                    stageFour.isTMRunning = 1;
-                    stageFour.tMRuntimeLeftForCentering = 0;
-                    stageSix.timeout = 1;
+                    if(stageFive.isReady)
+                    {
+                        stageFour.isToolTime = 0;
+                        stageFour.isToolRunning = 0;
+                        stageFour.toolRuntimeLeft = 0;
+                        stageFour.isTMRunning = 1;
+                        stageFour.tMRuntimeLeftForCentering = 0;
+                        stageSix.timeout = 1;
+                    }
                 }
             }
         }
@@ -444,16 +469,6 @@ void computeThirdTreadmill()
             int i = 0;
             for( i ; i < 3 ; i++)
             {
-                // check if ready
-                if((stageFour.itemPositions[i] >= 0 && stageFour.itemPositions <= EMPTY_SPACE_TO_BE_READY) || stageFour.itemCount >= 3)
-                {
-                    stageFour.isReady = 0;
-                }
-                else
-                {
-                    stageFour.isReady = 1;
-                }
-
                 // check if tool time
                 if(getFourthLightBarrier()->isBlocked)
                 {
@@ -470,7 +485,7 @@ void computeThirdTreadmill()
                 {
                     stageFour.lightBarrierBefore = 0;
                     stageFour.isTMRunning = 1;
-										stageThree.hasItemPassedLightBarrier = 1;
+                    stageThree.hasItemPassedLightBarrier = 1;
                 }
 
                 // check if item leaves
@@ -495,6 +510,17 @@ void computeThirdTreadmill()
 
 void computeSecondPlate()
 {
+
+    // is stage ready?
+    if(stageFive.isOccupied || getSecondPusher()->isBackTriggerActivated != 1)
+    {
+        stageFive.isReady = 0;
+    }
+    else
+    {
+        stageFive.isReady = 1;
+    }
+
     if(stageFive.isOccupied && stageThree.isReady)
     {
         if(getSecondPusher()->isBackTriggerActivated)
