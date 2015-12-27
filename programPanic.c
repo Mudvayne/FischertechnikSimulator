@@ -14,4 +14,7 @@ void panicHandleActors()
 
     stopTool(getFirstTool());
     stopTool(getSecondTool());
+
+    stopPusher(getFirstPusher());
+    stopPusher(getSecondPusher());
 }
