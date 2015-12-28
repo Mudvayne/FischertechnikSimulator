@@ -25,6 +25,7 @@ public class Window extends Frame {
         setSize(750, 500);
         setLayout(null);
         addKeyListener(new KeyboardListener(this));
+        addWindowListener(new WindowListener());
 
         this.simulation = simulation;
         this.drawables = new ArrayList<Drawable>();
