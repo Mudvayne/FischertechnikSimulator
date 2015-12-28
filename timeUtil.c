@@ -1,5 +1,9 @@
 #include "timeUtil.h"
 
+#ifdef WITH_MAKE_FILE
+#define NULL 0
+#endif
+
 long long lastCall = 0;
 long long lastCallSimulator = 0;
 

@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "treadmill.h"
 #include "lightBarrier.h"
 #include "pusher.h"
@@ -23,3 +24,8 @@ extern LightBarrier* getFifthLightBarrier();
 
 extern SiteState getSiteState();
 extern void setSiteState(SiteState newState);
+
+extern Treadmill* resolveTreadmill(uint8_t id);
+extern Tool* resolveTool(uint8_t id);
+extern Pusher* resolvePusher(uint8_t id);
+extern LightBarrier* resolveLightBarrier(uint8_t id);

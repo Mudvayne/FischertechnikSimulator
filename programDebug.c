@@ -1,3 +1,4 @@
+#include "program.h"
 
 void debugComputeActions()
 {
