@@ -51,9 +51,6 @@ public class Window extends Frame {
             drawables.add(new Drawable(object));
         }
 
-        drawables.add(new Drawable(new NullObject(-1, 80, 147, 100, 2)));
-        drawables.add(new Drawable(new NullObject(-1, 920, 120, 2, 100)));
-
         repaint();
     }
 
