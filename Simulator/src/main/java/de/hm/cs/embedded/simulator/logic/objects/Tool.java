@@ -6,7 +6,7 @@ import java.util.UUID;
  * Created by qriz on 12/27/15.
  */
 public class Tool extends SiteObject {
-    public static final int TOOL_SIZE = 20;
+    public static final int TOOL_SIZE = 100;
     private boolean activated;
 
     public Tool(int id, int x, int y) {

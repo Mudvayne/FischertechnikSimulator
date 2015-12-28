@@ -6,8 +6,8 @@ package de.hm.cs.embedded.simulator.logic.objects;
 public class LightBarrierSensor extends SiteObject {
 
     public LightBarrierSensor(int x, int y, boolean isXAligned) {
-        super(-1, isXAligned?x:x-(5/2), isXAligned?y-(5/2):y,
-                isXAligned?20:5, isXAligned?5:20);
+        super(-1, isXAligned?x:x-(1/2), isXAligned?y-(1/2):y,
+                isXAligned?100:1, isXAligned?1:100);
         // I hope I don't go to hell for this ctor...
     }
 

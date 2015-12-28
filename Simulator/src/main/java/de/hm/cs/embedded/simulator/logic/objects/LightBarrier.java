@@ -5,7 +5,7 @@ package de.hm.cs.embedded.simulator.logic.objects;
  */
 public class LightBarrier extends SiteObject {
 
-    public static final int LIGHT_BARRIER_SIZE = 5;
+    public static final int LIGHT_BARRIER_SIZE = 20;
     private boolean blocked;
     private LightBarrierSensor sensor;
 

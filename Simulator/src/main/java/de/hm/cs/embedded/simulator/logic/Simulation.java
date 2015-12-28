@@ -11,11 +11,16 @@ import java.util.List;
  * Created by qriz on 12/27/15.
  */
 public class Simulation {
-    public static final float TREADMILL_SPEED = 50.0f / 5000.0f;
-    public static final float PUSHER_SPEED = 16.0f / 1500.0f;
+    public static final float TREADMILL_SPEED = Float.valueOf(System.getProperty("treadmillSpeed", "0.064"));
+    public static final float PUSHER_SPEED = Float.valueOf(System.getProperty("pusherSpeed", "0.0667"));
+    public static final float MIN_COMPONENT_DISTANCE = Float.valueOf(System.getProperty("minComponentDistance", "85.0"));
 
     private ConstructionSite constructionSite;
     private List<Component> components;
+    private NullObject siteEnd;
+    private NullObject teleportPusherFirst;
+    private NullObject teleportPusherSecond;
+
     private int componentCount = 0;
 
     public List<LightBarrier> getLightBarriers() {
@@ -46,49 +51,71 @@ public class Simulation {
         components = new ArrayList<Component>();
         int id = 0;
 
+        siteEnd = new NullObject(-1, 850, 550, 100, 10);
+        teleportPusherFirst = new NullObject(-1, 80, 148, 100, 2);
+        teleportPusherSecond = new NullObject(-1, 920, 120, 2, 100);
 
-        List<LightBarrier> lightBarriers = Arrays.asList(new LightBarrier(id++, 26, 78, new LightBarrierSensor(6, 80, true)),
-                new LightBarrier(id++, 26, 48, new LightBarrierSensor(6, 50, true)),
-                new LightBarrier(id++, 49, 40, new LightBarrierSensor(51, 20, false)),
-                new LightBarrier(id++, 99, 40, new LightBarrierSensor(101, 20, false)),
-                new LightBarrier(id, 146, 58, new LightBarrierSensor(126, 60, true)));
-
-        id = 0;
-        List<Treadmill> treadmills = Arrays.asList(new Treadmill(id++, 6, 40, Treadmill.TREADMILL_SHORTER_SIZE, Treadmill.TREADMILL_LONGER_SIZE, Direction.UP),
-                new Treadmill(id++, 26, 20, Treadmill.TREADMILL_LONGER_SIZE, Treadmill.TREADMILL_SHORTER_SIZE, Direction.RIGHT),
-                new Treadmill(id++, 76, 20, Treadmill.TREADMILL_LONGER_SIZE, Treadmill.TREADMILL_SHORTER_SIZE, Direction.RIGHT),
-                new Treadmill(id, 126, 40, Treadmill.TREADMILL_SHORTER_SIZE, Treadmill.TREADMILL_LONGER_SIZE, Direction.DOWN));
+        List<LightBarrier> lightBarriers = Arrays.asList(new LightBarrier(id++, 190, 500, new LightBarrierSensor(80, 510, true)),
+                new LightBarrier(id++, 190, 250, new LightBarrierSensor(80, 260, true)),
+                new LightBarrier(id++, 340, 230, new LightBarrierSensor(350, 120, false)),
+                new LightBarrier(id++, 670, 230, new LightBarrierSensor(680, 120, false)),
+                new LightBarrier(id, 820, 440, new LightBarrierSensor(850, 450, true))
+        );
 
         id = 0;
-        Trigger firstUpperTrigger = new Trigger(21, 13);
-        Trigger firstLowerTrigger = new Trigger(-5, 13);
-        Trigger secondUpperTrigger = new Trigger(147, 35);
-        Trigger secondLowerTrigger = new Trigger(147, 8);
-        List<Pusher> pushers = Arrays.asList(new Pusher(id++, -6, 10, Pusher.PUSHER_SHORTER_SIZE, Pusher.PUSHER_LONGER_SIZE, firstUpperTrigger, firstLowerTrigger),
-                new Pusher(id, 126, 12, Pusher.PUSHER_LONGER_SIZE, Pusher.PUSHER_SHORTER_SIZE, secondUpperTrigger, secondLowerTrigger));
+        List<Treadmill> treadmills = Arrays.asList(new Treadmill(id++, 80, 230, Treadmill.TREADMILL_SHORTER_SIZE, Treadmill.TREADMILL_LONGER_SIZE, Direction.UP),
+                new Treadmill(id++, 190, 120, Treadmill.TREADMILL_LONGER_SIZE, Treadmill.TREADMILL_SHORTER_SIZE, Direction.RIGHT),
+                new Treadmill(id++, 520, 120, Treadmill.TREADMILL_LONGER_SIZE, Treadmill.TREADMILL_SHORTER_SIZE, Direction.RIGHT),
+                new Treadmill(id, 850, 230, Treadmill.TREADMILL_SHORTER_SIZE, Treadmill.TREADMILL_LONGER_SIZE, Direction.DOWN)
+        );
 
         id = 0;
-        List<Tool> tools = Arrays.asList(new Tool(id++, 41, 0),
-                new Tool(id, 91, 0));
+        Trigger firstUpperTrigger = new Trigger(180, 90);
+        Trigger firstLowerTrigger = new Trigger(50, 90);
+        Trigger secondUpperTrigger = new Trigger(960, 220);
+        Trigger secondLowerTrigger = new Trigger(960, 90);
+        List<Pusher> pushers = Arrays.asList(new Pusher(id++, 70, 100, Pusher.PUSHER_SHORTER_SIZE, Pusher.PUSHER_LONGER_SIZE, firstUpperTrigger, firstLowerTrigger),
+                new Pusher(id, 850, 110, Pusher.PUSHER_LONGER_SIZE, Pusher.PUSHER_SHORTER_SIZE, secondUpperTrigger, secondLowerTrigger)
+        );
+
+        id = 0;
+        List<Tool> tools = Arrays.asList(new Tool(id++, 300, 10),
+                new Tool(id, 630, 10)
+        );
 
         constructionSite.init(lightBarriers, treadmills, pushers, tools);
     }
 
     public void addComponent() {
-        Component newComponent = new Component(componentCount, 6, 70);
+        Component newComponent = new Component(componentCount, 90, 470);
         boolean startOccupied = false;
+        float smallestDistance = Float.MAX_VALUE;
 
         for (Component component : getComponents()) {
+            float distance = distance(newComponent, component);
+
+            if(distance < smallestDistance) {
+                smallestDistance = distance;
+            }
             if (component.collision(newComponent)) {
                 startOccupied = true;
             }
         }
 
-        if (!startOccupied) {
+        if (!startOccupied && smallestDistance > MIN_COMPONENT_DISTANCE) {
             componentCount++;
             componentCount = componentCount % 10;
             components.add(newComponent);
         }
+    }
+
+    private float distance(Component one, Component two) {
+        float x = one.getX() - two.getX();
+        float y = one.getY() - two.getY();
+        x = x*x;
+        y = y*y;
+
+        return (float) Math.sqrt(x+y);
     }
 
     public void removeComponent(int id) {
@@ -104,6 +131,21 @@ public class Simulation {
         simulateTreadmill(deltaInMs, getTreadmills());
         simulateLightBarriers(getLightBarriers());
         simulatePushers(deltaInMs, getPushers());
+        simulateTeleporter();
+    }
+
+    private void simulateTeleporter() {
+        for(Component component: getComponents()) {
+            if(!component.isTeleportOne() && component.collision(teleportPusherFirst)) {
+                component.setTeleportOne(true);
+                component.setX(90);
+                component.setY(130);
+            } else if (!component.isTeleportTwo() && component.collision(teleportPusherSecond)) {
+                component.setTeleportTwo(true);
+                component.setX(860);
+                component.setY(130);
+            }
+        }
     }
 
     private void simulateLightBarriers(List<LightBarrier> lightBarriers) {
@@ -173,6 +215,12 @@ public class Simulation {
             } else if (pusher.getId() == 1 && component.collision(pusher)) {
                 handleSecondPusherCollision(pusher, component, oldX, oldY);
             }
+        }
+
+        //If it reached the end of site stop it.
+        if(siteEnd.collision(component)) {
+            component.setX(oldX);
+            component.setY(oldY);
         }
     }
 

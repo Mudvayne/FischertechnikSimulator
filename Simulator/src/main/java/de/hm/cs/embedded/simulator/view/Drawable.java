@@ -10,7 +10,7 @@ import java.awt.*;
  * Created by qriz on 12/27/15.
  */
 public class Drawable {
-    public static final int SCALE = 4;
+    public static final int SCALE = 1;
     public static final int OFFSET = 50;
 
     private SiteObject object;

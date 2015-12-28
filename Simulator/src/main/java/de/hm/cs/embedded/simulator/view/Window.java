@@ -1,10 +1,7 @@
 package de.hm.cs.embedded.simulator.view;
 
 import de.hm.cs.embedded.simulator.logic.Simulation;
-import de.hm.cs.embedded.simulator.logic.objects.LightBarrier;
-import de.hm.cs.embedded.simulator.logic.objects.Pusher;
-import de.hm.cs.embedded.simulator.logic.objects.SiteObject;
-import de.hm.cs.embedded.simulator.logic.objects.Treadmill;
+import de.hm.cs.embedded.simulator.logic.objects.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,7 +10,7 @@ import java.util.ArrayList;
  * Created by qriz on 12/27/15.
  */
 public class Window extends Frame {
-    public static final boolean DISPLAY_LIGHT_SENSOR = false;
+    public static final boolean DISPLAY_LIGHT_SENSOR = true;
 
     private Simulation simulation;
     private java.util.List<Drawable> drawables;
@@ -22,7 +19,7 @@ public class Window extends Frame {
 
     public Window(Simulation simulation) {
         super("Foobar");
-        setSize(750, 500);
+        setSize(1130, 660);
         setLayout(null);
         addKeyListener(new KeyboardListener(this));
         addWindowListener(new WindowListener());
@@ -33,26 +30,31 @@ public class Window extends Frame {
     }
 
     public void init() {
+        drawables.add(new Drawable(new NullObject(-1, 80, 120, 100, 100)));
+        drawables.add(new Drawable(new NullObject(-1, 850, 120, 100, 100)));
+
+        for (SiteObject object : simulation.getTools()) {
+            drawables.add(new Drawable(object));
+        }
+
         for (Pusher pusher : simulation.getPushers()) {
             drawables.add(new Drawable(pusher));
             drawables.add(new Drawable(pusher.getUpperTrigger()));
             drawables.add(new Drawable(pusher.getLowerTrigger()));
         }
 
-        for (SiteObject object : simulation.getLightBarriers()) {
-            drawables.add(new Drawable(object));
-        }
-
         for (SiteObject object : simulation.getTreadmills()) {
             drawables.add(new Drawable(object));
         }
 
-        for (SiteObject object : simulation.getTools()) {
+        for (SiteObject object : simulation.getLightBarriers()) {
             drawables.add(new Drawable(object));
         }
 
-        repaint();
+        drawables.add(new Drawable(new NullObject(-1, 80, 147, 100, 2)));
+        drawables.add(new Drawable(new NullObject(-1, 920, 120, 2, 100)));
 
+        repaint();
     }
 
     public void update() {

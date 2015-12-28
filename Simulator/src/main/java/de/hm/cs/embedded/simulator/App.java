@@ -13,8 +13,10 @@ import de.hm.cs.embedded.simulator.view.Window;
 public class App {
 
     public static void main(String arg[]) throws InterruptedException {
-        //ConstructionSite constructionSite = new SimpleModel();
-        ConstructionSite constructionSite = new CModel();
+        System.out.println(String.format("LibraryPath: %s", System.getProperty("java.library.path")));
+
+        ConstructionSite constructionSite = new SimpleModel();
+        //ConstructionSite constructionSite = new CModel();
         Simulation simulation = new Simulation(constructionSite);
         simulation.initConstructionSite();
 

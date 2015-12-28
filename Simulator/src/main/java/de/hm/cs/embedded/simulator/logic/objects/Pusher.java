@@ -6,8 +6,8 @@ import java.util.UUID;
  * Created by qriz on 12/27/15.
  */
 public class Pusher extends SiteObject {
-    public static final int PUSHER_SHORTER_SIZE = 5;
-    public static final int PUSHER_LONGER_SIZE = 30;
+    public static final int PUSHER_SHORTER_SIZE = 10;
+    public static final int PUSHER_LONGER_SIZE = 120;
 
     private State state;
     private Trigger upperTrigger;

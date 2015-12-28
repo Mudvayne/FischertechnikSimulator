@@ -6,8 +6,8 @@ import java.util.UUID;
  * Created by qriz on 12/27/15.
  */
 public class Treadmill extends SiteObject {
-    public static final int TREADMILL_SHORTER_SIZE = 20;
-    public static final int TREADMILL_LONGER_SIZE = 50;
+    public static final int TREADMILL_SHORTER_SIZE = 100;
+    public static final int TREADMILL_LONGER_SIZE = 320;
 
     private boolean activated;
     private Direction direction;
