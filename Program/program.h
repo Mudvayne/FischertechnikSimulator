@@ -24,6 +24,7 @@ typedef struct
     short isReady;
     short timeout;
     short hasItemPassedSecondLB;
+    short waitTime;
 } StageOne;
 
 typedef struct

@@ -6,7 +6,7 @@
 
 TotalSystem totalSystem =   {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
 StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .isReady = 1, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0,
-                             .hasItemPassedSecondLB = 0};
+                             .hasItemPassedSecondLB = 0, .waitTime = 0};
 PusherStage stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 ToolStage stageThree =      {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,
@@ -39,7 +39,7 @@ void debug()
     printf("\nSTAGE 3: items = %d, pos = %d %d %d, TM = %d, toolLeft = %d, ready = %d    ", stageThree.itemCount, stageThree.itemPositions[0], stageThree.itemPositions[1], stageThree.itemPositions[2], stageThree.isTMRunning, stageThree.toolRuntimeLeft, stageThree.isReady);
     printf("\nSTAGE 4: items = %d, pos = %d %d %d, TM = %d, toolLeft = %d, ready = %d    ", stageFour.itemCount, stageFour.itemPositions[0], stageFour.itemPositions[1], stageFour.itemPositions[2], stageFour.isTMRunning, stageFour.toolRuntimeLeft, stageFour.isReady);
     printf("\nSTAGE 5: occupied = %d, dir = %d, ready = %d\t\t", stageFive.isOccupied, stageFive.pusherDir, stageFive.isReady);
-    printf("\nSTAGE 6: items = %d, running = %d, lb blocked for = %d, next check in = %d   ", stageSix.itemCount, stageSix.isRunning, stageSix.lightBarrierBlockedTime, stageSix.timeLeftForNextEmptyCheck);
+    printf("\nSTAGE 6: items = %d, running = %d, lb blocked for = %d, next check in = %d   \n\n", stageSix.itemCount, stageSix.isRunning, stageSix.lightBarrierBlockedTime, stageSix.timeLeftForNextEmptyCheck);
 }
 
 

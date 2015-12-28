@@ -37,6 +37,7 @@ void computeFirstTreadmill()
     {
         timeout(1);
     }
+
     //new items in stage?
     if(getFirstLightBarrier()->isBlocked == 1)
     {
@@ -87,20 +88,13 @@ void computeFirstTreadmill()
         stageOne.isReady = 1;
     }
 
-    //should it run?
-    stageOne.isRunning = 0;
-    if(stageOne.itemCount > 0)
+    if(stageOne.waitTime > 0)
     {
-        stageOne.isRunning = 1;
-        i = 0;
-        for( i ; i < 3 ; i++)
-        {
-            if(getSecondLightBarrier()->isBlocked && stageTwo.isReady == 0)
-            {
-                stageOne.isRunning = 0;
-                break;
-            }
-        }
+        stageOne.waitTime -= totalSystem.timeDiffSinceLastCall;
+    }
+    else
+    {
+        stageOne.waitTime = 0;
     }
 
     //has a item passed the LB2?
@@ -110,11 +104,24 @@ void computeFirstTreadmill()
         {
             stageOne.secondLightBarrierBefore = 0;
             stageOne.hasItemPassedSecondLB = 1;
+            stageOne.waitTime = STAGE_ONE_COOLDOWN_AFTER_SECOND_LB;
         }
     }
     else
     {
         stageOne.secondLightBarrierBefore = 1;
+    }
+
+    //should it run?
+    stageOne.isRunning = 0;
+    if(stageOne.itemCount > 0)
+    {
+        stageOne.isRunning = 1;
+        if((getSecondLightBarrier()->isBlocked && stageOne.waitTime > 0) || (getSecondLightBarrier()->isBlocked && stageTwo.isReady == 0))
+        {
+            printf("%d, %d", stageTwo.isReady, stageOne.waitTime);
+            stageOne.isRunning = 0;
+        }
     }
 
     //item left stage?

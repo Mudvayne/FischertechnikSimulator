@@ -2,6 +2,7 @@
     PROGRAM DEFINES
 */
 #ifdef ON_TARGET
+    #define STAGE_ONE_COOLDOWN_AFTER_SECOND_LB          1000
     #define TRAVERSE_TIME_ONE_TM                        2000
     #define RUN_LONGER_THAN_THEORETICALLY_NEEDED        500
     #define EMPTY_SPACE_TO_BE_READY                     600
@@ -12,7 +13,7 @@
     #define STAGE_SIX_CHECK_INTERVAL                    3000
     #define STAGE_SIX_RUN_TM_TOO_CHECK_IF_ITEM_WAS_REMOVED_TIME     2000
 #else
-
+    #define STAGE_ONE_COOLDOWN_AFTER_SECOND_LB          1000
     #define TRAVERSE_TIME_ONE_TM                        5000
     #define RUN_LONGER_THAN_THEORETICALLY_NEEDED        500
     #define EMPTY_SPACE_TO_BE_READY                     1200
