@@ -1,0 +1,2 @@
+cd /home/qriz/OWN-SEU/new_codebase/Simulator/src/main/java/
+javah de.hm.cs.embedded.simulator.model.NativeLibrary
