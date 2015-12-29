@@ -1,0 +1,22 @@
+TM4 is running without a stop
+	* TM4 "deletes" items if his LB gets toggled
+	* If items have "contact", there is no toggle
+	* So TM4 sometimes does not delete an item
+	* And if it thinks it has an item on it and the LB is not blocked, it runs
+	* More possible poblems with this situation (not yet noticed):
+		* The system-item-count is needed to deliver items from pushers to TM's correctly
+	
+Delivery to Pushers couse item collisions
+	* TM stops, if the pusher is occupied
+	* But the pusher only gets occupied, if the complete runtime for one item is done
+	* This runtime has to be a little bit longer, than it actually needs, for a good transfer
+	* So the pusher gets his occupation a little too late, and the TM does not stop in this time -> collision
+	* Fixes:
+		* A possible fix for this is a cooldown after a certain position
+			* If an item crosses a certain position right before the delivery, a cooldown will be set
+			* If another item crosses this position within this cooldown, the TM can be stopped, to avoid a collision
+			* Problem: if the two items are very close, the TM gets stopped before the first item is transfered to the pusher
+			* This solution is implemented in TM1, with exactly this problem
+		* Maybe tweeking the exact traverse time per TM can help -> very difficult, because its variable on the real target
+		* Or just increase the distance between items -> defines.h
+			* This does not work for TM1 -> human decides the distance

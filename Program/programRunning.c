@@ -2,11 +2,12 @@
 
 void timeout(int stage)
 {
+    /*
 	#ifndef ON_TARGET
     system("cls");
 	#endif
 
-  printf("Stage %d expected an item which never arrived.\n", stage);
+    printf("Stage %d expected an item which never arrived.\n", stage);
 
 	stopTreadmill(getFirstTreadmill());
 	stopTreadmill(getSecondTreadmill());
@@ -19,6 +20,7 @@ void timeout(int stage)
 	#ifndef ON_TARGET
     getchar();
 	#endif
+	*/
 }
 
 void computeFirstTreadmill()
@@ -63,6 +65,20 @@ void computeFirstTreadmill()
         //item left first light barrier
         stageOne.firstLightBarrierBefore = 0;
         stageOne.timeout += 1;
+
+        //update position to correct value
+        short smallestPosition = TRAVERSE_TIME_ONE_TM;
+        short item;
+        int i = 0;
+        for( i ; i < 3 ; i++)
+        {
+            if(stageOne.itemPositions[i] > 0 && stageOne.itemPositions[i] < smallestPosition)
+            {
+                item = i;
+                smallestPosition = stageOne.itemPositions[i];
+            }
+        }
+        stageOne.itemPositions[item] = TRAVERSE_TIME_ONE_TM * PERCENTAGE_OF_TM_AFTER_FIRST_LB;
     }
 
     //is this stage ready for more items?
@@ -119,7 +135,6 @@ void computeFirstTreadmill()
         stageOne.isRunning = 1;
         if((getSecondLightBarrier()->isBlocked && stageOne.waitTime > 0) || (getSecondLightBarrier()->isBlocked && stageTwo.isReady == 0))
         {
-            printf("%d, %d", stageTwo.isReady, stageOne.waitTime);
             stageOne.isRunning = 0;
         }
     }
@@ -207,79 +222,6 @@ void computeSecondTreadmill()
         }
     }
 
-    if(stageThree.itemCount > 0)
-    {
-        if(stageThree.isToolTime)
-        {
-            if(stageThree.tMRuntimeLeftForCentering <= 0)
-            {
-                //centered
-                stageThree.isTMRunning = 0;
-                if(stageThree.toolRuntimeLeft > 0)
-                {
-                    stageThree.isToolRunning = 1;
-                }
-                else
-                {
-                    if(stageFour.isReady)
-                    {
-                        //done with tooltime
-                        stageThree.isToolTime = 0;
-                        stageThree.isTMRunning = 1;
-                        stageThree.tMRuntimeLeftForCentering = 0;
-                        stageFour.timeout = 1;
-                        stageThree.isWaiting = 0;
-                    }
-                    else
-                    {
-                        stageThree.isWaiting = 1;
-                    }
-                    stageThree.isToolRunning = 0;
-                    stageThree.toolRuntimeLeft = 0;
-                }
-            }
-        }
-        else
-        {
-            int i = 0;
-            for( i ; i < 3 ; i++)
-            {
-                // check if tool time
-                if(getThirdLightBarrier()->isBlocked)
-                {
-                    if(stageThree.lightBarrierBefore == 0)
-                    {
-                        stageThree.lightBarrierBefore = 1;
-                        stageThree.isToolTime = 1;
-                        stageThree.tMRuntimeLeftForCentering = TRAVERSE_TIME_AFTER_CENTERED_LB;
-                        stageThree.toolRuntimeLeft = TOOL_TIME;
-                        break;
-                    }
-                }
-                else
-                {
-                    stageThree.lightBarrierBefore = 0;
-                    stageThree.isTMRunning = 1;
-                    stageThree.hasItemPassedLightBarrier = 1;
-                }
-
-                // check if item leaves
-                if((stageThree.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageThree.hasItemPassedLightBarrier)
-                {
-                    stageThree.itemCount--;
-                    stageThree.itemCountBefore--;
-                    stageThree.itemPositions[i] = -1;
-                    stageFour.itemCount++;
-                    stageThree.hasItemPassedLightBarrier = 0;
-                }
-            }
-        }
-    }
-    else
-    {
-        stageThree.isTMRunning = 0;
-    }
-
     //is this stage ready for more items?
     int i = 0;
     if(stageThree.itemCount > 0)
@@ -287,7 +229,7 @@ void computeSecondTreadmill()
         for( i ; i < 3 ; i++)
         {
             int pos = stageThree.itemPositions[i];
-            if((pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY) || stageThree.isWaiting)
+            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
             {
                 stageThree.isReady = 0;
                 break;
@@ -301,6 +243,105 @@ void computeSecondTreadmill()
     else
     {
         stageThree.isReady = 1;
+    }
+
+    // TM and TOOL
+    if(stageThree.itemCount > 0)
+    {
+        if(stageThree.isToolTime)
+        {
+            if(stageThree.tMRuntimeLeftForCentering > 0)
+            {
+                //need to run TM
+                stageThree.isTMRunning = 1;
+            }
+            else
+            {
+                if(stageThree.toolRuntimeLeft > 0)
+                {
+                    //Tooling
+                    stageThree.isToolRunning = 1;
+                    stageThree.isTMRunning = 0;
+                }
+                else
+                {
+                    //Done Tooltime
+                    stageThree.isToolTime = 0;
+                    stageThree.isToolRunning = 0;
+                    stageThree.isTMRunning = 1;
+                    stageThree.toolRuntimeLeft = 0;
+                    stageFour.timeout = 1;
+                }
+
+                //update item pos to correct value
+                int diff = TRAVERSE_TIME_ONE_TM;
+                short item;
+                int i = 0;
+                for( i ; i < 3 ; i++)
+                {
+                    if(abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2)) < diff)
+                    {
+                        diff = abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2));
+                        item = i;
+                    }
+                }
+                stageThree.itemPositions[item] = TRAVERSE_TIME_ONE_TM / 2;
+            }
+        }
+        else
+        {
+            if(getThirdLightBarrier()->isBlocked)
+            {
+                if(stageThree.lightBarrierBefore == 0)
+                {
+                    //new item in light barrier
+                    stageThree.lightBarrierBefore = 1;
+                    stageThree.isToolTime = 1;
+                    stageThree.tMRuntimeLeftForCentering = TRAVERSE_TIME_AFTER_CENTERED_LB;
+                    stageThree.toolRuntimeLeft = MILL_TIME;
+                }
+            }
+            else
+            {
+                if(stageThree.lightBarrierBefore = 1)
+                {
+                    //item leaves light barrier
+                    stageThree.hasItemPassedLightBarrier = 1;
+                }
+                // light barrier not blocked
+                stageThree.lightBarrierBefore = 0;
+            }
+            stageThree.isTMRunning = 1;
+        }
+    }
+    else
+    {
+        stageThree.isTMRunning = 0;
+        stageThree.isToolTime = 0;
+        stageThree.toolRuntimeLeft = 0;
+        stageThree.tMRuntimeLeftForCentering = 0;
+    }
+
+    //should it wait for next station or traverse item?
+    i = 0;
+    for( i ; i < 3 ; i++)
+    {
+        //wait for next stage?
+        if((stageThree.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM / 100) * 80) && stageThree.hasItemPassedLightBarrier && stageFour.isReady == 0)
+        {
+            stageThree.isTMRunning = 0;
+            stageFour.timeout = -1;
+            break;
+        }
+        //does item leave stage?
+        if((stageThree.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageThree.hasItemPassedLightBarrier)
+        {
+            stageThree.itemCount--;
+            stageThree.itemCountBefore--;
+            stageThree.itemPositions[i] = -1;
+            stageFour.itemCount++;
+            stageThree.hasItemPassedLightBarrier = 0;
+        }
     }
 }
 
@@ -317,7 +358,7 @@ void computeThirdTreadmill()
     }
     if(stageFour.timeout >= TIMEOUT)
     {
-        timeout(4);
+        timeout(3);
     }
 
     // check if new item
@@ -337,81 +378,6 @@ void computeThirdTreadmill()
         }
     }
 
-    if(stageFour.itemCount > 0)
-    {
-        if(stageFour.isToolTime)
-        {
-            if(stageFour.tMRuntimeLeftForCentering <= 0)
-            {
-                //centered
-                stageFour.isTMRunning = 0;
-                if(stageFour.toolRuntimeLeft > 0)
-                {
-                    stageFour.isToolRunning = 1;
-                }
-                else
-                {
-                    //done with tooltime
-                    if(stageFive.isReady)
-                    {
-                        stageFour.isToolTime = 0;
-                        stageFour.isTMRunning = 1;
-                        stageFour.tMRuntimeLeftForCentering = 0;
-                        stageSix.timeout = 1;
-                        stageFour.isWaiting = 0;
-                    }
-                    else
-                    {
-                        stageFour.isWaiting = 1;
-                    }
-                    stageFour.isToolRunning = 0;
-                    stageFour.toolRuntimeLeft = 0;
-                }
-            }
-        }
-        else
-        {
-            int i = 0;
-            for( i ; i < 3 ; i++)
-            {
-                // check if tool time
-                if(getFourthLightBarrier()->isBlocked)
-                {
-                    if(stageFour.lightBarrierBefore == 0)
-                    {
-                        stageFour.lightBarrierBefore = 1;
-                        stageFour.isToolTime = 1;
-                        stageFour.tMRuntimeLeftForCentering = TRAVERSE_TIME_AFTER_CENTERED_LB;
-                        stageFour.toolRuntimeLeft = TOOL_TIME;
-                        break;
-                    }
-                }
-                else
-                {
-                    stageFour.lightBarrierBefore = 0;
-                    stageFour.isTMRunning = 1;
-                    stageThree.hasItemPassedLightBarrier = 1;
-                }
-
-                // check if item leaves
-                if((stageFour.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageThree.hasItemPassedLightBarrier)
-                {
-                    stageFour.itemCount--;
-                    stageFour.itemCountBefore--;
-                    stageFour.itemPositions[i] = -1;
-
-                    // TODO: give it to next stage
-                    stageFive.isOccupied = 1;
-										stageThree.hasItemPassedLightBarrier = 0;
-                }
-            }
-        }
-    }
-    else
-    {
-        stageFour.isTMRunning = 0;
-    }
-
     //is this stage ready for more items?
     int i = 0;
     if(stageFour.itemCount > 0)
@@ -419,7 +385,7 @@ void computeThirdTreadmill()
         for( i ; i < 3 ; i++)
         {
             int pos = stageFour.itemPositions[i];
-            if((pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY) || stageFour.isWaiting)
+            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
             {
                 stageFour.isReady = 0;
                 break;
@@ -434,11 +400,109 @@ void computeThirdTreadmill()
     {
         stageFour.isReady = 1;
     }
+
+    // TM and TOOL
+    if(stageFour.itemCount > 0)
+    {
+        if(stageFour.isToolTime)
+        {
+            if(stageFour.tMRuntimeLeftForCentering > 0)
+            {
+                //need to run TM
+                stageFour.isTMRunning = 1;
+            }
+            else
+            {
+                if(stageFour.toolRuntimeLeft > 0)
+                {
+                    //Tooling
+                    stageFour.isToolRunning = 1;
+                    stageFour.isTMRunning = 0;
+                }
+                else
+                {
+                    //Done Tooltime
+                    stageFour.isToolTime = 0;
+                    stageFour.isToolRunning = 0;
+                    stageFour.isTMRunning = 1;
+                    stageFour.toolRuntimeLeft = 0;
+                    stageFour.timeout = 1;
+                }
+
+                //update item pos to correct value
+                int diff = TRAVERSE_TIME_ONE_TM;
+                short item;
+                int i = 0;
+                for( i ; i < 3 ; i++)
+                {
+                    if(abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2)) < diff)
+                    {
+                        diff = abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2));
+                        item = i;
+                    }
+                }
+                stageFour.itemPositions[item] = TRAVERSE_TIME_ONE_TM / 2;
+            }
+        }
+        else
+        {
+            if(getFourthLightBarrier()->isBlocked)
+            {
+                if(stageFour.lightBarrierBefore == 0)
+                {
+                    //new item in light barrier
+                    stageFour.lightBarrierBefore = 1;
+                    stageFour.isToolTime = 1;
+                    stageFour.tMRuntimeLeftForCentering = TRAVERSE_TIME_AFTER_CENTERED_LB;
+                    stageFour.toolRuntimeLeft = MILL_TIME;
+                }
+            }
+            else
+            {
+                if(stageFour.lightBarrierBefore = 1)
+                {
+                    //item leaves light barrier
+                    stageFour.hasItemPassedLightBarrier = 1;
+                }
+                // light barrier not blocked
+                stageFour.lightBarrierBefore = 0;
+            }
+            stageFour.isTMRunning = 1;
+        }
+    }
+    else
+    {
+        stageFour.isTMRunning = 0;
+        stageFour.isToolTime = 0;
+        stageFour.toolRuntimeLeft = 0;
+        stageFour.tMRuntimeLeftForCentering = 0;
+    }
+
+    //should it wait for next station or traverse item?
+    i = 0;
+    for( i ; i < 3 ; i++)
+    {
+        //wait for next stage?
+        if((stageFour.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM / 100) * 80) && stageFour.hasItemPassedLightBarrier && stageFive.isReady == 0)
+        {
+            stageFour.isTMRunning = 0;
+            stageFour.timeout = -1;
+            break;
+        }
+        //does item leave stage?
+        if((stageFour.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED * 2)) && stageFour.hasItemPassedLightBarrier)
+        {
+            stageFour.itemCount--;
+            stageFour.itemCountBefore--;
+            stageFour.itemPositions[i] = -1;
+            stageFive.isOccupied = 1;
+            stageFour.hasItemPassedLightBarrier = 0;
+        }
+    }
 }
 
 void computeSecondPlate()
 {
-
     // is stage ready?
     if(stageFive.isOccupied || getSecondPusher()->isBackTriggerActivated != 1)
     {
@@ -449,7 +513,7 @@ void computeSecondPlate()
         stageFive.isReady = 1;
     }
 
-    if(stageFive.isOccupied && stageThree.isReady)
+    if(stageFive.isOccupied && stageSix.isFull == 0)
     {
         if(getSecondPusher()->isBackTriggerActivated)
         {
@@ -474,6 +538,8 @@ void computeSecondPlate()
 
 void computeFourthTredmill()
 {
+    stageSix.isRunning = 1;
+
     // check if timeout
     if(getFifthLightBarrier()->isBlocked)
     {
@@ -488,34 +554,22 @@ void computeFourthTredmill()
         timeout(6);
     }
 
-    if(stageSix.itemCount > 0) // not empty?
+    if(stageSix.itemCount > 0)
     {
-        if(stageSix.lightBarrierBlockedTime >= STAGE_SIX_LB_CHECK_FULL_TIME) //to long blocked?
+        if(stageSix.lightBarrierBlockedTime >= STAGE_SIX_LB_BLOCK_FOR_FULL)
         {
+            //stage is full
+            if(stageSix.isChecking == 0)
+            {
+                stageSix.timeLeftForNextEmptyCheck = STAGE_SIX_CHECK_INTERVAL;
+                stageSix.tMRuntimeLeftForChecking = STAGE_SIX_RUN_TM_FOR_CHECK_TIME;
+            }
             stageSix.isFull = 1;
-            if(stageSix.timeLeftForNextEmptyCheck <= 0) // next check now?
-            {
-                if(stageSix.tMRuntimeLeftForChecking >= 0) //TM runtime left?
-                {
-                    stageSix.isRunning = 1;
-                    stageSix.tMRuntimeLeftForChecking -= totalSystem.timeDiffSinceLastCall;
-                }
-                else
-                {
-                    stageSix.isRunning = 0;
-                    stageSix.timeLeftForNextEmptyCheck = STAGE_SIX_CHECK_INTERVAL;
-                }
-            }
-            else
-            {
-                stageSix.isRunning = 0;
-                stageSix.timeLeftForNextEmptyCheck -= totalSystem.timeDiffSinceLastCall;
-            }
+            stageSix.isChecking = 1;
         }
         else
         {
             stageSix.isFull = 0;
-            stageSix.isRunning = 1;
         }
     }
     else
@@ -523,32 +577,38 @@ void computeFourthTredmill()
         stageSix.isRunning = 0;
     }
 
-    if(stageSix.isFull)
+    if(stageSix.isChecking)
     {
         if(stageSix.timeLeftForNextEmptyCheck > 0)
         {
-            if(stageSix.tMRuntimeLeftForChecking > 0)
-            {
-                stageSix.tMRuntimeLeftForChecking -= totalSystem.timeDiffSinceLastCall;
-                stageSix.isRunning = 1;
-            }
-            else
-            {
-                stageSix.isRunning = 0;
-            }
+            stageSix.timeLeftForNextEmptyCheck -= totalSystem.timeDiffSinceLastCall;
+            stageSix.isRunning = 0;
         }
         else
         {
-            stageSix.timeLeftForNextEmptyCheck = STAGE_SIX_LB_CHECK_FULL_TIME;
-            stageSix.tMRuntimeLeftForChecking = -1;
+            //we are in the middle of a check
+            if(stageSix.tMRuntimeLeftForChecking < 0)
+            {
+                stageSix.isRunning = 0;
+                stageSix.isChecking = 0;
+                stageSix.tMRuntimeLeftForChecking = 0;
+                stageSix.timeLeftForNextEmptyCheck = STAGE_SIX_CHECK_INTERVAL;
+            }
+            else
+            {
+                stageSix.tMRuntimeLeftForChecking -= totalSystem.timeDiffSinceLastCall;
+            }
         }
-        stageSix.timeLeftForNextEmptyCheck -= totalSystem.timeDiffSinceLastCall;
     }
 
-    //light barrier toggled?
+    //light barrier toggled and blocked time?
     if(getFifthLightBarrier()->isBlocked == 1)
     {
         stageSix.lightBarrierBlockedTime += totalSystem.timeDiffSinceLastCall;
+        if(stageSix.lightBarrierBlockedTime >= STAGE_SIX_LB_BLOCK_FOR_FULL + 1000)
+        {
+            stageSix.lightBarrierBlockedTime = STAGE_SIX_LB_BLOCK_FOR_FULL + 1000;
+        }
         if(stageSix.lightBarrierBefore == 0)
         {
             stageSix.lightBarrierBefore = 1;
@@ -556,6 +616,7 @@ void computeFourthTredmill()
     }
     else if(stageSix.lightBarrierBefore == 1)
     {
+        stageSix.isFull = 0;
         stageSix.lightBarrierBlockedTime = 0;
         stageSix.lightBarrierBefore = 0;
         //toggled to off

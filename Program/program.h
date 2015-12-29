@@ -1,6 +1,7 @@
 #include "defines.h"
 #include "model.h"
 #include "programAutomat.h"
+#include <stdlib.h>
 
 //******************************************
 //****** VARIABLES FOR STATE MACHINE *******
@@ -53,7 +54,6 @@ typedef struct
 
 typedef struct
 {
-    short isReady;
     short itemCount;
     short isRunning;
     short lightBarrierBefore;
@@ -62,6 +62,7 @@ typedef struct
     short tMRuntimeLeftForChecking;
     short isFull;
     short wasFullBefore;
+    short isChecking;
     short timeout;
 } StageSix;
 #endif // __PROGRAMM
