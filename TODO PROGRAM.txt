@@ -20,3 +20,8 @@ Delivery to Pushers couse item collisions
 		* Maybe tweeking the exact traverse time per TM can help -> very difficult, because its variable on the real target
 		* Or just increase the distance between items -> defines.h
 			* This does not work for TM1 -> human decides the distance
+			
+Timeouts need to be implemented correctly
+	* Timeouts need to be collaborate with possible jams
+	* Solutions
+		* If a stage notices a jam, it could disable the timeout for the next stage (wich is a very poor solution)
