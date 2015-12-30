@@ -1,6 +1,6 @@
 #include "program.h"
 
-void timeout(int stage)
+void timeout(short stage)
 {
     /*
 	#ifndef ON_TARGET
@@ -49,7 +49,7 @@ void computeFirstTreadmill()
             // new item in LB 1
             totalSystem.itemsInSystem++;
             stageOne.itemCount++;
-            int i = 0;
+            short i = 0;
             for( i ; i < 3; i++)
             {
                 if(stageOne.itemPositions[i] == -1)
@@ -69,7 +69,7 @@ void computeFirstTreadmill()
         //update position to correct value
         short smallestPosition = TRAVERSE_TIME_ONE_TM;
         short item;
-        int i = 0;
+        short i = 0;
         for( i ; i < 3 ; i++)
         {
             if(stageOne.itemPositions[i] > 0 && stageOne.itemPositions[i] < smallestPosition)
@@ -118,7 +118,7 @@ void computeFirstTreadmill()
     }
 
     //item left stage?
-    int i = 0;
+    short i = 0;
     for( i ; i < 3; i++)
     {
         if(stageOne.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED) && stageOne.hasItemPassedSecondLB)
@@ -189,7 +189,7 @@ void computeSecondTreadmill()
         // new item
         stageThree.itemCountBefore = stageThree.itemCount;
 
-        int i = 0;
+        short i = 0;
         for( i ; i < 3 ; i++)
         {
             if(stageThree.itemPositions[i] == -1)
@@ -205,7 +205,7 @@ void computeSecondTreadmill()
     if(stageThree.itemCount > 0)
     {
         // RDY?
-        int i = 0;
+        short i = 0;
         for( i ; i < 3 ; i++)
         {
             int pos = stageThree.itemPositions[i];
@@ -244,7 +244,7 @@ void computeSecondTreadmill()
                 //update item pos to correct value
                 int diff = TRAVERSE_TIME_ONE_TM;
                 short item;
-                int i = 0;
+                short i = 0;
                 for( i ; i < 3 ; i++)
                 {
                     if(abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2)) < diff)
@@ -291,11 +291,11 @@ void computeSecondTreadmill()
     }
 
     //should it wait for next station or traverse item?
-    int i = 0;
+    short i = 0;
     for( i ; i < 3 ; i++)
     {
         //wait for next stage?
-        if((stageThree.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM / 100) * 80) && stageThree.hasItemPassedLightBarrier && stageFour.isReady == 0)
+        if((stageThree.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM * 0.7)) && stageThree.hasItemPassedLightBarrier && stageFour.isReady == 0)
         {
             stageThree.isTMRunning = 0;
             stageFour.timeout = -1;
@@ -303,7 +303,7 @@ void computeSecondTreadmill()
         }
 
         //does item leave stage?
-        if((stageThree.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageThree.hasItemPassedLightBarrier)
+        if((stageThree.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED*1.5)) && stageThree.hasItemPassedLightBarrier)
         {
             stageThree.itemCount--;
             stageThree.itemCountBefore--;
@@ -336,7 +336,7 @@ void computeThirdTreadmill()
         // new item
         stageFour.itemCountBefore = stageFour.itemCount;
 
-        int i = 0;
+        short i = 0;
         for( i ; i < 3 ; i++)
         {
             if(stageFour.itemPositions[i] == -1)
@@ -352,7 +352,7 @@ void computeThirdTreadmill()
     if(stageFour.itemCount > 0)
     {
         // RDY?
-        int i = 0;
+        short i = 0;
         for( i ; i < 3 ; i++)
         {
             int pos = stageFour.itemPositions[i];
@@ -391,7 +391,7 @@ void computeThirdTreadmill()
                 //update item pos to correct value
                 int diff = TRAVERSE_TIME_ONE_TM;
                 short item;
-                int i = 0;
+                short i = 0;
                 for( i ; i < 3 ; i++)
                 {
                     if(abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2)) < diff)
@@ -438,11 +438,11 @@ void computeThirdTreadmill()
     }
 
     //should it wait for next station or traverse item?
-    int i = 0;
+    short i = 0;
     for( i ; i < 3 ; i++)
     {
         //wait for next stage?
-        if((stageFour.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM / 100) * 80) && stageFour.hasItemPassedLightBarrier && stageFive.isReady == 0)
+        if((stageFour.itemPositions[i] >= (TRAVERSE_TIME_ONE_TM * 0.7)) && stageFour.hasItemPassedLightBarrier && stageFive.isReady == 0)
         {
             stageFour.isTMRunning = 0;
             stageFour.timeout = -1;
@@ -450,7 +450,7 @@ void computeThirdTreadmill()
         }
 
         //does item leave stage?
-        if((stageFour.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED)) && stageFour.hasItemPassedLightBarrier)
+        if((stageFour.itemPositions[i] > (TRAVERSE_TIME_ONE_TM + RUN_LONGER_THAN_THEORETICALLY_NEEDED*1.5)) && stageFour.hasItemPassedLightBarrier)
         {
             stageFour.itemCount--;
             stageFour.itemCountBefore--;
@@ -594,7 +594,7 @@ void runningHandleActors() {
     if(stageOne.isRunning)
     {
         startTreadmill(treadmills[0]);
-        int i = 0;
+        short i = 0;
         for(i; i < 3; i++)
         {
             if(stageOne.itemPositions[i] > -1)
@@ -621,7 +621,7 @@ void runningHandleActors() {
     if(stageThree.isTMRunning)
     {
         startTreadmill(treadmills[1]);
-        int i = 0;
+        short i = 0;
         for(i; i < 3; i++)
         {
             if(stageThree.itemPositions[i] > -1)
@@ -653,7 +653,7 @@ void runningHandleActors() {
     if(stageFour.isTMRunning)
     {
         startTreadmill(treadmills[2]);
-        int i = 0;
+        short i = 0;
         for(i; i < 3; i++)
         {
             if(stageFour.itemPositions[i] > -1)
