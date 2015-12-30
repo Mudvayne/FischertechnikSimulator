@@ -20,12 +20,11 @@ typedef struct
     int itemPositions[3];
     short firstLightBarrierBefore;
     short secondLightBarrierBefore;
-
     short isRunning;
-    short isReady;
     short timeout;
     short hasItemPassedSecondLB;
     short waitTime;
+    short messureTimeBetweenItems;
 } StageOne;
 
 typedef struct
@@ -42,14 +41,13 @@ typedef struct
     int itemPositions[3];
     short isReady;
     short lightBarrierBefore;
-		short hasItemPassedLightBarrier;
-    short isToolTime; //centering and tooling
+    short hasItemPassedLightBarrier;
+    short isToolTime;
     short tMRuntimeLeftForCentering;
     short toolRuntimeLeft;
     short isTMRunning;
     short isToolRunning;
     short timeout;
-    short isWaiting;
 } ToolStage;
 
 typedef struct

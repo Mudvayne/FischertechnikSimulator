@@ -19,13 +19,13 @@
     #define PERCENTAGE_OF_TM_AFTER_FIRST_LB             0.2
     #define TRAVERSE_TIME_ONE_TM                        5000
     #define RUN_LONGER_THAN_THEORETICALLY_NEEDED        500
-    #define EMPTY_SPACE_TO_BE_READY                     2000
+    #define EMPTY_SPACE_TO_BE_READY                     2400
     #define TRAVERSE_TIME_AFTER_CENTERED_LB             600
     #define DRILL_TIME                                  3000
-    #define MILL_TIME                                   2000
+    #define MILL_TIME                                   TRAVERSE_TIME_ONE_TM * 0.4
     #define TIMEOUT                                     15000 //from LB to LB
-    #define STAGE_SIX_LB_BLOCK_FOR_FULL                 3000
-    #define STAGE_SIX_CHECK_INTERVAL                    3000
+    #define STAGE_SIX_LB_BLOCK_FOR_FULL                 2000
+    #define STAGE_SIX_CHECK_INTERVAL                    5000
     #define STAGE_SIX_RUN_TM_FOR_CHECK_TIME             2000
 #endif
 
