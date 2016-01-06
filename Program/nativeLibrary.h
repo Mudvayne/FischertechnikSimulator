@@ -127,6 +127,46 @@ JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_call
 JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callUnblockLightBarrier
   (JNIEnv *, jobject, jint);
 
+/*
+ * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
+ * Method:    callSetSiteState
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callSetSiteState
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
+ * Method:    callGetSiteState
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callGetSiteState
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
+ * Method:    callHandleTreadmill
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callHandleTreadmill
+  (JNIEnv *, jobject, jint, jboolean);
+
+/*
+ * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
+ * Method:    callHandleTool
+ * Signature: (IZ)V
+ */
+JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callHandleTool
+  (JNIEnv *, jobject, jint, jboolean);
+
+/*
+ * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
+ * Method:    callHandlePusher
+ * Signature: (IZZZ)V
+ */
+JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callHandlePusher
+  (JNIEnv *, jobject, jint, jboolean, jboolean, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

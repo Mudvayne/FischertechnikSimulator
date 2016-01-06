@@ -10,7 +10,16 @@ SiteState convertFromIntToStateEnum(uint8_t state) {
 	switch(state) {
 		case 0:
 		return PANIC_SWITCH;
-		
+		case 1:
+		return DIAGNOSTIC;
+		case 2:
+		return START;
+		case 3:
+		return RUNNING;
+		case 4:
+		return REST;
+		case 5:
+		return STOP;
 		
 		default:
 		return PANIC_SWITCH;
@@ -21,7 +30,16 @@ uint8_t convertFromStateEnumToInt(SiteState state) {
 	switch(state) {
 		case PANIC_SWITCH:
 		return 0;
-		
+		case DIAGNOSTIC:
+		return 1;
+		case START:
+		return 2;
+		case RUNNING:
+		return 3;
+		case REST:
+		return 4;
+		case STOP:
+		return 5;
 		
 		default:
 		return 0;
@@ -147,6 +165,16 @@ void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
 	
 	utilShiftBit(pusher->isFrontTriggerActivated,	13, &status);
 	utilShiftBit(pusher->isBackTriggerActivated,	14, &status);
+	
+	Pusher *pusher = getSecondPusher();
+	uint8_t isActive = pusher->runningDirection == BACKWARDS ? 1 : 0;
+	utilShiftBit(isActive, 							15, &status);
+	
+	isActive = pusher->runningDirection == FORWARDS ? 1 : 0;
+	utilShiftBit(isActive, 							16, &status);
+	
+	utilShiftBit(pusher->isFrontTriggerActivated,	17, &status);
+	utilShiftBit(pusher->isBackTriggerActivated,	18, &status);
 	
 	//Now build and send response.
 	GetWholeSiteStatusReturn response;

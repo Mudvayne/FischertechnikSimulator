@@ -28,11 +28,9 @@ void aggregateSensors() {
     updateLightBarrier(getFifthLightBarrier());
 }
 
-void handleAktors() {
-}
-
 void debug()
 {
+	/*
     system("cls");
     printf("ITEMS IN SYSTEM: %d, TOs MAX %ds: 1 = %d, 3 = %d, 4 = %d, 6 = %d", totalSystem.itemsInSystem, TIMEOUT/1000, stageOne.timeout, stageThree.timeout, stageFour.timeout, stageSix.timeout);
     printf("\nSTAGE 1: items = %d, pos = %d %d %d, running = %d", stageOne.itemCount, stageOne.itemPositions[0], stageOne.itemPositions[1], stageOne.itemPositions[2], stageOne.isRunning);
@@ -41,16 +39,32 @@ void debug()
     printf("\nSTAGE 4: items = %d, pos = %d %d %d, TT = %d, toolLeft = %d, ready = %d", stageFour.itemCount, stageFour.itemPositions[0], stageFour.itemPositions[1], stageFour.itemPositions[2], stageFour.isToolTime, stageFour.toolRuntimeLeft, stageFour.isReady);
     printf("\nSTAGE 5: occupied = %d, dir = %d, ready = %d", stageFive.isOccupied, stageFive.pusherDir, stageFive.isReady);
     printf("\nSTAGE 6: items = %d, full = %d, lb blocked for = %d, next check in = %d", stageSix.itemCount, stageSix.isFull, stageSix.lightBarrierBlockedTime, stageSix.timeLeftForNextEmptyCheck);
+    */
 }
 
+void handlePanicSwitch() {
+	if(getSiteState() == PANIC_SWITCH) {
+		return;
+	}
+	
+	uint8_t firstFrontTrigger = getFirstPusher()->isFrontTriggerActivated;
+	uint8_t firstBackTrigger = getFirstPusher()->isBackTriggerActivated;
+	uint8_t secondFrontTrigger = getSecondPusher()->isFrontTriggerActivated;
+	uint8_t secondBackTrigger = getSecondPusher()->isBackTriggerActivated;
+	
+	if(firstFrontTrigger && firstBackTrigger && secondFrontTrigger && secondBackTrigger) {
+		setSiteState(PANIC_SWITCH);
+	}
+}
 
 void executeProgram() {
-    void (*computeActions)(void) = resolveComputeActionsFor(getSiteState());
-    void (*handleActors) (void) = resolveHandleActorsFor(getSiteState());
-
     totalSystem.timeDiffSinceLastCall = calculateTimeDiffSinceLastCall();
 
     aggregateSensors();
+    handlePanicSwitch();
+    
+    void (*computeActions)(void) = resolveComputeActionsFor(getSiteState());
+    void (*handleActors) (void) = resolveHandleActorsFor(getSiteState());
     (*computeActions)();
     (*handleActors)();
 
