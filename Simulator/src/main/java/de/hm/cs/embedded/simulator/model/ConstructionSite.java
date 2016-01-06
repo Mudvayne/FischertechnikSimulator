@@ -1,9 +1,6 @@
 package de.hm.cs.embedded.simulator.model;
 
-import de.hm.cs.embedded.simulator.logic.objects.LightBarrier;
-import de.hm.cs.embedded.simulator.logic.objects.Pusher;
-import de.hm.cs.embedded.simulator.logic.objects.Tool;
-import de.hm.cs.embedded.simulator.logic.objects.Treadmill;
+import de.hm.cs.embedded.simulator.logic.objects.*;
 
 import java.util.List;
 
@@ -19,6 +16,10 @@ public interface ConstructionSite {
     List<Pusher> getPushers();
 
     List<Tool> getTools();
+
+    SiteState getSiteState();
+
+    boolean isPanicSwitchPressed();
 
     void init(List<LightBarrier> lightBarriers, List<Treadmill> treadmills, List<Pusher> pushers, List<Tool> tools);
 
@@ -37,4 +38,16 @@ public interface ConstructionSite {
     void blockLightBarrier(LightBarrier lightBarrier);
 
     void unblockLightBarrier(LightBarrier lightBarrier);
+
+    void changeSiteState(SiteState siteState);
+
+    void handleTreadmill(Treadmill treadmill, boolean activate);
+
+    void handleTool(Tool tool, boolean activate);
+
+    void handlePusher(Pusher pusher, Pusher.State state);
+
+    void pressPanicSwitch();
+
+    void releasePanicSwitch();
 }

@@ -3,6 +3,7 @@ package de.hm.cs.embedded.simulator.logic;
 import de.hm.cs.embedded.simulator.logic.objects.*;
 import de.hm.cs.embedded.simulator.model.ConstructionSite;
 
+import javax.print.attribute.standard.MediaPrintableArea;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by qriz on 12/27/15.
  */
-public class Simulation {
+public class Simulation implements Logic {
     public static final float TREADMILL_SPEED = Float.valueOf(System.getProperty("treadmillSpeed", "0.064"));
     public static final float PUSHER_SPEED = Float.valueOf(System.getProperty("pusherSpeed", "0.0667"));
     public static final float MIN_COMPONENT_DISTANCE = Float.valueOf(System.getProperty("minComponentDistance", "85.0"));
@@ -41,6 +42,10 @@ public class Simulation {
 
     public List<Component> getComponents() {
         return components;
+    }
+
+    public SiteState getCurrentSiteState() {
+        return constructionSite.getSiteState();
     }
 
     public Simulation(ConstructionSite constructionSite) {
@@ -128,10 +133,22 @@ public class Simulation {
     }
 
     public void updateSimulation(int deltaInMs) {
+        if(constructionSite.isPanicSwitchPressed()) {
+            return;
+        }
+
         simulateTreadmill(deltaInMs, getTreadmills());
         simulateLightBarriers(getLightBarriers());
         simulatePushers(deltaInMs, getPushers());
         simulateTeleporter();
+    }
+
+    public void changeSiteState(SiteState newState) {
+        constructionSite.changeSiteState(newState);
+    }
+
+    public boolean isPanicButtonPressed() {
+        return constructionSite.isPanicSwitchPressed();
     }
 
     private void simulateTeleporter() {

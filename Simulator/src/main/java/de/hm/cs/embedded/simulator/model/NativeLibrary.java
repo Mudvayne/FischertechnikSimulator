@@ -25,4 +25,11 @@ public class NativeLibrary {
     native void callUnblockLowerTrigger(int id);
     native void callBlockLightBarrier(int id);
     native void callUnblockLightBarrier(int id);
+
+    native void callSetSiteState(int state);
+    native int callGetSiteState();
+
+    native void callHandleTreadmill(int id, boolean activate);
+    native void callHandleTool(int id, boolean activate);
+    native void callHandlePusher(int id, boolean stop, boolean forward, boolean backward);
 }

@@ -1,6 +1,6 @@
 package de.hm.cs.embedded.simulator.view;
 
-import de.hm.cs.embedded.simulator.logic.Simulation;
+import de.hm.cs.embedded.simulator.logic.Logic;
 import de.hm.cs.embedded.simulator.logic.objects.*;
 
 import java.awt.*;
@@ -12,19 +12,22 @@ import java.util.ArrayList;
 public class Window extends Frame {
     public static final boolean DISPLAY_LIGHT_SENSOR = true;
 
-    private Simulation simulation;
+    private Logic logic;
+
+    private SiteState currentState;
+    private boolean panicButtonPressed;
     private java.util.List<Drawable> drawables;
     private java.util.List<Drawable> components;
 
-
-    public Window(Simulation simulation) {
+    public Window(Logic logic) {
         super("Foobar");
         setSize(1130, 660);
         setLayout(null);
-        addKeyListener(new KeyboardListener(this));
         addWindowListener(new WindowListener());
 
-        this.simulation = simulation;
+        this.logic = logic;
+        this.currentState = logic.getCurrentSiteState();
+        this.panicButtonPressed = false;
         this.drawables = new ArrayList<Drawable>();
         this.components = new ArrayList<Drawable>();
     }
@@ -33,21 +36,21 @@ public class Window extends Frame {
         drawables.add(new Drawable(new NullObject(-1, 80, 120, 100, 100)));
         drawables.add(new Drawable(new NullObject(-1, 850, 120, 100, 100)));
 
-        for (SiteObject object : simulation.getTools()) {
+        for (SiteObject object : logic.getTools()) {
             drawables.add(new Drawable(object));
         }
 
-        for (Pusher pusher : simulation.getPushers()) {
+        for (Pusher pusher : logic.getPushers()) {
             drawables.add(new Drawable(pusher));
             drawables.add(new Drawable(pusher.getUpperTrigger()));
             drawables.add(new Drawable(pusher.getLowerTrigger()));
         }
 
-        for (SiteObject object : simulation.getTreadmills()) {
+        for (SiteObject object : logic.getTreadmills()) {
             drawables.add(new Drawable(object));
         }
 
-        for (SiteObject object : simulation.getLightBarriers()) {
+        for (SiteObject object : logic.getLightBarriers()) {
             drawables.add(new Drawable(object));
         }
 
@@ -61,8 +64,8 @@ public class Window extends Frame {
                 someThingChanged = true;
             }
         }
-        for (int i = simulation.getComponents().size() - 1; i >= 0; i--) {
-            SiteObject object = simulation.getComponents().get(i);
+        for (int i = logic.getComponents().size() - 1; i >= 0; i--) {
+            SiteObject object = logic.getComponents().get(i);
 
             Drawable drawable = null;
             for (Drawable draw : components) {
@@ -87,7 +90,7 @@ public class Window extends Frame {
             Drawable drawable = components.get(i);
             boolean stillExisting = false;
 
-            for (SiteObject object : simulation.getComponents()) {
+            for (SiteObject object : logic.getComponents()) {
                 if (drawable.getObject() == object) {
                     stillExisting = true;
                 }
@@ -97,6 +100,16 @@ public class Window extends Frame {
                 someThingChanged = true;
                 components.remove(drawable);
             }
+        }
+
+        if(currentState != logic.getCurrentSiteState()) {
+            currentState = logic.getCurrentSiteState();
+            someThingChanged = true;
+        }
+
+        if(panicButtonPressed != logic.isPanicButtonPressed()) {
+            panicButtonPressed = logic.isPanicButtonPressed();
+            someThingChanged = true;
         }
 
         if (someThingChanged) {
@@ -113,6 +126,18 @@ public class Window extends Frame {
     @Override
     public void paintComponents(Graphics graphics) {
         super.paintComponents(graphics);
+
+        String siteState = currentState.toString();
+        int fontSize = 16;
+
+        graphics.setFont(new Font(Font.MONOSPACED, Font.BOLD, fontSize));
+        graphics.setColor(Color.BLACK);
+        graphics.drawString(siteState, fontSize, fontSize * 3);
+
+        graphics.setColor(panicButtonPressed ? Color.RED : Color.GREEN);
+        graphics.fillOval(880, 40, 40, 40);
+        graphics.setColor(Color.BLACK);
+        graphics.drawOval(880, 40, 40, 40);
 
         for (Drawable object : drawables) {
             paintDrawable(graphics, object);
@@ -153,23 +178,5 @@ public class Window extends Frame {
             graphics.setColor(Color.BLACK);
             graphics.drawRect(x, y, width, height);
         }
-    }
-
-    public void addComponent() {
-        simulation.addComponent();
-    }
-
-    public void pusher(int index, int action) {
-        Pusher pusher = simulation.getPushers().get(index);
-        pusher.setState(action == 0 ? Pusher.State.GOING_BACKWARD : Pusher.State.GOING_FORWARD);
-    }
-
-    public void treadmill(int index) {
-        Treadmill treadmill = simulation.getTreadmills().get(index);
-        treadmill.setActivated(!treadmill.isActivated());
-    }
-
-    public void removeComponent(int id) {
-        simulation.removeComponent(id);
     }
 }

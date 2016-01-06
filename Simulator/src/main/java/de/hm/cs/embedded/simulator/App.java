@@ -1,10 +1,10 @@
 package de.hm.cs.embedded.simulator;
 
+import de.hm.cs.embedded.simulator.logic.Logic;
 import de.hm.cs.embedded.simulator.logic.Simulation;
-import de.hm.cs.embedded.simulator.logic.objects.Pusher;
 import de.hm.cs.embedded.simulator.model.CModel;
 import de.hm.cs.embedded.simulator.model.ConstructionSite;
-import de.hm.cs.embedded.simulator.model.SimpleModel;
+import de.hm.cs.embedded.simulator.view.KeyboardListener;
 import de.hm.cs.embedded.simulator.view.Window;
 
 /**
@@ -17,11 +17,12 @@ public class App {
 
         //ConstructionSite constructionSite = new SimpleModel();
         ConstructionSite constructionSite = new CModel();
-        Simulation simulation = new Simulation(constructionSite);
-        simulation.initConstructionSite();
+        Logic logic = new Simulation(constructionSite);
+        logic.initConstructionSite();
 
-        Window window = new Window(simulation);
+        Window window = new Window(logic);
         window.init();
+        window.addKeyListener(new KeyboardListener(logic, constructionSite));
         window.setVisible(true);
 
         long lastTime = System.currentTimeMillis();
@@ -29,7 +30,7 @@ public class App {
             long currentTime = System.currentTimeMillis();
             int delta = (int) (currentTime-lastTime);
 
-            simulation.updateSimulation(delta);
+            logic.updateSimulation(delta);
             constructionSite.update();
             window.update();
 

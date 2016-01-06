@@ -1,9 +1,6 @@
 package de.hm.cs.embedded.simulator.model;
 
-import de.hm.cs.embedded.simulator.logic.objects.LightBarrier;
-import de.hm.cs.embedded.simulator.logic.objects.Pusher;
-import de.hm.cs.embedded.simulator.logic.objects.Tool;
-import de.hm.cs.embedded.simulator.logic.objects.Treadmill;
+import de.hm.cs.embedded.simulator.logic.objects.*;
 import org.apache.commons.lang.Validate;
 
 import java.util.Arrays;
@@ -23,6 +20,9 @@ public abstract class LocalModel implements ConstructionSite {
     private List<Pusher> pushers;
     private List<Tool> tools;
 
+    private boolean panicSwitchPressed;
+    protected SiteState siteState;
+
     public List<LightBarrier> getLightBarriers() {
         return lightBarriers;
     }
@@ -37,6 +37,14 @@ public abstract class LocalModel implements ConstructionSite {
 
     public List<Tool> getTools() {
         return tools;
+    }
+
+    public SiteState getSiteState() {
+        return siteState;
+    }
+
+    public boolean isPanicSwitchPressed() {
+        return panicSwitchPressed;
     }
 
     public void init(List<LightBarrier> lightBarriers, List<Treadmill> treadmills, List<Pusher> pushers, List<Tool> tools) {
@@ -54,5 +62,29 @@ public abstract class LocalModel implements ConstructionSite {
     private void validateListCount(List objects, int count) {
         Validate.notEmpty(objects);
         Validate.isTrue(objects.size() == count);
+    }
+
+    public void pressPanicSwitch() {
+        if(!panicSwitchPressed) {
+            blockLowerTrigger(getPushers().get(0));
+            blockUpperTrigger(getPushers().get(0));
+
+            blockLowerTrigger(getPushers().get(1));
+            blockUpperTrigger(getPushers().get(1));
+
+            panicSwitchPressed = true;
+        }
+    }
+
+    public void releasePanicSwitch() {
+        if(panicSwitchPressed) {
+            unblockLowerTrigger(getPushers().get(0));
+            unblockUpperTrigger(getPushers().get(0));
+
+            unblockLowerTrigger(getPushers().get(1));
+            unblockUpperTrigger(getPushers().get(1));
+
+            panicSwitchPressed = false;
+        }
     }
 }

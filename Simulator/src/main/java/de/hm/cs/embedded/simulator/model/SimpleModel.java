@@ -1,7 +1,6 @@
 package de.hm.cs.embedded.simulator.model;
 
-import de.hm.cs.embedded.simulator.logic.objects.LightBarrier;
-import de.hm.cs.embedded.simulator.logic.objects.Pusher;
+import de.hm.cs.embedded.simulator.logic.objects.*;
 
 /**
  * Created by qriz on 12/27/15.
@@ -45,5 +44,21 @@ public class SimpleModel extends LocalModel {
 
     public void unblockLightBarrier(LightBarrier lightBarrier) {
         lightBarrier.setBlocked(false);
+    }
+
+    public void changeSiteState(SiteState siteState) {
+        this.siteState = siteState;
+    }
+
+    public void handleTreadmill(Treadmill treadmill, boolean activate) {
+        treadmill.setActivated(activate);
+    }
+
+    public void handleTool(Tool tool, boolean activate) {
+        tool.setActivated(activate);
+    }
+
+    public void handlePusher(Pusher pusher, Pusher.State state) {
+        pusher.setState(state);
     }
 }
