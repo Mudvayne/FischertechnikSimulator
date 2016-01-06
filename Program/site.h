@@ -1,11 +1,11 @@
 #ifndef __SITE
 #define __SITE
 typedef enum {
-    PANIC_SWITCH, // In case the panic switch was pressed.
-    REST,         // In case the worker needs a rest.
-    START_UP,     //
-    RUNNING,      // Everything is fine, construction sites works.
-    RESET,        //
-    DEBUG         // Diagnostic Functions.
+    PANIC_SWITCH, 	// Panic switch was pressed, or sensor errors occured.
+    DIAGNOSTIC,         // Diagnostic Functions.
+    START,     		// State after Controller has been reset.
+    RUNNING,      	// Operational mode.
+    REST,         	// Worker needs a rest.
+    STOP		// Worker is about to shutdown construction site.
 } SiteState;
 #endif // __SITE

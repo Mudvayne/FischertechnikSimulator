@@ -14,7 +14,7 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
     case RUNNING:
         return &runningComputeActions;
         break;
-    case DEBUG:
+    case DIAGNOSTIC:
         return &debugComputeActions;
         break;
 
@@ -30,7 +30,7 @@ void (*resolveHandleActorsFor(SiteState currentState))(void) {
     case RUNNING:
         return &runningHandleActors;
         break;
-    case DEBUG:
+    case DIAGNOSTIC:
         return &debugHandleActors;
         break;
 
