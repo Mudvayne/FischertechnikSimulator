@@ -14,14 +14,14 @@ public class GetSiteStateStatusReturn extends Packet {
     }
 
     public GetSiteStateStatusReturn(int sequenceNumber) {
-        super(4, 81, sequenceNumber, false);
+        super(1, 81, sequenceNumber, false);
     }
 
     @Override
     public void fromByteArray(byte[] packet) {
         super.fromByteArray(packet);
 
-        status = packet[9];
+        status = packet[8];
     }
 
     @Override

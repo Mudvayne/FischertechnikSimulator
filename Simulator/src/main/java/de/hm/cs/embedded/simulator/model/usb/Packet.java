@@ -9,7 +9,7 @@ import java.util.BitSet;
  */
 public abstract class Packet {
     //Possible UID's    3493402161    3568702513
-    public static final Long BRICK_UID = Long.valueOf(System.getProperty("brickUID", "3493402161"));
+    public static final Long BRICK_UID = Long.valueOf(System.getProperty("brickUID", "3568702513"));
     public static final byte HEADER_LENGTH = 8;
     public static final byte TRUE_BYTE = 1;
     public static final byte FALSE_BYTE = 0;

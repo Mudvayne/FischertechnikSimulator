@@ -57,6 +57,9 @@ public abstract class LocalModel implements ConstructionSite {
         this.treadmills = treadmills;
         this.pushers = pushers;
         this.tools = tools;
+
+        this.panicSwitchPressed = false;
+        this.siteState = SiteState.DIAGNOSTIC;
     }
 
     private void validateListCount(List objects, int count) {

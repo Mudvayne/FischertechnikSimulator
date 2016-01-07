@@ -4,6 +4,7 @@ import de.hm.cs.embedded.simulator.logic.Logic;
 import de.hm.cs.embedded.simulator.logic.Simulation;
 import de.hm.cs.embedded.simulator.model.CModel;
 import de.hm.cs.embedded.simulator.model.ConstructionSite;
+import de.hm.cs.embedded.simulator.model.USBModel;
 import de.hm.cs.embedded.simulator.view.KeyboardListener;
 import de.hm.cs.embedded.simulator.view.Window;
 
@@ -16,7 +17,7 @@ public class App {
         System.out.println(String.format("LibraryPath: %s", System.getProperty("java.library.path")));
 
         //ConstructionSite constructionSite = new SimpleModel();
-        ConstructionSite constructionSite = new CModel();
+        ConstructionSite constructionSite = new USBModel();
         Logic logic = new Simulation(constructionSite);
         logic.initConstructionSite();
 
@@ -35,7 +36,7 @@ public class App {
             window.update();
 
             lastTime = currentTime;
-            Thread.sleep(10);
+            Thread.sleep(1000);
         }
     }
 }
