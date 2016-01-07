@@ -6,6 +6,8 @@
 #include "lightBarrier.h"
 #include "site.h"
 
+#include <stdio.h>
+
 SiteState convertFromIntToStateEnum(uint8_t state) {
 	switch(state) {
 		case 0:
@@ -49,7 +51,7 @@ uint8_t convertFromStateEnumToInt(SiteState state) {
 void utilShiftBit(uint8_t isActive, uint32_t shiftWidth, uint32_t *status) {
 	uint32_t bitField = isActive ? 1 : 0;
 	
-	(*status) | (isActive << shiftWidth);
+	(*status) = (*status) | (isActive << shiftWidth);
 }
 
 //#######################
@@ -57,6 +59,7 @@ void utilShiftBit(uint8_t isActive, uint32_t shiftWidth, uint32_t *status) {
 //#######################
 
 void handle_treadmill(const ComType com, const HandleTreadmill *data) {
+	printf("handleTreadmill\n");
 	Treadmill *treadmill = resolveTreadmill(data->treadmillId);
 	
 	if(treadmill == 0) {
@@ -72,6 +75,7 @@ void handle_treadmill(const ComType com, const HandleTreadmill *data) {
 }
 
 void handle_tool(const ComType com, const HandleTool *data) {
+	printf("handleTool\n");
 	Tool *tool = resolveTool(data->toolId);
 	
 	if(tool == 0) {
@@ -87,6 +91,7 @@ void handle_tool(const ComType com, const HandleTool *data) {
 }
 
 void handle_pusher(const ComType com, const HandlePusher *data) {
+	printf("handlePusher\n");
 	Pusher *pusher = resolvePusher(data->pusherId);
 	
 	if(pusher == 0) {
@@ -114,29 +119,34 @@ void getLightBarrierStatus(const ComType com, const GetLightBarrierStatus *data)
 	GetLightBarrierStatusReturn response;
 
 	response.header = data->header;
-	response.lightBarrierId; = data->lightBarrierId;
+	response.header.length = sizeof(GetLightBarrierStatusReturn);
+	response.lightBarrierId = data->lightBarrierId;
 	response.blocked = lightBarrier->isBlocked;
 
 	send_blocking_with_timeout(&response, sizeof(GetLightBarrierStatusReturn), com);
 }
 
 void getSiteStateStatus(const ComType com, const GetSiteSateStatus *data) {
-	GetSiteStateStatusReturn response;
+	printf("getSiteStateStaus\n");
+	GetSiteSateStatusReturn response;
 	
-	response.header = data-header;
+	response.header = data->header;
+	response.header.length = sizeof(GetSiteSateStatusReturn);
 	response.currentStatus = convertFromStateEnumToInt(getSiteState());
 	
-	send_blocking_with_timeout(&response, sizeof(GetSiteStateStatusReturn), com);
+	send_blocking_with_timeout(&response, sizeof(GetSiteSateStatusReturn), com);
 }
 
 void setSiteStateStatus(const ComType com, const SetSiteStateStatus *data) {
 	SiteState newState = convertFromIntToStateEnum(data->newStatus);
+	printf("setSiteStateStaus %d\n", newState);
 	
 	setSiteState(newState);
 }
 
 void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
-	int32_t status = 0;
+	printf("getWholeSiteStatus\n");
+	uint32_t status = 0;
 	
 	//Treadmill
 	utilShiftBit(getFirstTreadmill()->isRunning, 	0, &status);
@@ -166,8 +176,8 @@ void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
 	utilShiftBit(pusher->isFrontTriggerActivated,	13, &status);
 	utilShiftBit(pusher->isBackTriggerActivated,	14, &status);
 	
-	Pusher *pusher = getSecondPusher();
-	uint8_t isActive = pusher->runningDirection == BACKWARDS ? 1 : 0;
+	pusher = getSecondPusher();
+	isActive = pusher->runningDirection == BACKWARDS ? 1 : 0;
 	utilShiftBit(isActive, 							15, &status);
 	
 	isActive = pusher->runningDirection == FORWARDS ? 1 : 0;
@@ -180,6 +190,7 @@ void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
 	GetWholeSiteStatusReturn response;
 	
 	response.header = data->header;
+	response.header.length = sizeof(GetWholeSiteStatusReturn);
 	response.status = status;
 
 	send_blocking_with_timeout(&response, sizeof(GetWholeSiteStatusReturn), com);

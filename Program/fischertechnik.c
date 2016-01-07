@@ -155,12 +155,14 @@ void updatePusher(Pusher *pusher) {
 
 void startTreadmill(Treadmill *treadmill) {
 	Pin *pin = &pins[treadmillsIndex[treadmill->id]];
+	treadmill->isRunning = 1;
 	
 	activatePin(pin);
 }
 
 void stopTreadmill(Treadmill *treadmill) {
 	Pin *pin = &pins[treadmillsIndex[treadmill->id]];
+	treadmill->isRunning = 0;
 	
 	deactivatePin(pin);
 }
@@ -170,14 +172,16 @@ void stopTreadmill(Treadmill *treadmill) {
 // BEGIN TOOL IMPLEMENTATION
 // ##################################
 
-void startTool(Tool *treadmill) {
-	Pin *pin = &pins[toolIndex[treadmill->id]];
+void startTool(Tool *tool) {
+	Pin *pin = &pins[toolIndex[tool->id]];
+	tool->isRunning = 1;
 	
 	activatePin(pin);
 }
 
-void stopTool(Tool *treadmill) {
-	Pin *pin = &pins[toolIndex[treadmill->id]];
+void stopTool(Tool *tool) {
+	Pin *pin = &pins[toolIndex[tool->id]];
+	tool->isRunning = 0;
 	
 	deactivatePin(pin);
 }

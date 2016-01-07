@@ -43,7 +43,7 @@ void debug()
 }
 
 void handlePanicSwitch() {
-	if(getSiteState() == PANIC_SWITCH) {
+	if(getSiteState() == PANIC_SWITCH || getSiteState() == DIAGNOSTIC) {
 		return;
 	}
 	

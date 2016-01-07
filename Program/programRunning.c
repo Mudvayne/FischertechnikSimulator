@@ -247,13 +247,13 @@ void computeSecondTreadmill()
                 short i = 0;
                 for( i ; i < 3 ; i++)
                 {
-                    if(abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2)) < diff)
+                    if(abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM * 0.65)) < diff)
                     {
-                        diff = abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2));
+                        diff = abs(stageThree.itemPositions[i] - (TRAVERSE_TIME_ONE_TM * 0.65));
                         item = i;
                     }
                 }
-                stageThree.itemPositions[item] = TRAVERSE_TIME_ONE_TM / 2;
+                stageThree.itemPositions[item] = TRAVERSE_TIME_ONE_TM * 0.65;
             }
         }
         else
@@ -394,13 +394,13 @@ void computeThirdTreadmill()
                 short i = 0;
                 for( i ; i < 3 ; i++)
                 {
-                    if(abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2)) < diff)
+                    if(abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM * 0.65)) < diff)
                     {
-                        diff = abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM/2));
+                        diff = abs(stageFour.itemPositions[i] - (TRAVERSE_TIME_ONE_TM * 0.65));
                         item = i;
                     }
                 }
-                stageFour.itemPositions[item] = TRAVERSE_TIME_ONE_TM / 2;
+                stageFour.itemPositions[item] = TRAVERSE_TIME_ONE_TM * 0.65;
             }
         }
         else
