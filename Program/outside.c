@@ -114,19 +114,19 @@ void getLightBarrierStatus(const ComType com, const GetLightBarrierStatus *data)
 	GetLightBarrierStatusReturn response;
 
 	response.header = data->header;
-	response.lightBarrierId; = data->lightBarrierId;
+	response.lightBarrierId = data->lightBarrierId;
 	response.blocked = lightBarrier->isBlocked;
 
 	send_blocking_with_timeout(&response, sizeof(GetLightBarrierStatusReturn), com);
 }
 
 void getSiteStateStatus(const ComType com, const GetSiteSateStatus *data) {
-	GetSiteStateStatusReturn response;
+	GetSiteSateStatusReturn response;
 	
-	response.header = data-header;
+	response.header = data->header;
 	response.currentStatus = convertFromStateEnumToInt(getSiteState());
 	
-	send_blocking_with_timeout(&response, sizeof(GetSiteStateStatusReturn), com);
+	send_blocking_with_timeout(&response, sizeof(GetSiteSateStatusReturn), com);
 }
 
 void setSiteStateStatus(const ComType com, const SetSiteStateStatus *data) {
@@ -166,8 +166,8 @@ void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
 	utilShiftBit(pusher->isFrontTriggerActivated,	13, &status);
 	utilShiftBit(pusher->isBackTriggerActivated,	14, &status);
 	
-	Pusher *pusher = getSecondPusher();
-	uint8_t isActive = pusher->runningDirection == BACKWARDS ? 1 : 0;
+	pusher = getSecondPusher();
+	isActive = pusher->runningDirection == BACKWARDS ? 1 : 0;
 	utilShiftBit(isActive, 							15, &status);
 	
 	isActive = pusher->runningDirection == FORWARDS ? 1 : 0;
