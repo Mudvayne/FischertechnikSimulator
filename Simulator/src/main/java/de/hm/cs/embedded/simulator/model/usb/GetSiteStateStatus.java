@@ -5,7 +5,9 @@ package de.hm.cs.embedded.simulator.model.usb;
  */
 public class GetSiteStateStatus extends Packet {
 
+    public static final int FUNCTION_ID = 81;
+
     public GetSiteStateStatus(int sequenceNumber) {
-        super(0, 81, sequenceNumber, true);
+        super(0, FUNCTION_ID, sequenceNumber, true);
     }
 }

@@ -70,7 +70,7 @@ public class USBModel extends LocalModel {
                 if (headerPacket.getSequenceNumber() == sequenceNumber) {
                     messageFound = true;
 
-                    int payloadLength = packet.getPacketLength() - headerPacket.getPacketLength();
+                    int payloadLength = packet.getPacketLength() - 8;
                     byte[] messageArray;
 
                     if (payloadLength > 0) {
@@ -108,13 +108,13 @@ public class USBModel extends LocalModel {
         int sequenceNumber = calcNewSequenceNumber();
         GetWholeSiteStatus status = new GetWholeSiteStatus(sequenceNumber);
         writePacket(status.toByteBuffer());
-        GetWholeSiteStatusReturn response = new GetWholeSiteStatusReturn();
+        GetWholeSiteStatusReturn response = new GetWholeSiteStatusReturn(sequenceNumber);
         readPacket(sequenceNumber, response);
 
         sequenceNumber = calcNewSequenceNumber();
         GetSiteStateStatus siteStateStatus = new GetSiteStateStatus(sequenceNumber);
         writePacket(siteStateStatus.toByteBuffer());
-        GetSiteStateStatusReturn siteStateResponse = new GetSiteStateStatusReturn();
+        GetSiteStateStatusReturn siteStateResponse = new GetSiteStateStatusReturn(sequenceNumber);
         readPacket(sequenceNumber, siteStateResponse);
 
         getTreadmills().get(0).setActivated(response.isFirstTreadmillRunning());
@@ -186,15 +186,24 @@ public class USBModel extends LocalModel {
     }
 
     public void handleTreadmill(Treadmill treadmill, boolean activate) {
+        HandleTreadmill handle = new HandleTreadmill(calcNewSequenceNumber(), treadmill.getId(), activate);
+        writePacket(handle.toByteBuffer());
 
+        treadmill.setActivated(activate);
     }
 
     public void handleTool(Tool tool, boolean activate) {
+        HandleTool handle = new HandleTool(calcNewSequenceNumber(), tool.getId(), activate);
+        writePacket(handle.toByteBuffer());
 
+        tool.setActivated(activate);
     }
 
     public void handlePusher(Pusher pusher, Pusher.State state) {
+        HandlePusher handle = new HandlePusher(calcNewSequenceNumber(), pusher.getId(), state);
+        writePacket(handle.toByteBuffer());
 
+        pusher.setState(state);
     }
 
     private int convertStateToInt(SiteState siteState) {

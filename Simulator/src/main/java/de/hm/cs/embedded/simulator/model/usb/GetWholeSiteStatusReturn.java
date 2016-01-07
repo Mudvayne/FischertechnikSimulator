@@ -1,5 +1,6 @@
 package de.hm.cs.embedded.simulator.model.usb;
 
+import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 /**
@@ -10,8 +11,8 @@ public class GetWholeSiteStatusReturn extends Packet {
 
     private BitSet status;
 
-    public GetWholeSiteStatusReturn() {
-        super(4, FUNCTION_ID, 0, false);
+    public GetWholeSiteStatusReturn(int sequenceNumber) {
+        super(4, FUNCTION_ID, sequenceNumber, false);
     }
 
     public boolean isFirstTreadmillRunning() {
@@ -94,6 +95,15 @@ public class GetWholeSiteStatusReturn extends Packet {
     public void fromByteArray(byte[] packet) {
         super.fromByteArray(packet);
 
-        status = BitSet.valueOf(new byte[]{packet[9], packet[10], packet[11], packet[12]});
+        status = BitSet.valueOf(new byte[]{packet[8], packet[9], packet[10], packet[11]});
+    }
+
+    @Override
+    public ByteBuffer toByteBuffer() {
+        ByteBuffer messageBuffer = super.toByteBuffer();
+
+        messageBuffer.putInt(113);
+
+        return messageBuffer;
     }
 }

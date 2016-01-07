@@ -11,6 +11,9 @@ public abstract class Packet {
     //Possible UID's    3493402161    3568702513
     public static final Long BRICK_UID = Long.valueOf(System.getProperty("brickUID", "3493402161"));
     public static final byte HEADER_LENGTH = 8;
+    public static final byte TRUE_BYTE = 1;
+    public static final byte FALSE_BYTE = 0;
+    public static final BitSet NULL_BITSET = new BitSet(8);
 
     private long uid;
     private byte packetLength;
@@ -81,7 +84,11 @@ public abstract class Packet {
 
         response = bitSeq.get(3);
 
-        sequenceNumber = bitSeq.toByteArray()[0];
+        if(bitSeq.equals(NULL_BITSET)) {
+            sequenceNumber = 0;
+        } else {
+            sequenceNumber = bitSeq.toByteArray()[0];
+        }
     }
 
     public ByteBuffer toByteBuffer() {
@@ -101,7 +108,14 @@ public abstract class Packet {
 
         messageBuffer.put(packetLength);
         messageBuffer.put(functionId);
-        messageBuffer.put(bitSet.toByteArray()[0]);
+
+        //In case that all bits are 0 the BitSet class will not return an byteArray.
+        if(bitSet.equals(NULL_BITSET)) {
+            messageBuffer.put((byte) 0);
+        } else {
+            messageBuffer.put(bitSet.toByteArray()[0]);
+        }
+
         messageBuffer.put(flags);
 
         return messageBuffer;
