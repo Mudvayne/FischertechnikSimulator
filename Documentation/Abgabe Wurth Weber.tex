@@ -1,0 +1,85 @@
+\documentclass[fontsize=11pt,a4paper,final]{scrartcl}[2003/01/01]
+\usepackage[ngerman]{babel} 
+\usepackage[utf8]{inputenc} 
+\usepackage[autostyle=true,german=quotes]{csquotes}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{floatflt}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tabularx}
+\usepackage[sort&compress,numbers]{natbib}
+\usepackage{caption}
+
+\captionsetup[table]{skip=0pt}
+\captionsetup[figure]{skip=10pt}
+
+\title{Embedded Systems Dokumentation}
+\author{Von Christian Weber und Manuel Wurth}
+\date{\today}
+
+%Bilder scalen, wenn größer als Seite
+\usepackage[final]{graphicx}
+\makeatletter
+\def\ScaleIfNeeded{%
+	\ifdim\Gin@nat@width>\linewidth
+		\linewidth
+	\else
+		\Gin@nat@width
+	\fi
+}
+\makeatother
+
+\newcommand*{\quelle}{% 
+	\footnotesize Quelle: 
+}
+
+\newcommand*{\manu}{%
+	Programmiert von: Manuel Wurth
+}
+
+\newcommand*{\chris}{%
+	Programmiert von: Christian Weber
+}
+
+\begin{document}
+	
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Simulator}
+Weil die Gruppenzahl zu hoch ist, als dass ausreichend oft auf die Hardware zugegriffen werden könnte, haben wir uns entschlossen die Anlage zu simulieren. Als erstes wurde ein C-Simulator geschrieben, allerdings hat sich nach einiger Zeit herausgestellt, dass dieser für eine genauere Analyse von Fehlern unvorteilhaft ist. Deshalb wurde die Entwicklung nach einiger Zeit eingestellt und ein Java-Simulator mit grafischer Oberfläche entwickelt.
+\subsection{C-Simulator (verworfen)}
+\manu
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\ScaleIfNeeded]{Bilder/C-Simulator.png}
+	\caption{Der C-Simulator}
+	\label{fig:C-Simulator}
+\end{figure} \ \\
+\noindent Die Ausgabe des Simulators ist in Abbildung \ref{fig:C-Simulator} dargestellt. Ziel war es, die Anlage mit allen relevanten Informationen mithilfe von ASCII-Zeichen darzustellen. Darunter alle Lichtschranken, \textit{Flags}, die anzeigen ob eine Station gerade belegt ist (pre), die beiden Pusher mit ihren Daten und die beiden Werkzeuge. \\ \\
+Der Simulator war ursprünglich nur für Situationen geplant, an denen jede Station höchstens ein Werkstück bearbeitet. Dafür war die Darstellung noch ausreichend und die Logik konnte getestet werden. Für mehr als ein Werkstück pro Station wird die Darstellung aber schnell sehr unübersichtlich, deshalb haben wir uns dazu entschieden an einer grafischen Lösung zu arbeiten. Dieser Simulator wird also nicht mehr verwendet, deshalb wird hier auf Codebeispiele verzichtet, auch um Platz für andere Teilbereiche zu sparen, die tatsächlich zum Einsatz kommen.
+
+\subsection{Java-Simulator}
+\chris
+\section{Modi (States)}
+TODO: Bild von Automaten?
+\subsection{Not Aus}
+\chris
+\subsection{Diagnose}
+\chris
+\subsection{Pause}
+\subsection{Inbetriebnahme}
+\subsection{Normalbetrieb}
+\manu
+\subsubsection{Werkstücke und Positionen}
+\subsubsection{Pusher}
+\subsubsection{Fräsen und Bohren}
+\subsubsection{Stauerkennung}
+\subsubsection{Störungsfälle erkennen}
+\section{Kommunikation}
+
+\end{document}
