@@ -48,6 +48,7 @@ typedef struct
     short isTMRunning;
     short isToolRunning;
     short timeout;
+    short updatedPosInToolTime;
 } ToolStage;
 
 typedef struct
@@ -63,6 +64,18 @@ typedef struct
     short isChecking;
     short timeout;
 } StageSix;
+
+typedef struct
+{
+    short LB1_2;
+    short LB2_3;
+    short LB3_4;
+    short LB4_5;
+    short LB1_2_count;
+    short LB2_3_count;
+    short LB3_4_count;
+    short LB4_5_count;
+} Timeouts;
 #endif // __PROGRAMM
 
 extern TotalSystem totalSystem;
@@ -72,6 +85,7 @@ extern ToolStage stageThree;
 extern ToolStage stageFour;
 extern PusherStage stageFive;
 extern StageSix stageSix;
+extern Timeouts timeouts;
 
 extern void executeProgram();
 

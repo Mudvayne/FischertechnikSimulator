@@ -2,7 +2,7 @@
 
 void timeout(short stage)
 {
-		/*
+    /*
 	#ifndef ON_TARGET
 		system("cls");
 	#endif
@@ -54,7 +54,7 @@ void computeFirstTreadmill()
             {
                 if(stageOne.itemPositions[i] == -1)
                 {
-                    stageOne.itemPositions[i] = 0;
+                    stageOne.itemPositions[i] = -2; //position will be set at second LB
                     break;
                 }
             }
@@ -64,21 +64,8 @@ void computeFirstTreadmill()
     {
         //item left first light barrier
         stageOne.firstLightBarrierBefore = 0;
+        //TODO: Timeout
         stageOne.timeout += 1;
-
-        //update position to correct value
-        short smallestPosition = TM1_RUNTIME;
-        short item;
-        short i = 0;
-        for( i ; i < 3 ; i++)
-        {
-            if(stageOne.itemPositions[i] > 0 && stageOne.itemPositions[i] < smallestPosition)
-            {
-                item = i;
-                smallestPosition = stageOne.itemPositions[i];
-            }
-        }
-        stageOne.itemPositions[item] = TM1_RUNTIME * 0.2;
     }
 
     if(stageOne.waitTime > 0)
@@ -95,34 +82,31 @@ void computeFirstTreadmill()
     {
         if(stageOne.secondLightBarrierBefore == 1)
         {
-					  // item left LB2
+            // item left LB2
             stageOne.secondLightBarrierBefore = 0;
             stageOne.hasItemPassedSecondLB = 1;
             stageOne.waitTime = STAGE_ONE_COOLDOWN_AFTER_SECOND_LB;
             stageOne.messureTimeBetweenItems = 1;
-				}
+        }
     }
     else
     {
-				if(stageOne.secondLightBarrierBefore == 0)
-				{
-						//new item
-						stageOne.secondLightBarrierBefore = 1;
-						
-						//update position to correct value
-						short biggestPosition = 0;
-						short item;
-						short i = 0;
-						for( i ; i < 3 ; i++)
-						{
-								if(stageOne.itemPositions[i] > +biggestPosition)
-								{
-										item = i;
-										biggestPosition = stageOne.itemPositions[i];
-								}
-						}
-						stageOne.itemPositions[item] = TM1_RUNTIME * PERCENTAGE_OF_TM_AT_LB1;
-				}
+        if(stageOne.secondLightBarrierBefore == 0)
+        {
+            //new item
+            stageOne.secondLightBarrierBefore = 1;
+
+            //update position to correct value
+            short i = 0;
+            for( i ; i < 3 ; i++)
+            {
+                if(stageOne.itemPositions[i] == -2)
+                {
+                    stageOne.itemPositions[i] = TM1_RUNTIME * LB2_POS;
+                    break;
+                }
+            }
+        }
     }
 
     //should it run?
@@ -153,7 +137,7 @@ void computeFirstTreadmill()
 
 void computeFirstPlate()
 {
-    // is stage ready?
+    //is stage ready?
     if(stageTwo.isOccupied || getFirstPusher()->isBackTriggerActivated != 1)
     {
         stageTwo.isReady = 0;
@@ -213,7 +197,7 @@ void computeSecondTreadmill()
         {
             if(stageThree.itemPositions[i] == -1)
             {
-                stageThree.itemPositions[i] = 0;
+                stageThree.itemPositions[i] = -2;
                 break;
             }
         }
@@ -227,8 +211,7 @@ void computeSecondTreadmill()
         short i = 0;
         for( i ; i < 3 ; i++)
         {
-            int pos = stageThree.itemPositions[i];
-            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
+            if(stageThree.itemPositions[i] == -2)
             {
                 stageThree.isReady = 0;
                 break;
@@ -260,19 +243,20 @@ void computeSecondTreadmill()
                     stageFour.timeout = 1;
                 }
 
-                //update item pos to correct value
-                int diff = TM2_RUNTIME;
-                short item;
-                short i = 0;
-                for( i ; i < 3 ; i++)
+                //update position if not already done
+                if(stageThree.updatedPosInToolTime == 0)
                 {
-                    if(abs(stageThree.itemPositions[i] - (TM2_RUNTIME * 0.65)) < diff)
+                    short i = 0;
+                    for( i ; i < 3 ; i++)
                     {
-                        diff = abs(stageThree.itemPositions[i] - (TM2_RUNTIME * 0.65));
-                        item = i;
+                        if(stageThree.itemPositions[i] == -2)
+                        {
+                            stageThree.itemPositions[i] = TM2_RUNTIME * TOOL_LB_POS;
+                            break;
+                        }
                     }
+                    stageThree.updatedPosInToolTime = 1;
                 }
-                stageThree.itemPositions[item] = TM2_RUNTIME * 0.65;
             }
         }
         else
@@ -286,6 +270,7 @@ void computeSecondTreadmill()
                     stageThree.isToolTime = 1;
                     stageThree.tMRuntimeLeftForCentering = TRAVERSE_TIME_AFTER_CENTERED_LB;
                     stageThree.toolRuntimeLeft = MILL_TIME;
+                    stageThree.updatedPosInToolTime = 0;
                 }
             }
             else
@@ -314,7 +299,7 @@ void computeSecondTreadmill()
     for( i ; i < 3 ; i++)
     {
         //wait for next stage?
-        if((stageThree.itemPositions[i] >= (TM2_RUNTIME * 0.65)) && stageThree.hasItemPassedLightBarrier && stageFour.isReady == 0)
+        if((stageThree.itemPositions[i] >= (TM2_RUNTIME * TOOL_STAGE_WAIT_POS)) && stageFour.isReady == 0)
         {
             stageThree.isTMRunning = 0;
             stageFour.timeout = -1;
@@ -322,7 +307,7 @@ void computeSecondTreadmill()
         }
 
         //does item leave stage?
-        if((stageThree.itemPositions[i] > TM2_RUNTIME) && stageThree.hasItemPassedLightBarrier)
+        if(stageThree.itemPositions[i] > TM2_RUNTIME)
         {
             stageThree.itemCount--;
             stageThree.itemCountBefore--;
@@ -331,6 +316,7 @@ void computeSecondTreadmill()
             stageThree.hasItemPassedLightBarrier = 0;
         }
     }
+
 }
 
 void computeThirdTreadmill()
@@ -340,7 +326,7 @@ void computeThirdTreadmill()
     {
         stageFour.timeout = 0;
     }
-    if(stageThree.timeout > 0)
+    if(stageFour.timeout > 0)
     {
         stageFour.timeout += totalSystem.timeDiffSinceLastCall;
     }
@@ -360,7 +346,7 @@ void computeThirdTreadmill()
         {
             if(stageFour.itemPositions[i] == -1)
             {
-                stageFour.itemPositions[i] = 0;
+                stageFour.itemPositions[i] = -2;
                 break;
             }
         }
@@ -374,8 +360,7 @@ void computeThirdTreadmill()
         short i = 0;
         for( i ; i < 3 ; i++)
         {
-            int pos = stageFour.itemPositions[i];
-            if(pos >= 0 && pos <= 0 + EMPTY_SPACE_TO_BE_READY)
+            if(stageFour.itemPositions[i] == -2)
             {
                 stageFour.isReady = 0;
                 break;
@@ -404,22 +389,23 @@ void computeThirdTreadmill()
                     stageFour.isToolRunning = 0;
                     stageFour.isTMRunning = 1;
                     stageFour.toolRuntimeLeft = 0;
-                    stageFour.timeout = 1;
+                    stageSix.timeout = 1;
                 }
 
-                //update item pos to correct value
-                int diff = TM3_RUNTIME;
-                short item;
-                short i = 0;
-                for( i ; i < 3 ; i++)
+                //update position if not already done
+                if(stageFour.updatedPosInToolTime == 0)
                 {
-                    if(abs(stageFour.itemPositions[i] - (TM3_RUNTIME * 0.65)) < diff)
+                    short i = 0;
+                    for( i ; i < 3 ; i++)
                     {
-                        diff = abs(stageFour.itemPositions[i] - (TM3_RUNTIME * 0.65));
-                        item = i;
+                        if(stageFour.itemPositions[i] == -2)
+                        {
+                            stageFour.itemPositions[i] = TM3_RUNTIME * TOOL_LB_POS;
+                            break;
+                        }
                     }
+                    stageFour.updatedPosInToolTime = 1;
                 }
-                stageFour.itemPositions[item] = TM3_RUNTIME * 0.65;
             }
         }
         else
@@ -432,7 +418,8 @@ void computeThirdTreadmill()
                     stageFour.lightBarrierBefore = 1;
                     stageFour.isToolTime = 1;
                     stageFour.tMRuntimeLeftForCentering = TRAVERSE_TIME_AFTER_CENTERED_LB;
-                    stageFour.toolRuntimeLeft = DRILL_TIME;
+                    stageFour.toolRuntimeLeft = MILL_TIME;
+                    stageFour.updatedPosInToolTime = 0;
                 }
             }
             else
@@ -461,21 +448,20 @@ void computeThirdTreadmill()
     for( i ; i < 3 ; i++)
     {
         //wait for next stage?
-        if((stageFour.itemPositions[i] >= (TM3_RUNTIME * 0.65)) && stageFour.hasItemPassedLightBarrier && stageFive.isReady == 0)
+        if((stageFour.itemPositions[i] >= (TM3_RUNTIME * TOOL_STAGE_WAIT_POS)) && stageFive.isReady == 0)
         {
             stageFour.isTMRunning = 0;
-            stageFour.timeout = -1;
+            stageSix.timeout = -1;
             break;
         }
 
         //does item leave stage?
-        if((stageFour.itemPositions[i] > TM3_RUNTIME) && stageFour.hasItemPassedLightBarrier)
+        if(stageFour.itemPositions[i] > TM3_RUNTIME)
         {
             stageFour.itemCount--;
             stageFour.itemCountBefore--;
             stageFour.itemPositions[i] = -1;
-            stageFive.isOccupied++;
-            stageFour.hasItemPassedLightBarrier = 0;
+            stageFive.isOccupied = 1;
         }
     }
 }
@@ -584,9 +570,9 @@ void computeFourthTredmill()
     if(getFifthLightBarrier()->isBlocked == 1)
     {
         stageSix.lightBarrierBlockedTime += totalSystem.timeDiffSinceLastCall;
-        if(stageSix.lightBarrierBlockedTime >= STAGE_SIX_LB_BLOCK_FOR_FULL + 1000)
+        if(stageSix.lightBarrierBlockedTime >= STAGE_SIX_LB_BLOCK_FOR_FULL)
         {
-            stageSix.lightBarrierBlockedTime = STAGE_SIX_LB_BLOCK_FOR_FULL + 1000;
+            stageSix.lightBarrierBlockedTime = STAGE_SIX_LB_BLOCK_FOR_FULL;
         }
         if(stageSix.lightBarrierBefore == 0)
         {
