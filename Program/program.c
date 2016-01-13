@@ -5,8 +5,7 @@
 #include "defines.h"
 
 TotalSystem totalSystem =   {.itemsInSystem = 0, .timeDiffSinceLastCall = 0};
-StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .messureTimeBetweenItems = 0, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0,
-                             .hasItemPassedSecondLB = 0, .waitTime = 0};
+StageOne stageOne =         {.isRunning = 0, .firstLightBarrierBefore = 0, .itemCount = 0, .itemPositions = {-1, -1, -1}, .timeout = 0, .hasItemPassedSecondLB = 0};
 PusherStage stageTwo =      {.pusherDir = 1, .isOccupied = 0, .isReady = 1};
 ToolStage stageThree =      {.isReady = 1, .itemPositions = {-1, -1, -1}, .itemCount = 0, .itemCountBefore = 0,
                              .lightBarrierBefore = 0, .isToolTime = 0, .tMRuntimeLeftForCentering = 0, .toolRuntimeLeft = 0,

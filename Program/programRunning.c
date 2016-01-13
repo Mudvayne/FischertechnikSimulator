@@ -26,19 +26,7 @@ void timeout(short stage)
 void computeFirstTreadmill()
 {
     // check if timeout
-    if(getSecondLightBarrier()->isBlocked)
-    {
-        stageOne.timeout = 0;
-        stageThree.timeout = 1;
-    }
-    if(stageOne.timeout > 0)
-    {
-        stageOne.timeout += totalSystem.timeDiffSinceLastCall;
-    }
-    if(stageOne.timeout >= TIMEOUT)
-    {
-        timeout(1);
-    }
+
 
     //new items in stage?
     if(getFirstLightBarrier()->isBlocked == 1)
@@ -68,15 +56,6 @@ void computeFirstTreadmill()
         stageOne.timeout += 1;
     }
 
-    if(stageOne.waitTime > 0)
-    {
-        stageOne.waitTime -= totalSystem.timeDiffSinceLastCall;
-    }
-    else
-    {
-        stageOne.waitTime = 0;
-    }
-
     //has a item passed LB2?
     if(getSecondLightBarrier()->isBlocked == 0)
     {
@@ -85,8 +64,6 @@ void computeFirstTreadmill()
             // item left LB2
             stageOne.secondLightBarrierBefore = 0;
             stageOne.hasItemPassedSecondLB = 1;
-            stageOne.waitTime = STAGE_ONE_COOLDOWN_AFTER_SECOND_LB;
-            stageOne.messureTimeBetweenItems = 1;
         }
     }
     else
