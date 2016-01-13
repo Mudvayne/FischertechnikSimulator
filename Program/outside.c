@@ -141,7 +141,7 @@ void setSiteStateStatus(const ComType com, const SetSiteStateStatus *data) {
 	SiteState newState = convertFromIntToStateEnum(data->newStatus);
 	printf("setSiteStateStaus %d\n", newState);
 	
-	setSiteState(newState);
+	setSiteState(newState, 0);
 }
 
 void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {

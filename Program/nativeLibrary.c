@@ -152,7 +152,7 @@ JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_call
   (JNIEnv *env, jobject object, jint newState) {
 	SiteState state = convertFromIntToStateEnum(newState);
 	
-	setSiteState(state);
+	setSiteState(state, 0);
 }
 
 JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callGetSiteState
