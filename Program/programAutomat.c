@@ -47,7 +47,7 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
     switch(currentState) {
     case RUNNING:
         return &runningComputeActions;
-		
+
     case DIAGNOSTIC:
         return &debugComputeActions;
 
@@ -58,7 +58,7 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
 		return &startComputeActions;
 		
     default:
-        setSiteState(PANIC_SWITCH);
+        setSiteState(PANIC_SWITCH, 200);
         return &panicComputeActions;
     }
 }
@@ -77,7 +77,7 @@ void (*resolveHandleActorsFor(SiteState currentState))(void) {
 		return &startHandleActors;
 		
     default:
-        setSiteState(PANIC_SWITCH);
+        setSiteState(PANIC_SWITCH, 200);
         return &panicHandleActors;
     }
 }

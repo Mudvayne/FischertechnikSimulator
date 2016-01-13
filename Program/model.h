@@ -23,7 +23,7 @@ extern LightBarrier* getFourthLightBarrier();
 extern LightBarrier* getFifthLightBarrier();
 
 extern SiteState getSiteState();
-extern void setSiteState(SiteState newState);
+extern void setSiteState(SiteState newState, short errCode);
 
 extern Treadmill* resolveTreadmill(uint8_t id);
 extern Tool* resolveTool(uint8_t id);

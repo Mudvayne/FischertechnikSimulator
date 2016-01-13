@@ -18,6 +18,7 @@ Tool firstTool = {.id=0, .isRunning=0};
 Tool secondTool = {.id=1, .isRunning=0};
 
 SiteState currentState = RUNNING;
+short errorCode;
 
 Treadmill* getFirstTreadmill()
 {
@@ -89,10 +90,12 @@ SiteState getSiteState()
     return currentState;
 }
 
-void setSiteState(SiteState newState)
+void setSiteState(SiteState newState, short errCode)
 {
     currentState = newState;
+    errorCode = errCode;
 }
+
 
 void equalTreadmill(uint8_t id, Treadmill *treadmill, Treadmill **target) {
 	if(id == treadmill->id) {
@@ -102,12 +105,12 @@ void equalTreadmill(uint8_t id, Treadmill *treadmill, Treadmill **target) {
 
 Treadmill* resolveTreadmill(uint8_t id) {
 	Treadmill *desiredMill = 0;
-	
+
 	equalTreadmill(id, getFirstTreadmill(), &desiredMill);
 	equalTreadmill(id, getSecondTreadmill(), &desiredMill);
 	equalTreadmill(id, getThirdTreadmill(), &desiredMill);
 	equalTreadmill(id, getFourthTreadmill(), &desiredMill);
-	
+
 	return desiredMill;
 }
 
@@ -119,10 +122,10 @@ void equalTool(uint8_t id, Tool *tool, Tool **target) {
 
 Tool* resolveTool(uint8_t id) {
 	Tool *desiredTool = 0;
-	
+
 	equalTool(id, getFirstTool(), &desiredTool);
 	equalTool(id, getSecondTool(), &desiredTool);
-	
+
 	return desiredTool;
 }
 
@@ -134,10 +137,10 @@ void equalPusher(uint8_t id, Pusher *pusher, Pusher **target) {
 
 Pusher* resolvePusher(uint8_t id) {
 	Pusher *desiredPusher = 0;
-	
+
 	equalPusher(id, getFirstPusher(), &desiredPusher);
 	equalPusher(id, getSecondPusher(), &desiredPusher);
-	
+
 	return desiredPusher;
 }
 
@@ -149,12 +152,12 @@ void equalLightBarrier(uint8_t id, LightBarrier *lightBarrier, LightBarrier **ta
 
 LightBarrier* resolveLightBarrier(uint8_t id) {
 	LightBarrier *desiredLightBarrier = 0;
-	
+
 	equalLightBarrier(id, getFirstLightBarrier(), &desiredLightBarrier);
 	equalLightBarrier(id, getSecondLightBarrier(), &desiredLightBarrier);
 	equalLightBarrier(id, getThirdLightBarrier(), &desiredLightBarrier);
 	equalLightBarrier(id, getFourthLightBarrier(), &desiredLightBarrier);
 	equalLightBarrier(id, getFifthLightBarrier(), &desiredLightBarrier);
-	
+
 	return desiredLightBarrier;
 }
