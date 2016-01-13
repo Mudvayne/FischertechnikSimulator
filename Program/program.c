@@ -50,7 +50,7 @@ void handlePanicSwitch() {
 	uint8_t secondBackTrigger = getSecondPusher()->isBackTriggerActivated;
 
 	if(firstFrontTrigger && firstBackTrigger && secondFrontTrigger && secondBackTrigger) {
-		setSiteState(PANIC_SWITCH);
+		setSiteState(PANIC_SWITCH, 100);
 	}
 }
 

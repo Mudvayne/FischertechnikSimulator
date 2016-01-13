@@ -9,7 +9,7 @@
     #define TRAVERSE_TIME_AFTER_CENTERED_LB             70
     #define DRILL_TIME                                  3000
     #define MILL_TIME                                   2000
-    #define TIMEOUT                                     7000
+    #define TIMEOUT                                     5000
     #define STAGE_SIX_LB_BLOCK_FOR_FULL                	2000
     #define STAGE_SIX_CHECK_INTERVAL                    3000
     #define STAGE_SIX_RUN_TM_FOR_CHECK_TIME     		2000
@@ -24,7 +24,7 @@
     #define TRAVERSE_TIME_AFTER_CENTERED_LB             600
     #define DRILL_TIME                                  3000
     #define MILL_TIME                                   2000
-    #define TIMEOUT                                     15000
+    #define TIMEOUT                                     10000
     #define STAGE_SIX_LB_BLOCK_FOR_FULL                 1500
     #define STAGE_SIX_CHECK_INTERVAL                    5000
     #define STAGE_SIX_RUN_TM_FOR_CHECK_TIME             2000
