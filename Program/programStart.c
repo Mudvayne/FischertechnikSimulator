@@ -4,7 +4,8 @@
 
 enum InnerState {
 	SAFE_POSITION,
-	DEPLETE
+	DEPLETE,
+	FOOBAR
 };
 
 enum InnerState state;
@@ -19,19 +20,31 @@ void startComputeActions() {
 		case SAFE_POSITION:
 			utilComputeActionsForSafePosition();
 			break;
-	}		
+        case DEPLETE:
+            utilComputeActionsForDeplete();
+            break;
+	}
 }
 
 void startHandleActors() {
 	switch(state) {
 		case SAFE_POSITION:
 			utilHandleActorsForSafePosition();
-			
+
 			if(utilSafePositionDone()) {
 				state = DEPLETE;
+				utilInitDeplete();
 				printf("DEPLETE");
 			}
-	
+
 			break;
+
+        case DEPLETE:
+            utilHandleActorsForDeplete();
+
+            if(utilDepleteDone()) {
+                state = FOOBAR;
+                printf("FOOOOBAR");
+            }
 	}
 }
