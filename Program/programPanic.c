@@ -1,5 +1,9 @@
 #include "program.h"
 
+void panicInit() {
+    //DO NOTHING!
+}
+
 void panicComputeActions()
 {
     //DO NOTHING!

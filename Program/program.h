@@ -2,6 +2,7 @@
 #include "model.h"
 #include "programAutomat.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 //******************************************
 //****** VARIABLES FOR STATE MACHINE *******
@@ -86,6 +87,16 @@ extern ToolStage stageFour;
 extern PusherStage stageFive;
 extern StageSix stageSix;
 extern Timeouts timeouts;
+
+extern void utilInitSafePosition();
+extern void utilComputeActionsForSafePosition();
+extern void utilHandleActorsForSafePosition();
+extern bool utilSafePositionDone();
+
+extern void utilInitDeplete();
+extern void utilComputeActionsForDeplete();
+extern void utilHandleActorsForDeplete();
+extern bool utilDepleteDone();
 
 extern void executeProgram();
 
