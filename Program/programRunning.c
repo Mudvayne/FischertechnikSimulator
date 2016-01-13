@@ -114,7 +114,7 @@ void computeFirstTreadmill()
     if(stageOne.itemCount > 0)
     {
         stageOne.isRunning = 1;
-        if((getSecondLightBarrier()->isBlocked && stageOne.waitTime > 0) || (getSecondLightBarrier()->isBlocked && stageTwo.isReady == 0))
+        if(getSecondLightBarrier()->isBlocked && stageTwo.isReady == 0)
         {
             stageOne.isRunning = 0;
         }
