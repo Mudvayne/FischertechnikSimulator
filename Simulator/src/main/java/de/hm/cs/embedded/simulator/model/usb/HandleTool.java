@@ -1,7 +1,5 @@
 package de.hm.cs.embedded.simulator.model.usb;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
-
 import java.nio.ByteBuffer;
 
 /**

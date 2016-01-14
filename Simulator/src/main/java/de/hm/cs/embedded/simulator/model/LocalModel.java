@@ -67,6 +67,20 @@ public abstract class LocalModel implements ConstructionSite {
         Validate.isTrue(objects.size() == count);
     }
 
+    protected void updatePanicButtonPressed() {
+        Pusher pusherA = getPushers().get(0);
+        Pusher pusherB = getPushers().get(1);
+
+        boolean pusherATriggered = pusherA.getUpperTrigger().isTriggered() && pusherA.getLowerTrigger().isTriggered();
+        boolean pusherBTriggered = pusherB.getUpperTrigger().isTriggered() && pusherB.getLowerTrigger().isTriggered();
+
+        if(pusherATriggered && pusherBTriggered) {
+            pressPanicSwitch();
+        } else {
+            releasePanicSwitch();
+        }
+    }
+
     public void pressPanicSwitch() {
         if(!panicSwitchPressed) {
             blockLowerTrigger(getPushers().get(0));

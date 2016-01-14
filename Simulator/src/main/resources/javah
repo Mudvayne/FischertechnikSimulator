@@ -1,2 +1,3 @@
-cd /home/qriz/OWN-SEU/new_codebase/Simulator/src/main/java/
+#Documentation to generate JNI-C-Interface
+cd /path/to/Simulator/src/main/java/
 javah de.hm.cs.embedded.simulator.model.NativeLibrary

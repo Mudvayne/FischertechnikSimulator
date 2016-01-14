@@ -20,7 +20,7 @@ public interface Logic {
 
     SiteState getCurrentSiteState();
 
-    void initConstructionSite();
+    void initConstructionSite(String presetComponents);
 
     void addComponent();
 

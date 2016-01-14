@@ -2,10 +2,6 @@ package de.hm.cs.embedded.simulator;
 
 import de.hm.cs.embedded.simulator.logic.Logic;
 import de.hm.cs.embedded.simulator.logic.Simulation;
-import de.hm.cs.embedded.simulator.logic.objects.Pusher;
-import de.hm.cs.embedded.simulator.logic.objects.SiteState;
-import de.hm.cs.embedded.simulator.logic.objects.Tool;
-import de.hm.cs.embedded.simulator.model.CModel;
 import de.hm.cs.embedded.simulator.model.ConstructionSite;
 import de.hm.cs.embedded.simulator.model.USBModel;
 
@@ -17,7 +13,7 @@ public class TestApp {
     public static void main(String[] args) {
         ConstructionSite site = new USBModel();
         Logic logic = new Simulation(site);
-        logic.initConstructionSite();
+        logic.initConstructionSite(null);
 
 //        site.handleTool(site.getTools().get(0), true);
 //        site.handleTool(site.getTools().get(0), false);

@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.rmi.server.ExportException;
 
 /**
  * Created by qriz on 1/6/16.
@@ -152,6 +151,8 @@ public class USBModel extends LocalModel {
         getPushers().get(1).getLowerTrigger().setTriggered(response.isSecondPusherBackActivated());
 
         siteState = convertIntToState(siteStateResponse.getCurrentStatus());
+
+        updatePanicButtonPressed();
     }
 
     public void blockUpperTrigger(Pusher pusher) {

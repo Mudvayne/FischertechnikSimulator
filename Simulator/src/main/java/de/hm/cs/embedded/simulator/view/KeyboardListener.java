@@ -48,6 +48,7 @@ public class KeyboardListener implements KeyListener {
             logic.changeSiteState(SiteState.STOP);
         }
 
+        //Panic-Switch
         if(keyEvent.getKeyChar() == 'p') {
             if(site.isPanicSwitchPressed()) {
                 site.releasePanicSwitch();
@@ -91,6 +92,18 @@ public class KeyboardListener implements KeyListener {
 
         } else if (keyEvent.getKeyChar() == 'j') {
             site.handleTreadmill(site.getTreadmills().get(3), !site.getTreadmills().get(3).isActivated());
+        }
+
+        if (keyEvent.getKeyChar() == 'k') {
+            site.blockLightBarrier(site.getLightBarriers().get(0));
+        } else if (keyEvent.getKeyChar() == 'l') {
+            site.blockLightBarrier(site.getLightBarriers().get(1));
+        } else if (keyEvent.getKeyChar() == 'ö' || keyEvent.getKeyChar() == ';') {
+            site.blockLightBarrier(site.getLightBarriers().get(2));
+        } else if (keyEvent.getKeyChar() == 'ä' || keyEvent.getKeyChar() == '\'') {
+            site.blockLightBarrier(site.getLightBarriers().get(3));
+        } else if (keyEvent.getKeyChar() == '#' || keyEvent.getKeyChar() == '\\') {
+            site.blockLightBarrier(site.getLightBarriers().get(4));
         }
     }
 

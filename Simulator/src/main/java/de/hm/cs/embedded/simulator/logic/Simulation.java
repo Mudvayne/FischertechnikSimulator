@@ -2,8 +2,8 @@ package de.hm.cs.embedded.simulator.logic;
 
 import de.hm.cs.embedded.simulator.logic.objects.*;
 import de.hm.cs.embedded.simulator.model.ConstructionSite;
+import org.apache.commons.lang.StringUtils;
 
-import javax.print.attribute.standard.MediaPrintableArea;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +52,7 @@ public class Simulation implements Logic {
         this.constructionSite = constructionSite;
     }
 
-    public void initConstructionSite() {
+    public void initConstructionSite(String presetComponents) {
         components = new ArrayList<Component>();
         int id = 0;
 
@@ -89,10 +89,33 @@ public class Simulation implements Logic {
         );
 
         constructionSite.init(lightBarriers, treadmills, pushers, tools);
+
+        addComponents(presetComponents);
+    }
+
+    public void addComponents(String componentList) {
+        if(StringUtils.isBlank(componentList)) {
+            return;
+        }
+
+        String[] componentArray = componentList.split("\\|");
+
+        for(String component : componentArray) {
+            String[] coords = component.split(",");
+
+            int x = Integer.valueOf(coords[0]);
+            int y = Integer.valueOf(coords[1]);
+
+            addComponent(x, y);
+        }
     }
 
     public void addComponent() {
-        Component newComponent = new Component(componentCount, 90, 470);
+        addComponent(90, 470);
+    }
+
+    private void addComponent(int x, int y) {
+        Component newComponent = new Component(componentCount, x, y);
         boolean startOccupied = false;
         float smallestDistance = Float.MAX_VALUE;
 
