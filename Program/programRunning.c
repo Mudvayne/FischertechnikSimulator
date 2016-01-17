@@ -624,6 +624,25 @@ void computeFourthTredmill()
     }
 }
 
+void computeRestState()
+{
+    if(getSiteState() == REST)
+    {
+        stageOne.isRunning = 0;
+        stageThree.isTMRunning = 0;
+        stageFour.isTMRunning = 0;
+        stageSix.isRunning = 0;
+    }
+}
+
+void computeStopState()
+{
+    if(getSiteState() == STOP && getFirstLightBarrier()->isBlocked && stageOne.itemCount == 1)
+    {
+        stageOne.isRunning = 0;
+    }
+}
+
 void runningHandleActors() {
     Treadmill *treadmills[4] = {getFirstTreadmill(), getSecondTreadmill(), getThirdTreadmill(), getFourthTreadmill()};
     Tool *tools[2] = {getFirstTool(), getSecondTool()};
@@ -745,6 +764,8 @@ void runningComputeActions() {
     computeThirdTreadmill();
     computeSecondPlate();
     computeFourthTredmill();
+    computeRestState();
+    computeStopState();
 }
 
 void runningInit() {
