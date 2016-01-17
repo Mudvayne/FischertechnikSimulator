@@ -21,7 +21,12 @@ SiteState lastState = PANIC_SWITCH;
 void initNewState(SiteState currentState) {
 	switch(currentState) {
     case RUNNING:
-        runningInit();
+    case REST:
+    case STOP:
+        if(lastState != RUNNING && lastState != REST && lastState != STOP)
+        {
+            runningInit();
+        }
         break;
 
     case DIAGNOSTIC:
@@ -35,7 +40,6 @@ void initNewState(SiteState currentState) {
 	case START:
 		startInit();
 		break;
-
     }
 }
 
@@ -47,6 +51,8 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
 
     switch(currentState) {
     case RUNNING:
+    case REST:
+    case STOP:
         return &runningComputeActions;
 
     case DIAGNOSTIC:
@@ -67,7 +73,10 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
 void (*resolveHandleActorsFor(SiteState currentState))(void) {
     switch(currentState) {
     case RUNNING:
+    case REST:
+    case STOP:
         return &runningHandleActors;
+
     case DIAGNOSTIC:
         return &debugHandleActors;
 

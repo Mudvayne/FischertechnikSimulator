@@ -18,6 +18,7 @@ Tool firstTool = {.id=0, .isRunning=0};
 Tool secondTool = {.id=1, .isRunning=0};
 
 SiteState currentState = RUNNING;
+
 uint8_t errorCode;
 
 Treadmill* getFirstTreadmill()
@@ -95,6 +96,7 @@ void setSiteState(SiteState newState, uint8_t code)
     currentState = newState;
     errorCode = code;
 }
+
 
 uint8_t getErrorCode() {
     return errorCode;
