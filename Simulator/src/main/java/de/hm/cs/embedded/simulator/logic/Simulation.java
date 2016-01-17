@@ -52,6 +52,11 @@ public class Simulation implements Logic {
         this.constructionSite = constructionSite;
     }
 
+    @Override
+    public int getErrorCode() {
+        return constructionSite.getErrorCode();
+    }
+
     public void initConstructionSite(String presetComponents) {
         components = new ArrayList<Component>();
         int id = 0;
@@ -91,6 +96,11 @@ public class Simulation implements Logic {
         constructionSite.init(lightBarriers, treadmills, pushers, tools);
 
         addComponents(presetComponents);
+    }
+
+    @Override
+    public String decodeErrorCode(int errorCode) {
+        return constructionSite.decodeErrorCode(errorCode);
     }
 
     public void addComponents(String componentList) {

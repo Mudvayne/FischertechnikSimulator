@@ -20,6 +20,10 @@ public interface Logic {
 
     SiteState getCurrentSiteState();
 
+    int getErrorCode();
+
+    String decodeErrorCode(int errorCode);
+
     void initConstructionSite(String presetComponents);
 
     void addComponent();

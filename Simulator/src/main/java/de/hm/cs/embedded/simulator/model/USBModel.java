@@ -153,6 +153,7 @@ public class USBModel extends LocalModel {
         siteState = convertIntToState(siteStateResponse.getCurrentStatus());
 
         updatePanicButtonPressed();
+        errorCode = response.getErrorCode();
     }
 
     public void blockUpperTrigger(Pusher pusher) {

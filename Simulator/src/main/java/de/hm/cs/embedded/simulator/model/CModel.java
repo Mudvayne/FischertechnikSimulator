@@ -45,6 +45,8 @@ public class CModel extends LocalModel {
 
         siteState = convertIntToState(library.callGetSiteState());
         updatePanicButtonPressed();
+
+        errorCode = library.callGetErrorCode();
     }
 
     public void blockUpperTrigger(Pusher pusher) {

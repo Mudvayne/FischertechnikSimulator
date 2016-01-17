@@ -15,6 +15,7 @@ public class Window extends Frame {
     private Logic logic;
 
     private SiteState currentState;
+    private int currentErrorCode;
     private boolean panicButtonPressed;
     private java.util.List<Drawable> drawables;
     private java.util.List<Drawable> components;
@@ -28,8 +29,9 @@ public class Window extends Frame {
         this.logic = logic;
         this.currentState = logic.getCurrentSiteState();
         this.panicButtonPressed = false;
-        this.drawables = new ArrayList<Drawable>();
-        this.components = new ArrayList<Drawable>();
+        this.currentErrorCode = 0;
+        this.drawables = new ArrayList<>();
+        this.components = new ArrayList<>();
     }
 
     public void init() {
@@ -102,13 +104,18 @@ public class Window extends Frame {
             }
         }
 
-        if(currentState != logic.getCurrentSiteState()) {
+        if (currentState != logic.getCurrentSiteState()) {
             currentState = logic.getCurrentSiteState();
             someThingChanged = true;
         }
 
-        if(panicButtonPressed != logic.isPanicButtonPressed()) {
+        if (panicButtonPressed != logic.isPanicButtonPressed()) {
             panicButtonPressed = logic.isPanicButtonPressed();
+            someThingChanged = true;
+        }
+
+        if (currentErrorCode != logic.getErrorCode()) {
+            currentErrorCode = logic.getErrorCode();
             someThingChanged = true;
         }
 
@@ -133,6 +140,7 @@ public class Window extends Frame {
         graphics.setFont(new Font(Font.MONOSPACED, Font.BOLD, fontSize));
         graphics.setColor(Color.BLACK);
         graphics.drawString(siteState, fontSize, fontSize * 3);
+        graphics.drawString(logic.decodeErrorCode(currentErrorCode), fontSize, 2 * (fontSize * 2));
 
         graphics.setColor(panicButtonPressed ? Color.RED : Color.GREEN);
         graphics.fillOval(880, 40, 40, 40);

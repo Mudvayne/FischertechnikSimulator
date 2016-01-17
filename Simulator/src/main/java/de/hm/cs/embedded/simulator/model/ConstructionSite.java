@@ -21,7 +21,11 @@ public interface ConstructionSite {
 
     boolean isPanicSwitchPressed();
 
+    int getErrorCode();
+
     void init(List<LightBarrier> lightBarriers, List<Treadmill> treadmills, List<Pusher> pushers, List<Tool> tools);
+
+    String decodeErrorCode(int errorCode);
 
     void update();
 

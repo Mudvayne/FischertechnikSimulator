@@ -29,6 +29,8 @@ public class NativeLibrary {
     native void callSetSiteState(int state);
     native int callGetSiteState();
 
+    native int callGetErrorCode();
+
     native void callHandleTreadmill(int id, boolean activate);
     native void callHandleTool(int id, boolean activate);
     native void callHandlePusher(int id, boolean stop, boolean forward, boolean backward);

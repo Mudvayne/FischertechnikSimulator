@@ -11,8 +11,33 @@ public class GetWholeSiteStatusReturn extends Packet {
 
     private BitSet status;
 
+    //http://stackoverflow.com/questions/2473597/bitset-to-and-from-integer-long
+    public static BitSet convert(long value) {
+        BitSet bits = new BitSet();
+        int index = 0;
+        while (value != 0L) {
+            if (value % 2L != 0) {
+                bits.set(index);
+            }
+            ++index;
+            value = value >>> 1;
+        }
+        return bits;
+    }
+
+    public static long convert(BitSet bits) {
+        long value = 0L;
+        for (int i = 0; i < bits.length(); ++i) {
+            value += bits.get(i) ? (1L << i) : 0L;
+        }
+        return value;
+    }
+    //foobar
+
     public GetWholeSiteStatusReturn(int sequenceNumber) {
         super(4, FUNCTION_ID, sequenceNumber, false);
+
+        status = convert(1431655765);
     }
 
     public boolean isFirstTreadmillRunning() {
@@ -91,6 +116,16 @@ public class GetWholeSiteStatusReturn extends Packet {
         return status.get(18);
     }
 
+    public byte getErrorCode() {
+        BitSet bitSet = status.get(19, 19+8);
+
+        if(bitSet.equals(NULL_BITSET)) {
+            return 0;
+        } else {
+            return bitSet.toByteArray()[0];
+        }
+    }
+
     @Override
     public void fromByteArray(byte[] packet) {
         super.fromByteArray(packet);
@@ -102,7 +137,8 @@ public class GetWholeSiteStatusReturn extends Packet {
     public ByteBuffer toByteBuffer() {
         ByteBuffer messageBuffer = super.toByteBuffer();
 
-        messageBuffer.putInt(113);
+        int intStatus = (int) convert(status);
+        messageBuffer.putInt(intStatus);
 
         return messageBuffer;
     }
