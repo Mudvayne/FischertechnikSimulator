@@ -23,7 +23,6 @@ void initNewState(SiteState currentState) {
     case RUNNING:
     case REST:
     case STOP:
-        //todo: laststate is not set correctly so this is always false -> no init
         if(lastState != RUNNING && lastState != REST && lastState != STOP)
         {
             runningInit();
@@ -46,8 +45,8 @@ void initNewState(SiteState currentState) {
 
 void (*resolveComputeActionsFor(SiteState currentState))(void) {
 	if(currentState != lastState) {
-		lastState = currentState;
 		initNewState(currentState);
+        lastState = currentState;
 	}
 
     switch(currentState) {

@@ -646,7 +646,7 @@ computeErrorCases()
     // unexpected item
     if(stageSix.itemCount == 0 && getFifthLightBarrier()->isBlocked)
     {
-        unexpectedItem(6);
+        unexpectedItem(5);
     }
 }
 void runningHandleActors() {
