@@ -2,21 +2,6 @@
 
 void timeout(short stage)
 {
-    /*
-	#ifndef ON_TARGET
-		system("cls");
-	#endif
-
-		printf("Stage %d expected an item which never arrived.\n", stage);
-
-	stopTreadmill(getFirstTreadmill());
-	stopTreadmill(getSecondTreadmill());
-	stopTreadmill(getThirdTreadmill());
-	stopTreadmill(getFourthTreadmill());
-
-	stopTool(getFirstTool());
-	stopTool(getSecondTool());
-	*/
 	failure(stage * 10);
     setSiteState(PANIC_SWITCH, stage * 10);
 }
@@ -325,7 +310,17 @@ void computeSecondTreadmill()
     {
         timeout(3);
     }
-    if(getThirdLightBarrier()->isBlocked || stageThree.itemCount == 0)
+    short j = 0;
+    short isItemInFrontOfLB = 0;
+    for( j ; j < 3 ; j++)
+    {
+        if(stageThree.itemPositions[j] == -2)
+        {
+            isItemInFrontOfLB = 1;
+            break;
+        }
+    }
+    if(getThirdLightBarrier()->isBlocked || isItemInFrontOfLB == 0)
     {
         stageThree.timeout = 0;
     }
@@ -476,7 +471,17 @@ void computeThirdTreadmill()
     {
         timeout(4);
     }
-    if(getThirdLightBarrier()->isBlocked || stageFour.itemCount == 0)
+    short j = 0;
+    short isItemInFrontOfLB = 0;
+    for( j ; j < 3 ; j++)
+    {
+        if(stageFour.itemPositions[j] == -2)
+        {
+            isItemInFrontOfLB = 1;
+            break;
+        }
+    }
+    if(getFourthLightBarrier()->isBlocked || isItemInFrontOfLB == 0)
     {
         stageFour.timeout = 0;
     }
@@ -622,6 +627,7 @@ void computeFourthTredmill()
 void runningHandleActors() {
     Treadmill *treadmills[4] = {getFirstTreadmill(), getSecondTreadmill(), getThirdTreadmill(), getFourthTreadmill()};
     Tool *tools[2] = {getFirstTool(), getSecondTool()};
+    Pusher *pushers[2] = {getFirstPusher(), getSecondPusher()};
 
     //first stage
     if(stageOne.isRunning)
@@ -642,12 +648,11 @@ void runningHandleActors() {
     }
 
     //second stage
-    Pusher *firstPusher = getFirstPusher();
     switch(stageTwo.pusherDir)
     {
-        case 0: runBackwardsPusher(firstPusher); break;
-        case 1: stopPusher(firstPusher); break;
-        case 2: runForwardPusher(firstPusher); break;
+        case 0: runBackwardsPusher(pushers[0]); break;
+        case 1: stopPusher(pushers[0]); break;
+        case 2: runForwardPusher(pushers[0]); break;
     }
 
     //third stage
@@ -715,12 +720,11 @@ void runningHandleActors() {
     }
 
     //fifth stage
-    Pusher *secondPusher = getSecondPusher();
     switch(stageFive.pusherDir)
     {
-        case 0: runBackwardsPusher(secondPusher); break;
-        case 1: stopPusher(secondPusher); break;
-        case 2: runForwardPusher(secondPusher); break;
+        case 0: runBackwardsPusher(pushers[1]); break;
+        case 1: stopPusher(pushers[1]); break;
+        case 2: runForwardPusher(pushers[1]); break;
     }
 
     //sixth stage
@@ -756,11 +760,9 @@ void runningInit() {
     stageOne.timeout = 0;
     stageOne.hasItemPassedSecondLB = 0;
 
-
     stageTwo.pusherDir = 1;
     stageTwo.isOccupied = 0;
     stageTwo.isReady = 1;
-
 
     stageThree.isReady = 1;
     stageThree.itemPositions[0] = -1;
@@ -777,7 +779,6 @@ void runningInit() {
     stageThree.timeout = 0;
     stageThree.hasItemPassedLightBarrier = 0;
     stageThree.updatedPosInToolTime = 0;
-
 
     stageFour.isReady = 1;
     stageFour.itemPositions[0] = -1;
