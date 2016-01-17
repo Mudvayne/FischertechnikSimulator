@@ -54,6 +54,13 @@ void utilShiftBit(uint8_t isActive, uint32_t shiftWidth, uint32_t *status) {
 	(*status) = (*status) | (isActive << shiftWidth);
 }
 
+void utilShiftByte(uint8_t value, uint32_t shiftWidth, uint32_t *status) {
+	uint32_t bitField = value;
+	bitField = bitField << shiftWidth;
+
+	(*status) = (*status) | (bitField);
+}
+
 //#######################
 //##IMPLEMENTED METHODS##
 //#######################
@@ -136,7 +143,7 @@ void getSiteStateStatus(const ComType com, const GetSiteSateStatus *data) {
 void setSiteStateStatus(const ComType com, const SetSiteStateStatus *data) {
 	SiteState newState = convertFromIntToStateEnum(data->newStatus);
 	
-	setSiteState(newState, 0);
+	setSiteState(newState, CODE_NO_ERROR);
 }
 
 void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
@@ -180,6 +187,8 @@ void getWholeSiteStatus(const ComType com, const GetWholeSiteStatus *data) {
 	utilShiftBit(pusher->isFrontTriggerActivated,	17, &status);
 	utilShiftBit(pusher->isBackTriggerActivated,	18, &status);
 	
+	utilShiftByte(getErrorCode(), 					19, &status);
+
 	//Now build and send response.
 	GetWholeSiteStatusReturn response;
 	

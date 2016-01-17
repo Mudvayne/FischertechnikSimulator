@@ -5,6 +5,10 @@
 #include "tool.h"
 #include "site.h"
 
+#define CODE_NO_ERROR 0
+#define CODE_PANIC_SWITCH 100
+#define CODE_NOT_IMPLEMENTED 200
+
 extern Treadmill* getFirstTreadmill();
 extern Treadmill* getSecondTreadmill();
 extern Treadmill* getThirdTreadmill();
@@ -23,7 +27,8 @@ extern LightBarrier* getFourthLightBarrier();
 extern LightBarrier* getFifthLightBarrier();
 
 extern SiteState getSiteState();
-extern void setSiteState(SiteState newState, short errCode);
+extern void setSiteState(SiteState newState, uint8_t code);
+extern uint8_t getErrorCode();
 
 extern Treadmill* resolveTreadmill(uint8_t id);
 extern Tool* resolveTool(uint8_t id);

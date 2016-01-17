@@ -145,6 +145,14 @@ JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_call
 
 /*
  * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
+ * Method:    callGetErrorCode
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callGetErrorCode
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     de_hm_cs_embedded_simulator_model_NativeLibrary
  * Method:    callHandleTreadmill
  * Signature: (IZ)V
  */

@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DWITH_MAKE_FILE" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -58,6 +59,12 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="programRunning.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="programStart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="programUtil.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="pusher.h" />

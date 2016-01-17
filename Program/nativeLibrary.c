@@ -152,7 +152,7 @@ JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_call
   (JNIEnv *env, jobject object, jint newState) {
 	SiteState state = convertFromIntToStateEnum(newState);
 	
-	setSiteState(state, 0);
+	setSiteState(state, CODE_NO_ERROR);
 }
 
 JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callGetSiteState
@@ -160,6 +160,11 @@ JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_call
 	SiteState currentState = getSiteState();
 	
 	return convertFromStateEnumToInt(currentState);
+}
+
+JNIEXPORT jint JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callGetErrorCode
+  (JNIEnv *env, jobject object) {
+	return getErrorCode();
 }
 
 JNIEXPORT void JNICALL Java_de_hm_cs_embedded_simulator_model_NativeLibrary_callHandleTreadmill

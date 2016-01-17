@@ -51,6 +51,7 @@ bool utilSafePositionDone() {
 // ##################################
 #define STACK_SIZE 15
 #define TIMEOUT_STAGE_SIX 3000
+#define HAND_OVER_STAGE_FOUR_BEGIN 2000
 
 // BEGIN STACK
 bool (*stack[STACK_SIZE])(void);
@@ -115,13 +116,20 @@ bool utilTurnOffAll() {
 
     stopPusher(getFirstPusher());
     stopPusher(getSecondPusher());
+
+    stopTool(getFirstTool());
+    stopTool(getSecondTool());
 }
 
 bool utilStageSix() {
 	utilTurnOffAll();
-	startTreadmill(getFourthTreadmill());
 
-	return deltaInMs >= TIMEOUT_STAGE_SIX && !getFifthLightBarrier()->isBlocked;
+	if(deltaInMs >= TIMEOUT_STAGE_SIX && !getFifthLightBarrier()->isBlocked) {
+        return true;
+	} else {
+        startTreadmill(getFourthTreadmill());
+        return false;
+	}
 }
 
 
@@ -167,12 +175,47 @@ bool utilStageFive() {
     return isDone;
 }
 
-void initStageFour() {
+///struct  foobar
 
+struct UtilStageFourData {
+    uint8_t itemCount;
+    bool lastLBTrigger;
+};
+struct UtilStageFourData utilStageFourData;
+
+void initStageFour() {
+    if(getFourthLightBarrier()->isBlocked) {
+        utilStageFourData.itemCount = 1;
+        utilStageFourData.lastLBTrigger = true;
+    } else {
+        utilStageFourData.itemCount = 0;
+        utilStageFourData.lastLBTrigger = true;
+    }
 }
-bool utilStageFour() {
+bool utilStageFourBegin() {
+    bool isDone = false;
     utilTurnOffAll();
-    startTreadmill(getFirstTreadmill());
+
+    bool lbBlocked = getFourthLightBarrier()->isBlocked;
+    if(lbBlocked && !utilStageFourData.lastLBTrigger) {
+        utilStageFourData.itemCount++;
+    }
+    utilStageFourData.lastLBTrigger = lbBlocked;
+
+    if(deltaInMs >= HAND_OVER_STAGE_FOUR_BEGIN) {
+        isDone = true;
+        initStageFive();
+        pushUnderCurrent(&utilStageFive);
+    } else {
+        startTreadmill(getThirdTreadmill());
+    }
+
+    return isDone;
+}
+bool utilStageFourEnd() {
+    bool isDone = false;
+    utilTurnOffAll();
+
 }
 
 void utilInitDeplete() {
@@ -181,11 +224,12 @@ void utilInitDeplete() {
     deltaInMs = 0;
 	depleteDone = false;
 
-    push(&utilStageFour);
+    push(&utilStageFourBegin);
 	push(&utilStageFive);
 	push(&utilStageSix);
 
 	initStageFive();
+	initStageFour();
 }
 
 void utilComputeActionsForDeplete() {

@@ -1,5 +1,6 @@
 #include "programAutomat.h"
 
+extern void runningInit();
 extern void runningComputeActions();
 extern void runningHandleActors();
 
@@ -20,9 +21,9 @@ SiteState lastState = PANIC_SWITCH;
 void initNewState(SiteState currentState) {
 	switch(currentState) {
     case RUNNING:
-        //Do nothing
+        runningInit();
         break;
-		
+
     case DIAGNOSTIC:
         debugInit();
         break;
@@ -30,11 +31,11 @@ void initNewState(SiteState currentState) {
     case PANIC_SWITCH:
 		panicInit();
 		break;
-		
+
 	case START:
 		startInit();
 		break;
-		
+
     }
 }
 
@@ -43,7 +44,7 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
 		lastState = currentState;
 		initNewState(currentState);
 	}
-	
+
     switch(currentState) {
     case RUNNING:
         return &runningComputeActions;
@@ -53,12 +54,12 @@ void (*resolveComputeActionsFor(SiteState currentState))(void) {
 
     case PANIC_SWITCH:
 		return &panicComputeActions;
-		
+
 	case START:
 		return &startComputeActions;
-		
+
     default:
-        setSiteState(PANIC_SWITCH, 200);
+        setSiteState(PANIC_SWITCH, CODE_NOT_IMPLEMENTED);
         return &panicComputeActions;
     }
 }
@@ -72,12 +73,12 @@ void (*resolveHandleActorsFor(SiteState currentState))(void) {
 
     case PANIC_SWITCH:
 		return &panicHandleActors;
-		
+
 	case START:
 		return &startHandleActors;
-		
+
     default:
-        setSiteState(PANIC_SWITCH, 200);
+        setSiteState(PANIC_SWITCH, CODE_NOT_IMPLEMENTED);
         return &panicHandleActors;
     }
 }

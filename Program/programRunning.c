@@ -16,10 +16,6 @@ void timeout(short stage)
 
 	stopTool(getFirstTool());
 	stopTool(getSecondTool());
-
-	#ifndef ON_TARGET
-		getchar();
-	#endif
 	*/
 	failure(stage * 10);
     setSiteState(PANIC_SWITCH, stage * 10);
@@ -48,9 +44,6 @@ void failure(short errorCode)
         case 5:  printf("Unexpected Item in Light Barrier 5!"); break;
         default: printf("Unknown error code!"); break;
     }
-    #ifndef ON_TARGET
-    getchar();
-    #endif
 }
 
 void computeFirstTreadmill()
@@ -748,4 +741,72 @@ void runningComputeActions() {
     computeThirdTreadmill();
     computeSecondPlate();
     computeFourthTredmill();
+}
+
+void runningInit() {
+    totalSystem.itemsInSystem = 0;
+    totalSystem.timeDiffSinceLastCall = 0;
+
+    stageOne.isRunning = 0;
+    stageOne.firstLightBarrierBefore = 0;
+    stageOne.itemCount = 0;
+    stageOne.itemPositions[0] = -1;
+    stageOne.itemPositions[1] = -1;
+    stageOne.itemPositions[2] = -1;
+    stageOne.timeout = 0;
+    stageOne.hasItemPassedSecondLB = 0;
+
+
+    stageTwo.pusherDir = 1;
+    stageTwo.isOccupied = 0;
+    stageTwo.isReady = 1;
+
+
+    stageThree.isReady = 1;
+    stageThree.itemPositions[0] = -1;
+    stageThree.itemPositions[1] = -1;
+    stageThree.itemPositions[2] = -1;
+    stageThree.itemCount = 0;
+    stageThree.itemCountBefore = 0;
+    stageThree.lightBarrierBefore = 0;
+    stageThree.isToolTime = 0;
+    stageThree.tMRuntimeLeftForCentering = 0;
+    stageThree.toolRuntimeLeft = 0;
+    stageThree.isTMRunning = 0;
+    stageThree.isToolRunning = 0;
+    stageThree.timeout = 0;
+    stageThree.hasItemPassedLightBarrier = 0;
+    stageThree.updatedPosInToolTime = 0;
+
+
+    stageFour.isReady = 1;
+    stageFour.itemPositions[0] = -1;
+    stageFour.itemPositions[1] = -1;
+    stageFour.itemPositions[2] = -1;
+    stageFour.itemCount = 0;
+    stageFour.itemCountBefore = 0;
+    stageFour.lightBarrierBefore = 0;
+    stageFour.isToolTime = 0;
+    stageFour.tMRuntimeLeftForCentering = 0;
+    stageFour.toolRuntimeLeft = 0;
+    stageFour.isTMRunning = 0;
+    stageFour.isToolRunning = 0;
+    stageFour.timeout = 0;
+    stageFour.hasItemPassedLightBarrier = 0;
+    stageFour.updatedPosInToolTime = 0;
+
+    stageFive.pusherDir = 1;
+    stageFive.isOccupied = 0;
+    stageFive.isReady = 1;
+
+    stageSix.itemCount = 0;
+    stageSix.isRunning = 0;
+    stageSix.lightBarrierBefore = 0;
+    stageSix.lightBarrierBlockedTime = 0;
+    stageSix.timeLeftForNextEmptyCheck = -1;
+    stageSix.tMRuntimeLeftForChecking = 0;
+    stageSix.isFull = 0;
+    stageSix.wasFullBefore = 0;
+    stageSix.timeout = 0;
+    stageSix.isChecking = 0;
 }
