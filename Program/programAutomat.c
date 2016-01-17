@@ -23,6 +23,7 @@ void initNewState(SiteState currentState) {
     case RUNNING:
     case REST:
     case STOP:
+        //todo: laststate is not set correctly so this is always false -> no init
         if(lastState != RUNNING && lastState != REST && lastState != STOP)
         {
             runningInit();
