@@ -72,7 +72,8 @@ intptr_t currentStack;
 
 void initStack() {
     currentStack = -1;
-    for(intptr_t index = 0 ; index < STACK_SIZE; index++) {
+    intptr_t index = 0;
+    for(index ; index < STACK_SIZE; index++) {
         stack[index] = 0;
     }
 }

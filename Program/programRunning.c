@@ -2,21 +2,6 @@
 
 void timeout(short stage)
 {
-    /*
-	#ifndef ON_TARGET
-		system("cls");
-	#endif
-
-		printf("Stage %d expected an item which never arrived.\n", stage);
-
-	stopTreadmill(getFirstTreadmill());
-	stopTreadmill(getSecondTreadmill());
-	stopTreadmill(getThirdTreadmill());
-	stopTreadmill(getFourthTreadmill());
-
-	stopTool(getFirstTool());
-	stopTool(getSecondTool());
-	*/
 	failure(stage * 10);
     setSiteState(PANIC_SWITCH, stage * 10);
 }
@@ -127,26 +112,6 @@ void computeFirstTreadmill()
             stageOne.hasItemPassedSecondLB = 0;
             break;
         }
-    }
-
-    // item lost
-    if(stageOne.isRunning)
-    {
-        stageOne.timeout += totalSystem.timeDiffSinceLastCall;
-    }
-    if(stageOne.timeout >= TIMEOUT)
-    {
-        timeout(1);
-    }
-    if(getSecondLightBarrier()->isBlocked || stageOne.itemCount == 0)
-    {
-        stageOne.timeout = 0;
-    }
-
-    // unexpected item
-    if((stageOne.itemCount == 0 || stageOne.itemCount == 1 && stageOne.hasItemPassedSecondLB) && getSecondLightBarrier()->isBlocked)
-    {
-        unexpectedItem(2);
     }
 }
 
@@ -315,26 +280,6 @@ void computeSecondTreadmill()
             stageThree.hasItemPassedLightBarrier = 0;
         }
     }
-
-    // item lost
-    if(stageThree.isTMRunning)
-    {
-        stageThree.timeout += totalSystem.timeDiffSinceLastCall;
-    }
-    if(stageThree.timeout >= TIMEOUT)
-    {
-        timeout(3);
-    }
-    if(getThirdLightBarrier()->isBlocked || stageThree.itemCount == 0)
-    {
-        stageThree.timeout = 0;
-    }
-
-    // unexpected item
-    if(stageThree.itemCount == 0 && getThirdLightBarrier()->isBlocked)
-    {
-        unexpectedItem(3);
-    }
 }
 
 void computeThirdTreadmill()
@@ -466,26 +411,6 @@ void computeThirdTreadmill()
             stageFive.isOccupied = 1;
         }
     }
-
-    // item lost
-    if(stageFour.isTMRunning)
-    {
-        stageFour.timeout += totalSystem.timeDiffSinceLastCall;
-    }
-    if(stageFour.timeout >= TIMEOUT)
-    {
-        timeout(4);
-    }
-    if(getThirdLightBarrier()->isBlocked || stageFour.itemCount == 0)
-    {
-        stageFour.timeout = 0;
-    }
-
-    // unexpected item
-    if(stageFour.itemCount == 0 && getFourthLightBarrier()->isBlocked)
-    {
-        unexpectedItem(4);
-    }
 }
 
 void computeSecondPlate()
@@ -597,7 +522,113 @@ void computeFourthTredmill()
         totalSystem.itemsInSystem--;
         stageSix.wasFullBefore = 0;
     }
+}
 
+void computeRestState()
+{
+    if(getSiteState() == REST)
+    {
+        stageOne.isRunning = 0;
+        stageThree.isTMRunning = 0;
+        stageFour.isTMRunning = 0;
+        stageSix.isRunning = 0;
+    }
+}
+
+void computeStopState()
+{
+    if(getSiteState() == STOP && getFirstLightBarrier()->isBlocked && stageOne.itemCount == 1)
+    {
+        stageOne.isRunning = 0;
+    }
+}
+
+computeErrorCases()
+{
+	// stage one
+	// item lost
+    if(stageOne.isRunning)
+    {
+        stageOne.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageOne.timeout >= TIMEOUT)
+    {
+        timeout(1);
+    }
+    if(getSecondLightBarrier()->isBlocked || stageOne.itemCount == 0)
+    {
+        stageOne.timeout = 0;
+    }
+
+    // unexpected item
+    if((stageOne.itemCount == 0 || stageOne.itemCount == 1 && stageOne.hasItemPassedSecondLB) && getSecondLightBarrier()->isBlocked)
+    {
+        unexpectedItem(2);
+    }
+
+	// stage three
+    // item lost
+    if(stageThree.isTMRunning)
+    {
+        stageThree.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageThree.timeout >= TIMEOUT)
+    {
+        timeout(3);
+    }
+    short i = 0;
+    short isItemInFrontOfLB = 0;
+    for( i ; i < 3 ; i++)
+    {
+        if(stageThree.itemPositions[i] == -2)
+        {
+            isItemInFrontOfLB = 1;
+            break;
+        }
+    }
+    if(getThirdLightBarrier()->isBlocked || isItemInFrontOfLB == 0)
+    {
+        stageThree.timeout = 0;
+    }
+
+    // unexpected item
+    if(stageThree.itemCount == 0 && getThirdLightBarrier()->isBlocked)
+    {
+        unexpectedItem(3);
+    }
+
+	//stage four
+    // item lost
+    if(stageFour.isTMRunning)
+    {
+        stageFour.timeout += totalSystem.timeDiffSinceLastCall;
+    }
+    if(stageFour.timeout >= TIMEOUT)
+    {
+        timeout(4);
+    }
+    i = 0;
+    isItemInFrontOfLB = 0;
+    for( i ; i < 3 ; i++)
+    {
+        if(stageFour.itemPositions[i] == -2)
+        {
+            isItemInFrontOfLB = 1;
+            break;
+        }
+    }
+    if(getFourthLightBarrier()->isBlocked || isItemInFrontOfLB == 0)
+    {
+        stageFour.timeout = 0;
+    }
+
+    // unexpected item
+    if(stageFour.itemCount == 0 && getFourthLightBarrier()->isBlocked)
+    {
+        unexpectedItem(4);
+    }
+
+	//stage six
     // item lost
     if(stageSix.isRunning)
     {
@@ -615,13 +646,13 @@ void computeFourthTredmill()
     // unexpected item
     if(stageSix.itemCount == 0 && getFifthLightBarrier()->isBlocked)
     {
-        unexpectedItem(6);
+        unexpectedItem(5);
     }
 }
-
 void runningHandleActors() {
     Treadmill *treadmills[4] = {getFirstTreadmill(), getSecondTreadmill(), getThirdTreadmill(), getFourthTreadmill()};
     Tool *tools[2] = {getFirstTool(), getSecondTool()};
+    Pusher *pushers[2] = {getFirstPusher(), getSecondPusher()};
 
     //first stage
     if(stageOne.isRunning)
@@ -642,12 +673,11 @@ void runningHandleActors() {
     }
 
     //second stage
-    Pusher *firstPusher = getFirstPusher();
     switch(stageTwo.pusherDir)
     {
-        case 0: runBackwardsPusher(firstPusher); break;
-        case 1: stopPusher(firstPusher); break;
-        case 2: runForwardPusher(firstPusher); break;
+        case 0: runBackwardsPusher(pushers[0]); break;
+        case 1: stopPusher(pushers[0]); break;
+        case 2: runForwardPusher(pushers[0]); break;
     }
 
     //third stage
@@ -715,12 +745,11 @@ void runningHandleActors() {
     }
 
     //fifth stage
-    Pusher *secondPusher = getSecondPusher();
     switch(stageFive.pusherDir)
     {
-        case 0: runBackwardsPusher(secondPusher); break;
-        case 1: stopPusher(secondPusher); break;
-        case 2: runForwardPusher(secondPusher); break;
+        case 0: runBackwardsPusher(pushers[1]); break;
+        case 1: stopPusher(pushers[1]); break;
+        case 2: runForwardPusher(pushers[1]); break;
     }
 
     //sixth stage
@@ -741,6 +770,9 @@ void runningComputeActions() {
     computeThirdTreadmill();
     computeSecondPlate();
     computeFourthTredmill();
+    computeRestState();
+    computeStopState();
+    computeErrorCases(); //overwrites actors, so call it last
 }
 
 void runningInit() {
@@ -756,11 +788,9 @@ void runningInit() {
     stageOne.timeout = 0;
     stageOne.hasItemPassedSecondLB = 0;
 
-
     stageTwo.pusherDir = 1;
     stageTwo.isOccupied = 0;
     stageTwo.isReady = 1;
-
 
     stageThree.isReady = 1;
     stageThree.itemPositions[0] = -1;
@@ -777,7 +807,6 @@ void runningInit() {
     stageThree.timeout = 0;
     stageThree.hasItemPassedLightBarrier = 0;
     stageThree.updatedPosInToolTime = 0;
-
 
     stageFour.isReady = 1;
     stageFour.itemPositions[0] = -1;
