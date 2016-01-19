@@ -62,9 +62,9 @@ bool utilSafePositionDone() {
 	#define TIMEOUT_STAGE_FOUR_END 3000
 
 	#define HAND_OVER_STAGE_THREE_BEGIN 700
-	#define HAND_OVER_STAGE_THREE_END 1900
+	#define HAND_OVER_STAGE_THREE_END 1000
 
-	#define HAND_OVER_STAGE_ONE 800
+	#define HAND_OVER_STAGE_ONE 400
 
 #else
 
