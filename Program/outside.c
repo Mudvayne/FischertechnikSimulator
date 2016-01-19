@@ -51,7 +51,7 @@ uint8_t convertFromStateEnumToInt(SiteState state) {
 void utilShiftBit(uint8_t isActive, uint32_t shiftWidth, uint32_t *status) {
 	uint32_t bitField = isActive ? 1 : 0;
 	
-	(*status) = (*status) | (isActive << shiftWidth);
+	(*status) = (*status) | (bitField << shiftWidth);
 }
 
 void utilShiftByte(uint8_t value, uint32_t shiftWidth, uint32_t *status) {
