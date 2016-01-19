@@ -52,18 +52,35 @@ bool utilSafePositionDone() {
 #define STACK_SIZE 15
 #define ITEM_TRACK_SIZE 4
 
-#define TIMEOUT_STAGE_SIX_FULL 2000
-#define TIMEOUT_STAGE_SIX 3000
+#ifdef ON_TARGET
+	#define TIMEOUT_STAGE_SIX_FULL 2000
+	#define TIMEOUT_STAGE_SIX 3000
 
-#define HAND_OVER_STAGE_FOUR_BEGIN 2000
-#define HAND_OVER_STAGE_FOUR_END 3000
+	#define HAND_OVER_STAGE_FOUR_BEGIN 500
+	#define HAND_OVER_STAGE_FOUR_END 700
 
-#define TIMEOUT_STAGE_FOUR_END 8000
+	#define TIMEOUT_STAGE_FOUR_END 3000
 
-#define HAND_OVER_STAGE_THREE_BEGIN 1500
-#define HAND_OVER_STAGE_THREE_END 3000
+	#define HAND_OVER_STAGE_THREE_BEGIN 700
+	#define HAND_OVER_STAGE_THREE_END 1900
 
-#define HAND_OVER_STAGE_ONE 800
+	#define HAND_OVER_STAGE_ONE 800
+
+#else
+
+	#define TIMEOUT_STAGE_SIX_FULL 2000
+	#define TIMEOUT_STAGE_SIX 3000
+
+	#define HAND_OVER_STAGE_FOUR_BEGIN 2000
+	#define HAND_OVER_STAGE_FOUR_END 3000
+
+	#define TIMEOUT_STAGE_FOUR_END 8000
+
+	#define HAND_OVER_STAGE_THREE_BEGIN 1500
+	#define HAND_OVER_STAGE_THREE_END 3000
+
+	#define HAND_OVER_STAGE_ONE 800
+#endif
 
 
 // BEGIN STACK
@@ -258,12 +275,14 @@ void utilMonitorItems(LightBarrier *lightBarrier, bool *lastLBBlocked, struct It
         }
 
         if(lbBlocked && !(*lastLBBlocked)) { //New Item have been found.
+					printf("NEW Item in LB index:%d\n", index);
             itemTrack->items[index].exist = true;
             itemTrack->items[index].inLB = true;
 
         } else if (!lbBlocked && (*lastLBBlocked)) { //Current Item left lb
             index--;
 
+						printf("Item LEFT LB index:%d\n", index);
             itemTrack->items[index].inLB = false;
         }
     }
@@ -315,11 +334,12 @@ enum NextAction {
 };
 
 enum NextAction handleTreadmill(uint16_t *tmRunning, struct ItemTrack *itemTrack, uint16_t handOverTime, uint16_t tmTimeout, Treadmill *treadmill) {
+		bool gotItem = false;
     enum NextAction action = ACTION_NOT_DONE;
     uint8_t index;
     for(index = 0; index < ITEM_TRACK_SIZE; index++) {
         if (itemTrack->items[index].exist) {
-
+						gotItem = true;
             if(itemTrack->items[index].position >= handOverTime) {
                 action = ACTION_HAND_OVER;
 
@@ -330,7 +350,7 @@ enum NextAction handleTreadmill(uint16_t *tmRunning, struct ItemTrack *itemTrack
         }
     }
 
-    if ((*tmRunning) >= tmTimeout) {
+    if (!gotItem && (*tmRunning) >= tmTimeout) {
         action = ACTION_TIME_OUT;
     } else {
 
@@ -350,11 +370,14 @@ bool utilStageFourEnd() {
     action = handleTreadmill(&utilStageFourData.tmRunTime, &utilStageFourData.itemTrack, HAND_OVER_STAGE_FOUR_END, TIMEOUT_STAGE_FOUR_END, getThirdTreadmill());
 
     if(action == ACTION_HAND_OVER) {
+				printf("Stage 4: HAND_OVER\n");
         isDone = true;
         initStageFive();
         pushUnderCurrent(&utilStageFourEnd);
         pushUnderCurrent(&utilStageFive);
     } else if (action == ACTION_TIME_OUT) {
+				printf("Stage 4: TIME_OUT\n");
+			
         isDone = true;
         initStageFour();
 
@@ -402,11 +425,13 @@ bool utilStageThreeEnd() {
 
     if(action == ACTION_HAND_OVER) {
         isDone = true;
+				printf("Stage 3: HAND_OVER\n");
 
         pushUnderCurrent(&utilStageThreeEnd);
         pushUnderCurrent(&utilStageFourEnd);
     } else if (action == ACTION_TIME_OUT) {
         isDone = true;
+				printf("Stage 3: TIME_OUT\n");
         initStageThree();
 
     }
@@ -426,7 +451,9 @@ void doNothing() {
 
 bool utilStageTwo() {
     utilTurnOffAll();
-    return utilHandlePusher(getFirstPusher(), &stageTwoState, &utilStageThreeEnd, &doNothing);
+		
+		initStageFour();
+    return utilHandlePusher(getFirstPusher(), &stageTwoState, &utilStageThreeEnd, &initStageThree);
 }
 
 struct StageOneData {

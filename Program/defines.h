@@ -10,7 +10,7 @@
     #define DRILL_TIME                                  3000
     #define MILL_TIME                                   2000
     #define TIMEOUT                                     5000
-    #define STAGE_SIX_LB_BLOCK_FOR_FULL                	2000
+    #define STAGE_SIX_LB_BLOCK_FOR_FULL                	1200
     #define STAGE_SIX_CHECK_INTERVAL                    2000
     #define STAGE_SIX_RUN_TM_FOR_CHECK_TIME     		1000
     #define LB2_POS                                     0.75
