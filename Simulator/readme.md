@@ -64,6 +64,7 @@ Via -D Param on JVM start-up
 | **USB Model related** |
 | `hostname` | Hostname for Brick Deamon | `String` | localhost |
 | `port` | Port from Brick Deamon | `int` | 4223 |
+| `timeoutInMS` | Timeout for not replied messages | `int` | 1000 |
 | `brickUID` | The encoded BrickUID | `Long` | 3568702513 <- Group_01 MasterBrick |
 | **C Model related** |
 | `java.library.path` | path to shared library program called `libWuber.so` or `Wuber.dll` | `String` | n/a |

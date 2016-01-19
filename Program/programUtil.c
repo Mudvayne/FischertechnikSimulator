@@ -68,12 +68,12 @@ bool utilSafePositionDone() {
 
 // BEGIN STACK
 bool (*stack[STACK_SIZE])(void);
-intptr_t currentStack;
+uint8_t currentStack;
 
 void initStack() {
     currentStack = -1;
-    intptr_t index = 0;
-    for(index ; index < STACK_SIZE; index++) {
+    uint8_t index = 0;
+    for(; index < STACK_SIZE; index++) {
         stack[index] = 0;
     }
 }
@@ -120,7 +120,7 @@ uint32_t deltaInMs;
 
 bool depleteDone;
 
-bool utilTurnOffAll() {
+void utilTurnOffAll() {
     stopTreadmill(getFirstTreadmill());
     stopTreadmill(getSecondTreadmill());
     stopTreadmill(getThirdTreadmill());

@@ -16,6 +16,8 @@ import java.nio.ByteBuffer;
 public class USBModel extends LocalModel {
     public static final String HOSTNAME = System.getProperty("hostname", "localhost");
     public static final int PORT = Integer.valueOf(System.getProperty("port", "4223"));
+    public static final int TIMEOUT_MS = Integer.valueOf(System.getProperty("timeoutInMS", "1000"));
+    public static final int MAX_MESSAGE_COUNT = 20;
 
     private OutputStream outputStream;
     private InputStream inputStream;
@@ -27,6 +29,7 @@ public class USBModel extends LocalModel {
 
         try {
             Socket socket = new Socket();
+            socket.setSoTimeout(TIMEOUT_MS);
             socket.connect(new InetSocketAddress(HOSTNAME, PORT));
 
             outputStream = socket.getOutputStream();
@@ -60,9 +63,11 @@ public class USBModel extends LocalModel {
             NullPacket headerPacket = new NullPacket();
             byte[] headerArray = new byte[headerPacket.getPacketLength()];
             boolean messageFound = false;
+            int msgCount = 0;
 
-            while(!messageFound) {
+            while(!messageFound || msgCount < MAX_MESSAGE_COUNT) {
                 inputStream.read(headerArray);
+                msgCount++;
 
                 headerPacket.fromByteArray(headerArray);
 
