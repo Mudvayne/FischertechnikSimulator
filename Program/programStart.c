@@ -26,6 +26,9 @@ void startComputeActions() {
         case DEPLETE:
             utilComputeActionsForDeplete();
             break;
+        case DONE:
+            //Do nothing
+            break;
 	}
 }
 
@@ -57,5 +60,9 @@ void startHandleActors() {
 				setSiteState(RUNNING, CODE_NO_ERROR);
 			}
 			break;
+
+        case DONE:
+            //Do nothing
+            break;
 	}
 }
