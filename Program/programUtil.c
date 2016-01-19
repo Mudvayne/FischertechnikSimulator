@@ -234,11 +234,13 @@ bool utilStageFive() {
 }
 
 struct Item {
+    bool used;
     bool exist;
     bool inLB;
     uint16_t position;
 };
 void utilInitItem(struct Item *item) {
+    item->used = false;
     item->exist = false;
     item->inLB = false;
     item->position = 0;
@@ -269,13 +271,15 @@ void utilMonitorItems(LightBarrier *lightBarrier, bool *lastLBBlocked, struct It
         uint8_t index = 0;
 
         for(index = 0; index < ITEM_TRACK_SIZE; index++) {
-            if (!itemTrack->items[index].exist) {
+            if (!itemTrack->items[index].exist && !itemTrack->items[index].used) {
                 break;
             }
         }
 
         if(lbBlocked && !(*lastLBBlocked)) { //New Item have been found.
-					printf("NEW Item in LB index:%d\n", index);
+            printf("NEW Item in LB index:%d\n", index);
+
+            itemTrack->items[index].used = true;
             itemTrack->items[index].exist = true;
             itemTrack->items[index].inLB = true;
 
@@ -304,6 +308,7 @@ void initStageFour() {
     if(getFourthLightBarrier()->isBlocked) {
         utilStageFourData.itemTrack.items[0].exist = true;
         utilStageFourData.itemTrack.items[0].inLB = true;
+        utilStageFourData.itemTrack.items[0].used = true;
         utilStageFourData.lastLBTrigger = true;
     } else {
         utilStageFourData.lastLBTrigger = false;
@@ -377,10 +382,8 @@ bool utilStageFourEnd() {
         pushUnderCurrent(&utilStageFive);
     } else if (action == ACTION_TIME_OUT) {
 				printf("Stage 4: TIME_OUT\n");
-			
-        isDone = true;
-        initStageFour();
 
+        isDone = true;
     }
 
     return isDone;
@@ -395,6 +398,7 @@ void initStageThree() {
     if(getThirdLightBarrier()->isBlocked) {
         utilStageThreeData.itemTrack.items[0].exist = true;
         utilStageThreeData.itemTrack.items[0].inLB = true;
+        utilStageThreeData.itemTrack.items[0].used = true;
         utilStageThreeData.lastLBTrigger = true;
     } else {
         utilStageThreeData.lastLBTrigger = false;
@@ -408,6 +412,8 @@ bool utilStageThreeBegin() {
 
     if(deltaInMs >= HAND_OVER_STAGE_THREE_BEGIN) {
         isDone = true;
+
+        initStageFour();
         pushUnderCurrent(&utilStageFourEnd);
     } else {
         startTreadmill(getSecondTreadmill());
@@ -425,15 +431,15 @@ bool utilStageThreeEnd() {
 
     if(action == ACTION_HAND_OVER) {
         isDone = true;
-				printf("Stage 3: HAND_OVER\n");
+        printf("Stage 3: HAND_OVER\n");
 
         pushUnderCurrent(&utilStageThreeEnd);
+
+        initStageFour();
         pushUnderCurrent(&utilStageFourEnd);
     } else if (action == ACTION_TIME_OUT) {
         isDone = true;
-				printf("Stage 3: TIME_OUT\n");
-        initStageThree();
-
+        printf("Stage 3: TIME_OUT\n");
     }
 
     return isDone;
@@ -451,8 +457,7 @@ void doNothing() {
 
 bool utilStageTwo() {
     utilTurnOffAll();
-		
-		initStageFour();
+
     return utilHandlePusher(getFirstPusher(), &stageTwoState, &utilStageThreeEnd, &initStageThree);
 }
 
@@ -494,8 +499,9 @@ bool utilStageOne() {
             stageOneState.timer = 0;
             stageOneState.leftLB = false;
 
-            initStageTwo();
             pushUnderCurrent(&utilStageOne);
+
+            initStageTwo();
             pushUnderCurrent(&utilStageTwo);
             isDone = true;
         }
