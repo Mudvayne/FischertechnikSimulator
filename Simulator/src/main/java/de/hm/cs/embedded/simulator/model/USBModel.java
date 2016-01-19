@@ -99,7 +99,7 @@ public class USBModel extends LocalModel {
             }
 
         } catch (IOException e) {
-            throw new IllegalStateException("Writing a Message failed.", e);
+            
         }
     }
 
