@@ -8,11 +8,20 @@
 uint32_t timeDiff = 0;
 
 void main() {
-    initStageFour();
-
-    totalSystem.timeDiffSinceLastCall = 1000;
     getFourthLightBarrier()->isBlocked = 1;
-    utilStageFourBegin();
+
+    initStageFour();
+    totalSystem.timeDiffSinceLastCall = 1;
+
+    uint16_t timer = 0;
+    for(; timer <= 1000; timer++) {
+        utilStageFourBegin();
+    }
+
+    getFourthLightBarrier()->isBlocked = 0;
+    for(;timer<=2000; timer++) {
+        utilStageFourBegin();
+    }
 
 
     totalSystem.timeDiffSinceLastCall = 4000;

@@ -283,6 +283,7 @@ void initStageFour() {
 
     if(getFourthLightBarrier()->isBlocked) {
         utilStageFourData.itemTrack.items[0].exist = true;
+        utilStageFourData.itemTrack.items[0].inLB = true;
         utilStageFourData.lastLBTrigger = true;
     } else {
         utilStageFourData.lastLBTrigger = false;
@@ -369,6 +370,7 @@ void initStageThree() {
 
     if(getThirdLightBarrier()->isBlocked) {
         utilStageThreeData.itemTrack.items[0].exist = true;
+        utilStageThreeData.itemTrack.items[0].inLB = true;
         utilStageThreeData.lastLBTrigger = true;
     } else {
         utilStageThreeData.lastLBTrigger = false;
