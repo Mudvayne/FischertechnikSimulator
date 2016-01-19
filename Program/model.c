@@ -17,7 +17,7 @@ LightBarrier fifthLightBarrier = {.id=4, .isBlocked = 0};
 Tool firstTool = {.id=0, .isRunning=0};
 Tool secondTool = {.id=1, .isRunning=0};
 
-SiteState currentState = RUNNING;
+SiteState currentState = START;
 
 uint8_t errorCode;
 

@@ -50,8 +50,21 @@ bool utilSafePositionDone() {
 // ###BEGIN DEPLETE IMPLEMENTATION###
 // ##################################
 #define STACK_SIZE 15
+#define ITEM_TRACK_SIZE 4
+
+#define TIMEOUT_STAGE_SIX_FULL 2000
 #define TIMEOUT_STAGE_SIX 3000
+
 #define HAND_OVER_STAGE_FOUR_BEGIN 2000
+#define HAND_OVER_STAGE_FOUR_END 3000
+
+#define TIMEOUT_STAGE_FOUR_END 8000
+
+#define HAND_OVER_STAGE_THREE_BEGIN 1500
+#define HAND_OVER_STAGE_THREE_END 3000
+
+#define HAND_OVER_STAGE_ONE 800
+
 
 // BEGIN STACK
 bool (*stack[STACK_SIZE])(void);
@@ -69,7 +82,6 @@ void push(bool (*function)(void)) {
 	currentStack++;
 	if(currentStack >= STACK_SIZE) {
 		//Exceptionhandling.
-		printf("ERROR\n");
 		return;
 	}
 
@@ -82,8 +94,7 @@ bool (*pop(void))(void) {
 
 	currentStack--;
 	if(currentStack < -1) {
-		//Exceptionhandling.
-		printf("ERROR\n");
+        //Exceptionhandling.
 		return 0;
 	}
 
@@ -122,15 +133,40 @@ bool utilTurnOffAll() {
     stopTool(getSecondTool());
 }
 
+struct UtilStageSixData {
+    uint16_t tmRunning;
+    bool isRunning;
+};
+
+struct UtilStageSixData utilStageSixData;
+
+void initStageSix() {
+    utilStageSixData.tmRunning = 0;
+    utilStageSixData.isRunning = true;
+}
+
 bool utilStageSix() {
 	utilTurnOffAll();
+	bool isDone = false;
 
 	if(deltaInMs >= TIMEOUT_STAGE_SIX && !getFifthLightBarrier()->isBlocked) {
-        return true;
-	} else {
-        startTreadmill(getFourthTreadmill());
-        return false;
+        isDone = true;
+	} else if (deltaInMs >= TIMEOUT_STAGE_SIX && getFifthLightBarrier()->isBlocked) {
+
+        utilStageSixData.tmRunning += totalSystem.timeDiffSinceLastCall;
+
+        if(utilStageSixData.tmRunning >= TIMEOUT_STAGE_SIX_FULL) {
+            utilStageSixData.isRunning = !utilStageSixData.isRunning;
+
+            utilStageSixData.tmRunning = 0;
+        }
 	}
+
+	if(utilStageSixData.isRunning) {
+        startTreadmill(getFourthTreadmill());
+	}
+
+    return isDone;
 }
 
 
@@ -145,63 +181,119 @@ enum PusherStageState stageFiveState;
 void initStageFive() {
     stageFiveState = Start;
 }
-bool utilStageFive() {
-    utilTurnOffAll();
-    Pusher *pusher = getSecondPusher();
+
+bool utilHandlePusher(Pusher *pusher, enum PusherStageState *pusherStageState, bool (*nextFunction)(void), void (*initNextFunction)(void)) {
     bool isDone = false;
 
-    if(stageFiveState == Start) {
+    if((*pusherStageState) == Start) {
         runForwardPusher(pusher);
-        stageFiveState = Going_Forward;
+        (*pusherStageState) = Going_Forward;
 
-    } else if (stageFiveState == Going_Forward) {
+    } else if ((*pusherStageState) == Going_Forward) {
         runForwardPusher(pusher);
 
         if(pusher->isFrontTriggerActivated) {
             runBackwardsPusher(pusher);
-            stageFiveState = Going_Backward;
+            (*pusherStageState) = Going_Backward;
         }
-    } else if (stageFiveState == Going_Backward) {
+    } else if ((*pusherStageState) == Going_Backward) {
         runBackwardsPusher(pusher);
 
         if(pusher->isBackTriggerActivated) {
             stopPusher(pusher);
 
             isDone = true;
-            pushUnderCurrent(&utilStageSix);
-            stageFiveState = Done;
+            (*initNextFunction)();
+            pushUnderCurrent(nextFunction);
+            (*pusherStageState) = Done;
         }
     }
 
     return isDone;
 }
+bool utilStageFive() {
+    utilTurnOffAll();
+    return utilHandlePusher(getSecondPusher(), &stageFiveState, &utilStageSix, &initStageSix);
+}
 
-///struct  foobar
-
-struct UtilStageFourData {
-    uint8_t itemCount;
-    bool lastLBTrigger;
+struct Item {
+    bool exist;
+    bool inLB;
+    uint16_t position;
 };
-struct UtilStageFourData utilStageFourData;
+void utilInitItem(struct Item *item) {
+    item->exist = false;
+    item->inLB = false;
+    item->position = 0;
+}
 
+struct ItemTrack {
+    struct Item items[ITEM_TRACK_SIZE];
+};
+void utilInitItemTrack(struct ItemTrack *itemTrack) {
+    utilInitItem(&(itemTrack->items[0]));
+    utilInitItem(&(itemTrack->items[1]));
+    utilInitItem(&(itemTrack->items[2]));
+    utilInitItem(&(itemTrack->items[3]));
+}
+
+struct UtilStageToolData {
+    uint16_t tmRunTime;
+    bool lastLBTrigger;
+    struct ItemTrack itemTrack;
+};
+struct UtilStageToolData utilStageFourData;
+
+void utilMonitorItems(LightBarrier *lightBarrier, bool *lastLBBlocked, struct ItemTrack *itemTrack) {
+    bool lbBlocked = lightBarrier->isBlocked;
+
+    //Check for change.
+    if(lbBlocked != (*lastLBBlocked)) {
+        uint8_t index = 0;
+
+        for(index = 0; index < ITEM_TRACK_SIZE; index++) {
+            if (!itemTrack->items[index].exist) {
+                break;
+            }
+        }
+
+        if(lbBlocked && !(*lastLBBlocked)) { //New Item have been found.
+            itemTrack->items[index].exist = true;
+            itemTrack->items[index].inLB = true;
+
+        } else if (!lbBlocked && (*lastLBBlocked)) { //Current Item left lb
+            index--;
+
+            itemTrack->items[index].inLB = false;
+        }
+    }
+
+    //Update all items.
+    for(uint8_t index = 0; index < ITEM_TRACK_SIZE; index++) {
+        if (itemTrack->items[index].exist && !itemTrack->items[index].inLB) {
+            itemTrack->items[index].position += totalSystem.timeDiffSinceLastCall;
+        }
+    }
+
+    (*lastLBBlocked) = lbBlocked;
+}
 void initStageFour() {
+    utilStageFourData.tmRunTime = 0;
+    utilInitItemTrack(&utilStageFourData.itemTrack);
+
     if(getFourthLightBarrier()->isBlocked) {
-        utilStageFourData.itemCount = 1;
+        utilStageFourData.itemTrack.items[0].exist = true;
         utilStageFourData.lastLBTrigger = true;
     } else {
-        utilStageFourData.itemCount = 0;
-        utilStageFourData.lastLBTrigger = true;
+        utilStageFourData.lastLBTrigger = false;
     }
 }
+
 bool utilStageFourBegin() {
     bool isDone = false;
-    utilTurnOffAll();
 
-    bool lbBlocked = getFourthLightBarrier()->isBlocked;
-    if(lbBlocked && !utilStageFourData.lastLBTrigger) {
-        utilStageFourData.itemCount++;
-    }
-    utilStageFourData.lastLBTrigger = lbBlocked;
+    utilTurnOffAll();
+    utilMonitorItems(getFourthLightBarrier(), &utilStageFourData.lastLBTrigger, &utilStageFourData.itemTrack);
 
     if(deltaInMs >= HAND_OVER_STAGE_FOUR_BEGIN) {
         isDone = true;
@@ -213,10 +305,181 @@ bool utilStageFourBegin() {
 
     return isDone;
 }
+
+enum NextAction {
+    ACTION_NOT_DONE,
+    ACTION_HAND_OVER,
+    ACTION_TIME_OUT
+};
+
+enum NextAction handleTreadmill(uint16_t *tmRunning, struct ItemTrack *itemTrack, uint16_t handOverTime, uint16_t tmTimeout, Treadmill *treadmill) {
+    enum NextAction action = ACTION_NOT_DONE;
+
+    for(uint8_t index = 0; index < ITEM_TRACK_SIZE; index++) {
+        if (itemTrack->items[index].exist) {
+
+            if(itemTrack->items[index].position >= handOverTime) {
+                action = ACTION_HAND_OVER;
+
+                stopTreadmill(treadmill);
+                itemTrack->items[index].exist = false;
+            }
+            break;
+        }
+    }
+
+    if ((*tmRunning) >= tmTimeout) {
+        action = ACTION_TIME_OUT;
+    } else {
+
+        startTreadmill(treadmill);
+        (*tmRunning) += totalSystem.timeDiffSinceLastCall;
+    }
+
+    return action;
+}
+
 bool utilStageFourEnd() {
     bool isDone = false;
+    enum NextAction action = ACTION_NOT_DONE;
     utilTurnOffAll();
 
+    utilMonitorItems(getFourthLightBarrier(), &utilStageFourData.lastLBTrigger, &utilStageFourData.itemTrack);
+    action = handleTreadmill(&utilStageFourData.tmRunTime, &utilStageFourData.itemTrack, HAND_OVER_STAGE_FOUR_END, TIMEOUT_STAGE_FOUR_END, getThirdTreadmill());
+
+    if(action == ACTION_HAND_OVER) {
+        isDone = true;
+        initStageFive();
+        pushUnderCurrent(&utilStageFourEnd);
+        pushUnderCurrent(&utilStageFive);
+    } else if (action == ACTION_TIME_OUT) {
+        isDone = true;
+        initStageFour();
+
+    }
+
+    return isDone;
+}
+
+struct UtilStageToolData utilStageThreeData;
+
+void initStageThree() {
+    utilStageThreeData.tmRunTime = 0;
+    utilInitItemTrack(&utilStageThreeData.itemTrack);
+
+    if(getThirdLightBarrier()->isBlocked) {
+        utilStageThreeData.itemTrack.items[0].exist = true;
+        utilStageThreeData.lastLBTrigger = true;
+    } else {
+        utilStageThreeData.lastLBTrigger = false;
+    }
+}
+bool utilStageThreeBegin() {
+    bool isDone = false;
+
+    utilTurnOffAll();
+    utilMonitorItems(getThirdLightBarrier(), &utilStageThreeData.lastLBTrigger, &utilStageThreeData.itemTrack);
+
+    if(deltaInMs >= HAND_OVER_STAGE_THREE_BEGIN) {
+        isDone = true;
+        pushUnderCurrent(&utilStageFourEnd);
+    } else {
+        startTreadmill(getSecondTreadmill());
+    }
+
+    return isDone;
+}
+bool utilStageThreeEnd() {
+    bool isDone = false;
+    enum NextAction action = ACTION_NOT_DONE;
+    utilTurnOffAll();
+
+    utilMonitorItems(getThirdLightBarrier(), &utilStageThreeData.lastLBTrigger, &utilStageThreeData.itemTrack);
+    action = handleTreadmill(&utilStageThreeData.tmRunTime, &utilStageThreeData.itemTrack, HAND_OVER_STAGE_THREE_END, TIMEOUT_STAGE_FOUR_END, getSecondTreadmill());
+
+    if(action == ACTION_HAND_OVER) {
+        isDone = true;
+
+        pushUnderCurrent(&utilStageThreeEnd);
+        pushUnderCurrent(&utilStageFourEnd);
+    } else if (action == ACTION_TIME_OUT) {
+        isDone = true;
+        initStageThree();
+
+    }
+
+    return isDone;
+}
+
+enum PusherStageState stageTwoState;
+
+void initStageTwo() {
+    stageTwoState = Start;
+}
+
+void doNothing() {
+
+}
+
+bool utilStageTwo() {
+    utilTurnOffAll();
+    return utilHandlePusher(getFirstPusher(), &stageTwoState, &utilStageThreeEnd, &doNothing);
+}
+
+struct StageOneData {
+    bool lastLBBlocked;
+    bool leftLB;
+    uint16_t timer;
+};
+struct StageOneData stageOneState;
+
+void initStageOne() {
+    stageOneState.leftLB = false;
+    stageOneState.timer = 0;
+    if(getSecondLightBarrier()->isBlocked) {
+        stageOneState.lastLBBlocked = true;
+    } else {
+        stageOneState.lastLBBlocked = true;
+    }
+}
+
+bool utilStageOne() {
+    utilTurnOffAll();
+    bool isDone = false;
+
+    if (getFirstLightBarrier()->isBlocked) {
+        deltaInMs = 0;
+    }
+
+    bool lbBlocked = getSecondLightBarrier()->isBlocked;
+    if (!lbBlocked && stageOneState.lastLBBlocked) {
+        stageOneState.leftLB = true;
+    }
+    stageOneState.lastLBBlocked = lbBlocked;
+
+    if(stageOneState.leftLB) {
+        stageOneState.timer+= totalSystem.timeDiffSinceLastCall;
+
+        if(stageOneState.timer >= HAND_OVER_STAGE_ONE) {
+            stageOneState.timer = 0;
+            stageOneState.leftLB = false;
+
+            initStageTwo();
+            pushUnderCurrent(&utilStageOne);
+            pushUnderCurrent(&utilStageTwo);
+            isDone = true;
+        }
+    }
+
+    if(deltaInMs >= TIMEOUT_STAGE_FOUR_END) {
+        isDone = true;
+    }
+
+    if(!isDone) {
+        startTreadmill(getFirstTreadmill());
+    }
+
+    return isDone;
 }
 
 void utilInitDeplete() {
@@ -225,12 +488,21 @@ void utilInitDeplete() {
     deltaInMs = 0;
 	depleteDone = false;
 
+    push(&utilStageOne);
+    push(&utilStageTwo);
+    push(&utilStageThreeEnd);
+    push(&utilStageThreeBegin);
+    push(&utilStageFourEnd);
     push(&utilStageFourBegin);
 	push(&utilStageFive);
 	push(&utilStageSix);
 
+    initStageSix();
 	initStageFive();
 	initStageFour();
+	initStageThree();
+	initStageTwo();
+	initStageOne();
 }
 
 void utilComputeActionsForDeplete() {

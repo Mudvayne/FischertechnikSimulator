@@ -1,11 +1,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "program.h"
+#include "model.h"
 
 enum InnerState {
 	SAFE_POSITION,
 	DEPLETE,
-	FOOBAR
+	ASSURE_SAFE,
+	DONE
 };
 
 enum InnerState state;
@@ -17,6 +19,7 @@ void startInit() {
 
 void startComputeActions() {
 	switch(state) {
+        case ASSURE_SAFE:
 		case SAFE_POSITION:
 			utilComputeActionsForSafePosition();
 			break;
@@ -34,17 +37,25 @@ void startHandleActors() {
 			if(utilSafePositionDone()) {
 				state = DEPLETE;
 				utilInitDeplete();
-				printf("DEPLETE");
 			}
-
 			break;
 
         case DEPLETE:
             utilHandleActorsForDeplete();
 
             if(utilDepleteDone()) {
-                state = FOOBAR;
-                printf("FOOOOBAR");
+                state = ASSURE_SAFE;
+                utilInitSafePosition();
             }
+            break;
+
+        case ASSURE_SAFE:
+			utilHandleActorsForSafePosition();
+
+			if(utilSafePositionDone()) {
+				state = DONE;
+				setSiteState(RUNNING, CODE_NO_ERROR);
+			}
+			break;
 	}
 }
