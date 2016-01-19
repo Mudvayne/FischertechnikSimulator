@@ -777,10 +777,10 @@ void runningComputeActions() {
 
 void runningInit() {
     totalSystem.itemsInSystem = 0;
-    totalSystem.timeDiffSinceLastCall = 0;
 
     stageOne.isRunning = 0;
     stageOne.firstLightBarrierBefore = 0;
+    stageOne.secondLightBarrierBefore = 0;
     stageOne.itemCount = 0;
     stageOne.itemPositions[0] = -1;
     stageOne.itemPositions[1] = -1;
