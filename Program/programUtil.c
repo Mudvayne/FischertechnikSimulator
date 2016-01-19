@@ -269,7 +269,8 @@ void utilMonitorItems(LightBarrier *lightBarrier, bool *lastLBBlocked, struct It
     }
 
     //Update all items.
-    for(uint8_t index = 0; index < ITEM_TRACK_SIZE; index++) {
+    uint8_t index;
+    for(index = 0; index < ITEM_TRACK_SIZE; index++) {
         if (itemTrack->items[index].exist && !itemTrack->items[index].inLB) {
             itemTrack->items[index].position += totalSystem.timeDiffSinceLastCall;
         }
@@ -315,8 +316,8 @@ enum NextAction {
 
 enum NextAction handleTreadmill(uint16_t *tmRunning, struct ItemTrack *itemTrack, uint16_t handOverTime, uint16_t tmTimeout, Treadmill *treadmill) {
     enum NextAction action = ACTION_NOT_DONE;
-
-    for(uint8_t index = 0; index < ITEM_TRACK_SIZE; index++) {
+    uint8_t index;
+    for(index = 0; index < ITEM_TRACK_SIZE; index++) {
         if (itemTrack->items[index].exist) {
 
             if(itemTrack->items[index].position >= handOverTime) {

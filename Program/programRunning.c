@@ -1,17 +1,5 @@
 #include "program.h"
 
-void timeout(short stage)
-{
-	failure(stage * 10);
-    setSiteState(PANIC_SWITCH, stage * 10);
-}
-
-void unexpectedItem(short lightBarrier)
-{
-    failure(lightBarrier);
-    setSiteState(PANIC_SWITCH, lightBarrier);
-}
-
 void failure(short errorCode)
 {
     printf("\n\n");
@@ -29,6 +17,18 @@ void failure(short errorCode)
         case 5:  printf("Unexpected Item in Light Barrier 5!"); break;
         default: printf("Unknown error code!"); break;
     }
+}
+
+void timeout(short stage)
+{
+	failure(stage * 10);
+    setSiteState(PANIC_SWITCH, stage * 10);
+}
+
+void unexpectedItem(short lightBarrier)
+{
+    failure(lightBarrier);
+    setSiteState(PANIC_SWITCH, lightBarrier);
 }
 
 void computeFirstTreadmill()

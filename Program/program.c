@@ -29,14 +29,14 @@ void aggregateSensors() {
 
 void debug()
 {
-    /*system("cls");
+    system("cls");
     printf("ITEMS IN SYSTEM: %d, TOs MAX %ds: 1 = %d, 3 = %d, 4 = %d, 6 = %d", totalSystem.itemsInSystem, TIMEOUT/1000, stageOne.timeout, stageThree.timeout, stageFour.timeout, stageSix.timeout);
     printf("\nSTAGE 1: items = %d, pos = %d %d %d, running = %d", stageOne.itemCount, stageOne.itemPositions[0], stageOne.itemPositions[1], stageOne.itemPositions[2], stageOne.isRunning);
     printf("\nSTAGE 2: occupied = %d, dir = %d,  ready = %d\t\t", stageTwo.isOccupied, stageTwo.pusherDir, stageTwo.isReady);
     printf("\nSTAGE 3: items = %d, pos = %d %d %d, TT = %d, toolLeft = %d, ready = %d", stageThree.itemCount, stageThree.itemPositions[0], stageThree.itemPositions[1], stageThree.itemPositions[2], stageThree.isToolTime, stageThree.toolRuntimeLeft, stageThree.isReady);
     printf("\nSTAGE 4: items = %d, pos = %d %d %d, TT = %d, toolLeft = %d, ready = %d", stageFour.itemCount, stageFour.itemPositions[0], stageFour.itemPositions[1], stageFour.itemPositions[2], stageFour.isToolTime, stageFour.toolRuntimeLeft, stageFour.isReady);
     printf("\nSTAGE 5: occupied = %d, dir = %d, ready = %d", stageFive.isOccupied, stageFive.pusherDir, stageFive.isReady);
-    printf("\nSTAGE 6: items = %d, full = %d, lb blocked for = %d, next check in = %d", stageSix.itemCount, stageSix.isFull, stageSix.lightBarrierBlockedTime, stageSix.timeLeftForNextEmptyCheck);*/
+    printf("\nSTAGE 6: items = %d, full = %d, lb blocked for = %d, next check in = %d", stageSix.itemCount, stageSix.isFull, stageSix.lightBarrierBlockedTime, stageSix.timeLeftForNextEmptyCheck);
 }
 
 void handlePanicSwitch() {
