@@ -68,7 +68,7 @@ bool utilSafePositionDone() {
 
 // BEGIN STACK
 bool (*stack[STACK_SIZE])(void);
-uint8_t currentStack;
+int8_t currentStack;
 
 void initStack() {
     currentStack = -1;
