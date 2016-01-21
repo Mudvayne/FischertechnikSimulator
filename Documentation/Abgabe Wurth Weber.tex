@@ -95,19 +95,59 @@ Deshalb wurde die Entwicklung nach einiger Zeit eingestellt und ein Java-Simulat
 \end{figure} \ \\
 \noindent Die Ausgabe des Simulators ist in Abbildung \ref{fig:C-Simulator} dargestellt. Ziel war es, die Anlage mit allen relevanten Informationen mithilfe von ASCII-Zeichen darzustellen. Darunter alle Lichtschranken, \textit{flags}, die anzeigen ob eine Station gerade belegt ist (pre), die beiden Schieber mit ihren Daten und die beiden Werkzeuge. \\ \\
 Der Simulator war ursprünglich nur für Situationen geplant, an denen jede Station höchstens ein Werkstück bearbeitet. Dafür war die Darstellung noch ausreichend und die Logik konnte getestet werden. Für mehr als ein Werkstück pro Station wird die Darstellung aber schnell sehr unübersichtlich, deshalb haben wir uns dazu entschieden an einer grafischen Lösung zu arbeiten. Dieser Simulator wird also nicht mehr verwendet, deshalb wird hier auf Codebeispiele verzichtet, auch um Platz für andere Teilbereiche zu sparen, die tatsächlich zum Einsatz kommen.
-\subsection{Java-Simulator}
-\chris
+\subsection{Java-Simulator - \chris}
 
-\section{Architektur}
-\chris
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\ScaleIfNeeded]{Bilder/Java-Simulator.png}
+	\caption{Der Java Simulator}
+	\label{fig:Java-Simulator}
+\end{figure}
+Der Java-Simulator wurde in 3 unterschiedliche Schichten eingeteilt. Die \lstinline|View|, die den akutellen Zustand in einem Fenster darstellt (siehe Abbildung \ref{fig:Java-Simulator}). Die \lstinline|Simulation|, die mittels der Zustände der Aktoren und den virtuellen Werkstücken, den Zustand der Sensoren berechnet. Die letzte Schicht ist die \lstinline|ConstructionSite|, die die Abstraktion der Anlage darstellt.\\
+\\
+Der Simulator dient zum Testen des Programms, dafür müssen die Zustände der Sensoren in das Programm geschrieben werden. Anschließend muss die Logik des Programms ausgeführt werden, die die Zustände der Aktoren setzt. Abschließend wird für den nächsten Simulationschritt die Werte der Aktoren ausgelesen. Um dies zu realisieren wurde zu eine Umsetzung ähnlich wie ein Computerspiel gegriffen. Das zentrale Herzstück ist die sogenannte \lstinline|Game Loop| die dafür sorgt, dass sich die Simulation, das Programm und die Darstellung aktualisiert.\\
+\\
+Für das Front-End wurde auf AWT zurückgegriffen, die ein komfortables überschreiben der systeminternen Methoden ermöglicht, um ein flüssiges zeichnen der Werkstücke zurealisieren. Die Kommunikation mit dem Programm wurde mit dem Java Native Interface realisiert, es wurde ein zweites Build-Target eingeführt, dass die wesentlichen Bestandteile des Programms unverändert lies, jedoch die Notwendigen Komponenten zur Simulation ersetzt, mehr dazu in Kapitel \ref{sec:arch}\\
+\\
+Im Rahmen des Projekts wurde ebenfalls die Steuerung der realen Analage mittels eines Programms gefordert. Es lag nahe für dieses Problem die vorhandene Visualisierung des Simulator zu verwenden. Aus diesem Grund gibt es für die \lstinline|ConstructionSite|, zwei Implementierungen. Einmal für die Simulation und für die reale Anlage. Zur Kommunikation mit der Anlage wird auf das von Tinkerforge bereitgestellte Protokoll zurückgegriffen, für das eigene Pakete definiert wurden.
+
+
+\section{Architektur (Entwurf von: Christian Weber)}
+\label{sec:arch}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\ScaleIfNeeded]{Bilder/architektur.png}
+	\caption{Grobarchitektur des Projekts}
+	\label{fig:Architektur}
+\end{figure}
+Von Beginn an, wurde sich auf die Grobarchitektur in Form des Vorliegenden Komponentendiagramm (Abbildung \ref{fig:Architektur}) geeinigt.
+
+\begin{itemize}
+ \item \textbf{Driver} definiert Abstraktion der einzelnen Objekte auf der Anlage. Bietet Funktionen um Zustände der Aktoren/Sensoren zu manipulieren.
+ \item \textbf{ConstructionSite} ist eine Abstraktion der gesamten Anlage. Speichert alle Zustände von allen Aktoren und Sensoren in structs.
+ \item \textbf{Programm} enthält die Logik, liest Sensoren- und setzt Aktoren-Zustände.
+ \item \textbf{OS} enthält den Betriebsystem relevanten Code. Für das regelmäßige ausführen des Programms.
+\end{itemize}
+
+\noindent Durch diese Architektur ist es relativ klar welche Komponenten für eine Simulation ersetzt werden müssen. Die ConstructionSite und das Programm sind unabhängig von den Zielsystemen, der Treiber und die Betriebsystem-Komponente müssen angepasst werden.\\
+\\
+Die für jedes Objekt definierte \lstinline|struct| abstrahieren ihre wesentlichen Merkmale. Bei Lichtschranken ist dies der Zustand ob sie blockiert sind oder nicht. Jedes Objekt speichert eine \lstinline|id|, mit der sie einem realen Objekt auf der Anlage zuzuordnen sind.
+
+
+
+
 \section{Modi (States)}
 TODO: Bild von Automaten?
-\subsection{Not Aus}
-\chris
-\subsection{Diagnose}
-\chris
+\subsection{Not Aus (\chris)}
+Bei einem Notaus soll nach Anforderungen, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret dass in diesem Modus alle Aktoren ausgeschalten werden und im ausgeschaltenen Zustand gehalten werden.
 
-\subsection{Inbetriebnahme}
+\subsection{Diagnose (\chris)}
+In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modi lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet das die Pusher nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulierung der Aktorenzustände findet hier nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
+
+\subsection{Inbetriebnahme (\chris)}
+
+
 \subsection{Normalbetrieb (\manu)}
 Dieses Kapitel widmet sich der Umsetzung des Normalbetriebs der Anlage. Um den Umfang der Dokumentation klein zu halten, werden nur interessante Aspekte beleuchtet.
 \begin{lstlisting}[caption={Beispiel: Struct für die erste \textit{stage} (erstes Laufband)},label={lst:strukt1}]
@@ -218,7 +258,7 @@ if((stageOne.itemCount == 0 || stageOne.itemCount == 1 && stageOne.hasItemPassed
 \end{lstlisting}
 Als Beispiel für eine unerwartet ausgelöste Lichtschranke soll Listing \ref{lst:unexpectedItem} herangezogen werden. Wird die zweite Lichtschranke des ersten Laufbands \underline{unerwartet} ausgelöst, liegt entweder kein Werkstück auf dem Laufband oder es liegt genau ein Werkstück auf dem Laufband, und zwar hinter der zweiten Lichtschranke (Zeile 1). Ist dies der Fall, wir die Funktion \lstinline|unexpectedItem()| ausgeführt, die abermals zu einem Notaus führt.
 
-\subsection{Pause und Stopp}
+\subsection{Pause und Stopp (\manu)}
 Um Gegensatz zu den anderen Modi muss bei den Modi Pause und Stopp der aktuelle Zustand des laufenden Betriebs erhalten bleiben. Es hat sich deshalb angeboten, beide Modi als Teil des laufenden Betriebs zu etablieren.
 
 \begin{lstlisting}[caption={Die Funktion \lstinline|runningComputeActions|},label={lst:runningComputeActions}]
