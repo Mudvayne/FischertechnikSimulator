@@ -95,6 +95,7 @@ Deshalb wurde die Entwicklung nach einiger Zeit eingestellt und ein Java-Simulat
 \end{figure} \ \\
 \noindent Die Ausgabe des Simulators ist in Abbildung \ref{fig:C-Simulator} dargestellt. Ziel war es, die Anlage mit allen relevanten Informationen mithilfe von ASCII-Zeichen darzustellen. Darunter alle Lichtschranken, \textit{flags}, die anzeigen ob eine Station gerade belegt ist (pre), die beiden Schieber mit ihren Daten und die beiden Werkzeuge. \\ \\
 Der Simulator war ursprünglich nur für Situationen geplant, an denen jede Station höchstens ein Werkstück bearbeitet. Dafür war die Darstellung noch ausreichend und die Logik konnte getestet werden. Für mehr als ein Werkstück pro Station wird die Darstellung aber schnell sehr unübersichtlich, deshalb haben wir uns dazu entschieden an einer grafischen Lösung zu arbeiten. Dieser Simulator wird also nicht mehr verwendet, deshalb wird hier auf Codebeispiele verzichtet, auch um Platz für andere Teilbereiche zu sparen, die tatsächlich zum Einsatz kommen.
+
 \subsection{Java-Simulator - \chris}
 
 \begin{figure}[H]
@@ -103,16 +104,18 @@ Der Simulator war ursprünglich nur für Situationen geplant, an denen jede Stat
 	\caption{Der Java Simulator}
 	\label{fig:Java-Simulator}
 \end{figure}
-Der Java-Simulator wurde in 3 unterschiedliche Schichten eingeteilt. Die \lstinline|View|, die den akutellen Zustand in einem Fenster darstellt (siehe Abbildung \ref{fig:Java-Simulator}). Die \lstinline|Simulation|, die mittels der Zustände der Aktoren und den virtuellen Werkstücken, den Zustand der Sensoren berechnet. Die letzte Schicht ist die \lstinline|ConstructionSite|, die die Abstraktion der Anlage darstellt.\\
-\\
-Der Simulator dient zum Testen des Programms, dafür müssen die Zustände der Sensoren in das Programm geschrieben werden. Anschließend muss die Logik des Programms ausgeführt werden, die die Zustände der Aktoren setzt. Abschließend wird für den nächsten Simulationschritt die Werte der Aktoren ausgelesen. Um dies zu realisieren wurde zu eine Umsetzung ähnlich wie ein Computerspiel gegriffen. Das zentrale Herzstück ist die sogenannte \lstinline|Game Loop| die dafür sorgt, dass sich die Simulation, das Programm und die Darstellung aktualisiert.\\
-\\
-Für das Front-End wurde auf AWT zurückgegriffen, die ein komfortables überschreiben der systeminternen Methoden ermöglicht, um ein flüssiges zeichnen der Werkstücke zurealisieren. Die Kommunikation mit dem Programm wurde mit dem Java Native Interface realisiert, es wurde ein zweites Build-Target eingeführt, dass die wesentlichen Bestandteile des Programms unverändert lies, jedoch die Notwendigen Komponenten zur Simulation ersetzt, mehr dazu in Kapitel \ref{sec:arch}\\
-\\
-Im Rahmen des Projekts wurde ebenfalls die Steuerung der realen Analage mittels eines Programms gefordert. Es lag nahe für dieses Problem die vorhandene Visualisierung des Simulator zu verwenden. Aus diesem Grund gibt es für die \lstinline|ConstructionSite|, zwei Implementierungen. Einmal für die Simulation und für die reale Anlage. Zur Kommunikation mit der Anlage wird auf das von Tinkerforge bereitgestellte Protokoll zurückgegriffen, für das eigene Pakete definiert wurden.
 
+Für die Simulation ist es wichtig zu wissen, dass das Programm zur Steuerung der Anlage, die Zustände der Sensoren liest und seiner Logik entsprechend die Zustände der Aktoren schreibt. Eine Simulation wiederum muss möglichst realistisch die Zustände der Sensoren abhängig von den Aktoren steuern. Dafür besitzt der Java-Simulator eine stark abstrahierte Physiksimulation. Zur Verdeutlichung ein Beispiel, es wird angenommen, dass ein Werkstück das sich auf einem angeschalteten Laufband befindet mit der Geschwindigkeit des Laufbands bewegt. Der Java-Simulator überprüft unteranderem auch, ob Kollisionen auftreten. Diese können auftreten, wenn ein Werkstück an einer Lichtbarriere vorbeifährt.\\
+\\
+Der Java-Simulator wurde in 3 unterschiedliche Schichten eingeteilt. Die \lstinline|View|, die den aktuellen Zustand in einem Fenster darstellt, die \lstinline|Simulation|, die für die Physiksimulation zuständig ist und die \lstinline|ConstructionSite|, die zwei Aufgaben besitzt, einmal die Abstraktion der Fischertechnik Anlage und zum anderen die Kommunikation mit dem Programm.\\
+\\
+Das zentrale Herzstück des Java-Simulators ist die sogenannte \lstinline|Game Loop|. Sie sorgt dafür, dass sich die Simulation, das Programm und die Darstellung in regelmäßigen Zyklen aktualisieren. Die \lstinline|Game Loop| ist ein bekanntes Pattern aus dem Game Engineering Bereich.\\
+\\
+Für das Front-End wurde auf AWT zurückgegriffen, die ein komfortables überschreiben der systeminternen Methoden ermöglicht. Damit ist ein flüssiges Zeichnen der Werkstücke einfach realisierbar. Die Kommunikation mit dem Programm wurde mit dem Java Native Interface (JNI) realisiert. Dafür wurde ein zweites Build-Target eingeführt das wesentliche Bestandteile des Programms unverändert lässt, jedoch die notwendigen Komponenten zur Simulation ersetzt, mehr dazu in Kapitel \ref{sec:arch}.\\
+\\
+Im Rahmen des Projekts wurde ebenfalls die Steuerung der realen Anlage mittels eines Rich-client gefordert. Es lag nahe für diese Aufgabenstellung die vorhandene Visualisierung des Simulators zu verwenden. Aus diesem Grund gibt es für die \lstinline|ConstructionSite| zwei Implementierungen, für die Simulation und für die reale Anlage. Zur Kommunikation mit der realen Anlage wird auf das von Tinkerforge bereitgestellte Protokoll\footnote{\url{http://www.tinkerforge.com/en/doc/Low_Level_Protocols/TCPIP.html}} zurückgegriffen, für das eigene Pakete definiert werden mussten.\\
 
-\section{Architektur (Entwurf von: Christian Weber)}
+\section{Architektur}
 \label{sec:arch}
 
 \begin{figure}[H]
@@ -121,31 +124,47 @@ Im Rahmen des Projekts wurde ebenfalls die Steuerung der realen Analage mittels 
 	\caption{Grobarchitektur des Projekts}
 	\label{fig:Architektur}
 \end{figure}
-Von Beginn an, wurde sich auf die Grobarchitektur in Form des Vorliegenden Komponentendiagramm (Abbildung \ref{fig:Architektur}) geeinigt.
+Von Beginn an, wurde sich auf die Grobarchitektur in Form des vorliegenden Komponentendiagramms (Abbildung \ref{fig:Architektur}) geeinigt.
 
 \begin{itemize}
- \item \textbf{Driver} definiert Abstraktion der einzelnen Objekte auf der Anlage. Bietet Funktionen um Zustände der Aktoren/Sensoren zu manipulieren.
- \item \textbf{ConstructionSite} ist eine Abstraktion der gesamten Anlage. Speichert alle Zustände von allen Aktoren und Sensoren in structs.
+ \item \textbf{Driver} definiert Abstraktion der einzelnen Objekte auf der Anlage. Bietet Funktionen um Zustände der Aktoren/Sensoren zu manipulieren/auszulesen.
+ \item \textbf{ConstructionSite} ist eine Abstraktion der gesamten Anlage. Speichert alle Zustände von allen Aktoren und Sensoren in \lstinline|structs|.
  \item \textbf{Programm} enthält die Logik, liest Sensoren- und setzt Aktoren-Zustände.
- \item \textbf{OS} enthält den Betriebsystem relevanten Code. Für das regelmäßige ausführen des Programms.
+ \item \textbf{OS} enthält den Betriebssystem relevanten Code. Für das regelmäßige ausführen des Programms.
 \end{itemize}
 
-\noindent Durch diese Architektur ist es relativ klar welche Komponenten für eine Simulation ersetzt werden müssen. Die ConstructionSite und das Programm sind unabhängig von den Zielsystemen, der Treiber und die Betriebsystem-Komponente müssen angepasst werden.\\
+\noindent Durch diese Architektur ist es relativ klar welche Komponenten für eine Simulation ersetzt werden müssen. Die ConstructionSite und das Programm sind unabhängig von den Zielsystemen, der Treiber und die Betriebssystem-Komponente müssen angepasst werden.\\
 \\
-Die für jedes Objekt definierte \lstinline|struct| abstrahieren ihre wesentlichen Merkmale. Bei Lichtschranken ist dies der Zustand ob sie blockiert sind oder nicht. Jedes Objekt speichert eine \lstinline|id|, mit der sie einem realen Objekt auf der Anlage zuzuordnen sind.
 
+\begin{lstlisting}[caption={Beispiel: Treiber für Laufband},label={lst:treadmill}]
+#ifndef __TREADMILL
+#define __TREADMILL
+typedef struct {
+    short id;
+    short isRunning;
+} Treadmill;
+#endif // __TREADMILL
 
+extern void startTreadmill(Treadmill *treadmill);
+extern void stopTreadmill(Treadmill *treadmill);
+\end{lstlisting}
+Als ein Beispiel für einen Teil des Treibers kann Listing \ref{lst:treadmill} betrachtet werden. Es wird ein \lstinline|struct| definiert, der das Laufband auf seine wesentlichen Merkmale reduziert. Die \lstinline|id| stellt die Verbindung mit einem realen Laufband her. Die \lstinline|ConstructionSite| definiert nur Methoden, vom Prinzip  Getter, auf die einzelnen Objekte der Anlage, z.B. für die 4 Laufbänder. Die Schnittstelle für \lstinline|Programm| ist die Methode \lstinline|void executeProgram(void)|.
 
 
 \section{Modi (States)}
-TODO: Bild von Automaten?
+Die Logik der Anlage befindet sich immer in einem bestimmten Modus. Es folgt die Dokumentation der einzelnen Modi.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\ScaleIfNeeded]{Bilder/StateAutomat.png}
+	\caption{Darstellung der Analagen States}
+	\label{fig:Automat}
+\end{figure}
+
 \subsection{Not Aus (\chris)}
-Bei einem Notaus soll nach Anforderungen, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret dass in diesem Modus alle Aktoren ausgeschalten werden und im ausgeschaltenen Zustand gehalten werden.
+Bei einem Not-Aus soll nach Anforderungen, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret, dass in diesem Modus alle Aktoren ausgeschalten werden und im ausgeschalteten Zustand gehalten werden.
 
 \subsection{Diagnose (\chris)}
-In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modi lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet das die Pusher nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulierung der Aktorenzustände findet hier nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
-
-\subsection{Inbetriebnahme (\chris)}
+In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modi lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet das die Schieber nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulierung der Aktoren Zustände findet nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
 
 
 \subsection{Normalbetrieb (\manu)}
@@ -300,6 +319,14 @@ void computeStopState()
 }
 \end{lstlisting}
 Die Anlage wird kontrolliert und ohne Ausschluss leer gefahren. Sobald das erste Laufband frei ist werden keine weiteren Werkstücke mehr angenommen (siehe Listing \ref{lst:stop}).
-\section{Kommunikation}
+
+\subsection{Inbetriebnahme (\chris)}
+Bei der Inbetriebnahme muss die Anforderungen beachtet werden, dass sich die Anlage in einem undefinierten Zustand befindet. Das bedeutet, dass sich die Schieber nicht auf ihren Endpositionen befinden müssen und sich Werkstücke verteilt innerhalb der Anlage befinden können. Aus diesen Grund besteht der Modus der Inbetriebnahme aus zwei wesentlichen Schritten. Erstens Anlage leerfahren und zweitens sie in einen definierten Zustand, dem Startzustand, überführen.\\
+\\
+Für das Leerfahren wurde die Anlage in 6 Stages eingeteilt. Die Anlage wird von hinten nach vorne leergefahren, dass bedeutet das zuerst Stage 6 leergefahren wird, danach Stage 5 usw. Die Stage 4 und 3 sind zwei geteilt in einem Bereich vor der Lichtschranke und einem Bereich hinter der Lichtschranke. Der Algorithmus für den hinteren Abschnitt von Stage 4 und 3 übergeben auf alle Fälle ein Werkstück, bei dem vorderen Abschnitt wird abgewartet ob ein Werkstück die Lichtbarriere auslöst und damit eine Übergabe notwendig ist.\\
+\\
+Das Herzstück des Leerfahrens ist ein Stack der Funktionszeiger speichert. Der oberste Funktionszeiger wird ausgeführt, ist der Stack leer ist das Leerfahren ebenfalls abgeschlossen. Initial befinden sich alle 6 Stages auf dem Stack. Wenn eine Stage abgeschlossen ist, wird der dazugehörige Funktionszeiger von dem Stack genommen. Sollte eine Stage feststellen dass ein Werkstück zu einer nachfolgenden Stage übergeben werden muss, wird der entsprechende Funktionszeiger auf den Stack abgelegt.\\
+\\
+Für den Startzustand müssen die Schieber auf ihren hinteren Endpositionen ruhen. Alle Laufbänder und Werkzeuge sind deaktiviert. Nachdem die Inbetriebnahme abgeschlossen ist, kann auf den Normalbetrieb gewechselt werden.
 
 \end{document}
