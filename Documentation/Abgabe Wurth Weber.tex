@@ -105,7 +105,7 @@ Der Simulator war ursprünglich nur für Situationen geplant, an denen jede Stat
 	\label{fig:Java-Simulator}
 \end{figure}
 
-Für die Simulation ist es wichtig zu wissen, dass das Programm zur Steuerung der Anlage, die Zustände der Sensoren liest und seiner Logik entsprechend die Zustände der Aktoren schreibt. Eine Simulation wiederum muss möglichst realistisch die Zustände der Sensoren abhängig von den Aktoren steuern. Dafür besitzt der Java-Simulator eine stark abstrahierte Physiksimulation. Zur Verdeutlichung ein Beispiel, es wird angenommen, dass ein Werkstück das sich auf einem angeschalteten Laufband befindet mit der Geschwindigkeit des Laufbands bewegt. Der Java-Simulator überprüft unteranderem auch, ob Kollisionen auftreten. Diese können auftreten, wenn ein Werkstück an einer Lichtbarriere vorbeifährt.\\
+Für die Simulation ist es wichtig zu wissen, dass das Programm zur Steuerung der Anlage, die Zustände der Sensoren liest und seiner Logik entsprechend die Zustände der Aktoren schreibt. Eine Simulation wiederum muss möglichst realistisch die Zustände der Sensoren, abhängig von den Aktoren steuern. Dafür besitzt der Java-Simulator eine stark abstrahierte Physiksimulation. Zur Verdeutlichung ein Beispiel, es wird angenommen, dass ein Werkstück das sich auf einem angeschalteten Laufband befindet, mit der Geschwindigkeit des Laufbands bewegt. Der Java-Simulator überprüft unteranderem auch ob Kollisionen auftreten. Diese können auftreten, wenn z.B. ein Werkstück an einer Lichtbarriere vorbeifährt.\\
 \\
 Der Java-Simulator wurde in 3 unterschiedliche Schichten eingeteilt. Die \lstinline|View|, die den aktuellen Zustand in einem Fenster darstellt, die \lstinline|Simulation|, die für die Physiksimulation zuständig ist und die \lstinline|ConstructionSite|, die zwei Aufgaben besitzt, einmal die Abstraktion der Fischertechnik Anlage und zum anderen die Kommunikation mit dem Programm.\\
 \\
@@ -133,7 +133,7 @@ Von Beginn an, wurde sich auf die Grobarchitektur in Form des vorliegenden Kompo
  \item \textbf{OS} enthält den Betriebssystem relevanten Code. Für das regelmäßige ausführen des Programms.
 \end{itemize}
 
-\noindent Durch diese Architektur ist es relativ klar welche Komponenten für eine Simulation ersetzt werden müssen. Die ConstructionSite und das Programm sind unabhängig von den Zielsystemen, der Treiber und die Betriebssystem-Komponente müssen angepasst werden.\\
+\noindent Durch diese Architektur ist klar welche Komponenten für eine Simulation ersetzt werden müssen. Die ConstructionSite und das Programm sind unabhängig von den Zielsystemen, der Treiber und die Betriebssystem-Komponente müssen angepasst werden.\\
 \\
 
 \begin{lstlisting}[caption={Beispiel: Treiber für Laufband},label={lst:treadmill}]
@@ -148,7 +148,7 @@ typedef struct {
 extern void startTreadmill(Treadmill *treadmill);
 extern void stopTreadmill(Treadmill *treadmill);
 \end{lstlisting}
-Als ein Beispiel für einen Teil des Treibers kann Listing \ref{lst:treadmill} betrachtet werden. Es wird ein \lstinline|struct| definiert, der das Laufband auf seine wesentlichen Merkmale reduziert. Die \lstinline|id| stellt die Verbindung mit einem realen Laufband her. Die \lstinline|ConstructionSite| definiert nur Methoden, vom Prinzip  Getter, auf die einzelnen Objekte der Anlage, z.B. für die 4 Laufbänder. Die Schnittstelle für \lstinline|Programm| ist die Methode \lstinline|void executeProgram(void)|.
+Als ein Beispiel für einen Teil des Treibers kann Listing \ref{lst:treadmill} betrachtet werden. Es wird ein \lstinline|struct| definiert, der das Laufband auf seine wesentlichen Merkmale reduziert. Die \lstinline|id| stellt die Verbindung mit einem realen Laufband her. Die \lstinline|ConstructionSite| definiert nur Funktionen, die vom Prinzip \textit{Getter}, auf die einzelnen Objekte der Anlage sind, z.B. Getter für die 4 Laufbänder. Die Schnittstelle für \lstinline|Programm| ist die Methode \lstinline|void executeProgram(void)| die regelmäßig von dem \lstinline|OS| aufgerufen wird, um die Logik des Programms auszuführen.
 
 
 \section{Modi (States)}
@@ -161,10 +161,10 @@ Die Logik der Anlage befindet sich immer in einem bestimmten Modus. Es folgt die
 \end{figure}
 
 \subsection{Not Aus (\chris)}
-Bei einem Not-Aus soll nach Anforderungen, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret, dass in diesem Modus alle Aktoren ausgeschalten werden und im ausgeschalteten Zustand gehalten werden.
+Bei einem Not-Aus soll nach Anforderung, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret, dass in diesem Modus alle Aktoren ausgeschalten werden und im ausgeschalteten Zustand gehalten werden.
 
 \subsection{Diagnose (\chris)}
-In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modi lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet das die Schieber nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulierung der Aktoren Zustände findet nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
+In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modi lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet, dass die Schieber nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulierung der Aktoren Zustände findet nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
 
 
 \subsection{Normalbetrieb (\manu)}
@@ -323,7 +323,7 @@ Die Anlage wird kontrolliert und ohne Ausschluss leer gefahren. Sobald das erste
 \subsection{Inbetriebnahme (\chris)}
 Bei der Inbetriebnahme muss die Anforderungen beachtet werden, dass sich die Anlage in einem undefinierten Zustand befindet. Das bedeutet, dass sich die Schieber nicht auf ihren Endpositionen befinden müssen und sich Werkstücke verteilt innerhalb der Anlage befinden können. Aus diesen Grund besteht der Modus der Inbetriebnahme aus zwei wesentlichen Schritten. Erstens Anlage leerfahren und zweitens sie in einen definierten Zustand, dem Startzustand, überführen.\\
 \\
-Für das Leerfahren wurde die Anlage in 6 Stages eingeteilt. Die Anlage wird von hinten nach vorne leergefahren, dass bedeutet das zuerst Stage 6 leergefahren wird, danach Stage 5 usw. Die Stage 4 und 3 sind zwei geteilt in einem Bereich vor der Lichtschranke und einem Bereich hinter der Lichtschranke. Der Algorithmus für den hinteren Abschnitt von Stage 4 und 3 übergeben auf alle Fälle ein Werkstück, bei dem vorderen Abschnitt wird abgewartet ob ein Werkstück die Lichtbarriere auslöst und damit eine Übergabe notwendig ist.\\
+Für das Leerfahren wurde die Anlage in 6 Stages eingeteilt. Die Anlage wird von hinten nach vorne leergefahren, dass bedeutet das zuerst Stage 6 leergefahren wird, danach Stage 5 usw. Die Stage 4 und 3 sind zweigeteilt, in einem Bereich vor der Lichtschranke und einem Bereich hinter der Lichtschranke. Der Algorithmus für den hinteren Abschnitt von Stage 4 und 3 übergeben auf alle Fälle ein Werkstück, bei dem vorderen Abschnitt wird abgewartet ob ein Werkstück die Lichtbarriere auslöst und damit eine Übergabe notwendig ist.\\
 \\
 Das Herzstück des Leerfahrens ist ein Stack der Funktionszeiger speichert. Der oberste Funktionszeiger wird ausgeführt, ist der Stack leer ist das Leerfahren ebenfalls abgeschlossen. Initial befinden sich alle 6 Stages auf dem Stack. Wenn eine Stage abgeschlossen ist, wird der dazugehörige Funktionszeiger von dem Stack genommen. Sollte eine Stage feststellen dass ein Werkstück zu einer nachfolgenden Stage übergeben werden muss, wird der entsprechende Funktionszeiger auf den Stack abgelegt.\\
 \\
