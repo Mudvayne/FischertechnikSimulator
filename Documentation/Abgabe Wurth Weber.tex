@@ -105,35 +105,35 @@ Der Simulator war ursprünglich nur für Situationen geplant, an denen jede Stat
 	\label{fig:Java-Simulator}
 \end{figure}
 
-Für die Simulation ist es wichtig zu wissen, dass das Programm zur Steuerung der Anlage, die Zustände der Sensoren liest und seiner Logik entsprechend die Zustände der Aktoren schreibt. Eine Simulation wiederum muss möglichst realistisch die Zustände der Sensoren, abhängig von den Aktoren steuern. Dafür besitzt der Java-Simulator eine stark abstrahierte Physiksimulation. Zur Verdeutlichung ein Beispiel, es wird angenommen, dass ein Werkstück das sich auf einem angeschalteten Laufband befindet, mit der Geschwindigkeit des Laufbands bewegt. Der Java-Simulator überprüft unteranderem auch ob Kollisionen auftreten. Diese können auftreten, wenn z.B. ein Werkstück an einer Lichtbarriere vorbeifährt.\\
+Für die Simulation ist es wichtig zu wissen, dass das Programm zur Steuerung der Anlage die Zustände der Sensoren liest und seiner Logik entsprechend die Zustände der Aktoren schreibt. Eine Simulation wiederum muss möglichst realistisch die Zustände der Sensoren in Abhängigkeit der Aktoren schreiben. Dafür besitzt der Java-Simulator eine stark abstrahierte Physiksimulation. Zur Verdeutlichung ein Beispiel: Es wird angenommen, dass ein Werkstück welches sich auf einem angeschalteten Laufband befindet, sich mit der Geschwindigkeit des Laufbands bewegt. Der Java-Simulator überprüft unter anderem auch ob Kollisionen auftreten. Diese können auftreten, wenn z.B. ein Werkstück an einer Lichtbarriere vorbeifährt.\\
 \\
 Der Java-Simulator wurde in 3 unterschiedliche Schichten eingeteilt. Die \lstinline|View|, die den aktuellen Zustand in einem Fenster darstellt, die \lstinline|Simulation|, die für die Physiksimulation zuständig ist und die \lstinline|ConstructionSite|, die zwei Aufgaben besitzt, einmal die Abstraktion der Fischertechnik Anlage und zum anderen die Kommunikation mit dem Programm.\\
 \\
 Das zentrale Herzstück des Java-Simulators ist die sogenannte \lstinline|Game Loop|. Sie sorgt dafür, dass sich die Simulation, das Programm und die Darstellung in regelmäßigen Zyklen aktualisieren. Die \lstinline|Game Loop| ist ein bekanntes Pattern aus dem Game Engineering Bereich.\\
 \\
-Für das Front-End wurde auf AWT zurückgegriffen, die ein komfortables überschreiben der systeminternen Methoden ermöglicht. Damit ist ein flüssiges Zeichnen der Werkstücke einfach realisierbar. Die Kommunikation mit dem Programm wurde mit dem Java Native Interface (JNI) realisiert. Dafür wurde ein zweites Build-Target eingeführt das wesentliche Bestandteile des Programms unverändert lässt, jedoch die notwendigen Komponenten zur Simulation ersetzt, mehr dazu in Kapitel \ref{sec:arch}.\\
+Für das Front-End wurde auf AWT zurückgegriffen, das ein komfortables Überschreiben der system-internen Methoden ermöglicht. Damit ist ein flüssiges Zeichnen der Werkstücke einfach realisierbar. Die Kommunikation mit dem Programm wurde mit dem Java Native Interface (\textit{JNI}) realisiert. Dafür wurde ein zweites Build-Target eingeführt, das wesentliche Bestandteile des Programms unverändert lässt, jedoch die notwendigen Komponenten zur Simulation ersetzt. Mehr dazu in Kapitel \ref{sec:arch}.\\
 \\
-Im Rahmen des Projekts wurde ebenfalls die Steuerung der realen Anlage mittels eines Rich-client gefordert. Es lag nahe für diese Aufgabenstellung die vorhandene Visualisierung des Simulators zu verwenden. Aus diesem Grund gibt es für die \lstinline|ConstructionSite| zwei Implementierungen, für die Simulation und für die reale Anlage. Zur Kommunikation mit der realen Anlage wird auf das von Tinkerforge bereitgestellte Protokoll\footnote{\url{http://www.tinkerforge.com/en/doc/Low_Level_Protocols/TCPIP.html}} zurückgegriffen, für das eigene Pakete definiert werden mussten.\\
+Im Rahmen des Projekts wurde ebenfalls die Steuerung der realen Anlage mittels eines Rich-client gefordert. Es lag nahe für diese Aufgabenstellung die vorhandene Visualisierung des Simulators zu verwenden. Aus diesem Grund gibt es für die \lstinline|ConstructionSite| zwei Implementierungen, eine für die Simulation und eine für die reale Anlage. Zur Kommunikation mit der realen Anlage wird auf das von \textit{Tinkerforge} bereitgestellte Protokoll\footnote{\url{http://www.tinkerforge.com/en/doc/Low_Level_Protocols/TCPIP.html}} zurückgegriffen, für das eigene Pakete definiert werden mussten.\\
 
 \section{Architektur}
 \label{sec:arch}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1\ScaleIfNeeded]{Bilder/architektur.png}
+	\includegraphics[width=0.7\ScaleIfNeeded]{Bilder/architektur.png}
 	\caption{Grobarchitektur des Projekts}
 	\label{fig:Architektur}
 \end{figure}
 Von Beginn an, wurde sich auf die Grobarchitektur in Form des vorliegenden Komponentendiagramms (Abbildung \ref{fig:Architektur}) geeinigt.
 
 \begin{itemize}
- \item \textbf{Driver} definiert Abstraktion der einzelnen Objekte auf der Anlage. Bietet Funktionen um Zustände der Aktoren/Sensoren zu manipulieren/auszulesen.
+ \item \textbf{Driver} definiert Abstraktionen der einzelnen Objekte auf der Anlage. Bietet Funktionen um Zustände der Aktoren/Sensoren zu manipulieren/auszulesen.
  \item \textbf{ConstructionSite} ist eine Abstraktion der gesamten Anlage. Speichert alle Zustände von allen Aktoren und Sensoren in \lstinline|structs|.
  \item \textbf{Programm} enthält die Logik, liest Sensoren- und setzt Aktoren-Zustände.
- \item \textbf{OS} enthält den Betriebssystem relevanten Code. Für das regelmäßige ausführen des Programms.
+ \item \textbf{OS} enthält den für das Betriebssystem relevanten Code. Für das regelmäßige ausführen des Programms.
 \end{itemize}
 
-\noindent Durch diese Architektur ist klar welche Komponenten für eine Simulation ersetzt werden müssen. Die ConstructionSite und das Programm sind unabhängig von den Zielsystemen, der Treiber und die Betriebssystem-Komponente müssen angepasst werden.\\
+\noindent Durch diese Architektur ist klar welche Komponenten für eine Simulation ersetzt werden müssen. Die \textit{ConstructionSite} und das Programm sind unabhängig von den Zielsystemen. Der Treiber und die Betriebssystem-Komponente muss angepasst werden.\\
 \\
 
 \begin{lstlisting}[caption={Beispiel: Treiber für Laufband},label={lst:treadmill}]
@@ -148,26 +148,24 @@ typedef struct {
 extern void startTreadmill(Treadmill *treadmill);
 extern void stopTreadmill(Treadmill *treadmill);
 \end{lstlisting}
-Als ein Beispiel für einen Teil des Treibers kann Listing \ref{lst:treadmill} betrachtet werden. Es wird ein \lstinline|struct| definiert, der das Laufband auf seine wesentlichen Merkmale reduziert. Die \lstinline|id| stellt die Verbindung mit einem realen Laufband her. Die \lstinline|ConstructionSite| definiert nur Funktionen, die vom Prinzip \textit{Getter}, auf die einzelnen Objekte der Anlage sind, z.B. Getter für die 4 Laufbänder. Die Schnittstelle für \lstinline|Programm| ist die Methode \lstinline|void executeProgram(void)| die regelmäßig von dem \lstinline|OS| aufgerufen wird, um die Logik des Programms auszuführen.
-
+Als ein Beispiel für einen Teil des Treibers kann Listing \ref{lst:treadmill} betrachtet werden. Es wird ein \lstinline|struct| definiert, der das Laufband auf seine wesentlichen Merkmale reduziert. Die \lstinline|id| stellt die Verbindung mit einem realen Laufband her. Die \textit{ConstructionSite} definiert nur Funktionen, die Zeiger zurück geben, die auf die Variablen der \textit{ConstructionSite} zeigen. Z.B. auf die vier Laufbänder. Die Schnittstelle für \lstinline|Programm| ist die Methode \lstinline|void executeProgram(void)|, die regelmäßig von \lstinline|OS| aufgerufen wird, um die Logik des Programms auszuführen.
 
 \section{Modi (States)}
 Die Logik der Anlage befindet sich immer in einem bestimmten Modus. Es folgt die Dokumentation der einzelnen Modi.
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1\ScaleIfNeeded]{Bilder/StateAutomat.png}
+	\includegraphics[width=0.7\ScaleIfNeeded]{Bilder/StateAutomat.png}
 	\caption{Darstellung der Analagen States}
 	\label{fig:Automat}
 \end{figure}
 
-\subsection{Not Aus (\chris)}
-Bei einem Not-Aus soll nach Anforderung, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret, dass in diesem Modus alle Aktoren ausgeschalten werden und im ausgeschalteten Zustand gehalten werden.
+\subsection{Not Aus - \chris}
+Bei einem Not-Aus soll nach Anforderung, die Anlage sofort in einem sicheren Zustand gebracht werden. Dies bedeutet konkret, dass in diesem Modus alle Aktoren ausgeschaltet werden und ausgeschaltet bleiben.
 
-\subsection{Diagnose (\chris)}
-In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modi lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet, dass die Schieber nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulierung der Aktoren Zustände findet nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
+\subsection{Diagnose - \chris}
+In dem Diagnose Modus soll der Benutzer die Verbindung zwischen Microcontroller und Anlage testen können. Deswegen ist dieser Modus lediglich mit einem Schutzalgorithmus ausgestattet, der darauf achtet, dass die Schieber nicht über ihren Arbeitsbereich hinausfahren. Eine weitere Manipulation der Aktoren-Zustände findet nicht statt, da ansonsten der Testbetrieb eingeschränkt wird.
 
-
-\subsection{Normalbetrieb (\manu)}
+\subsection{Normalbetrieb - \manu}
 Dieses Kapitel widmet sich der Umsetzung des Normalbetriebs der Anlage. Um den Umfang der Dokumentation klein zu halten, werden nur interessante Aspekte beleuchtet.
 \begin{lstlisting}[caption={Beispiel: Struct für die erste \textit{stage} (erstes Laufband)},label={lst:strukt1}]
 typedef struct
@@ -181,7 +179,7 @@ typedef struct
 	short hasItemPassedSecondLB;
 } StageOne;
 \end{lstlisting} 
-Die Anlage wurde in 6 \textit{stages} unterteilt, die jeweils eigenständig und mit Rücksicht auf die nächste \textit{stage} arbeiten. Für jede \textit{stage} wurden \lstinline|structs| angelegt, die alle Daten halten, die für den Betrieb der \textit{stage} erforderlich sind (siehe z.B. in Listing \ref{lst:strukt1}). Eigenständige \textit{stages} sind die vier Laufbänder sowie die beiden Schieber, jeweils inklusive aller Sensoren und Aktoren. Der Normalbetrieb erfolgt unter Berücksichtigung einer ganz bestimmten Reihenfolge von Aktionen:
+Die Anlage wurde in 6 \textit{stages} unterteilt, die jeweils eigenständig und mit Rücksicht auf die nächste \textit{stage} arbeiten. Für jede \textit{stage} wurden \textit{structs} angelegt, die alle Daten halten, die für den Betrieb der \textit{stage} erforderlich sind (siehe z.B. in Listing \ref{lst:strukt1}). Eigenständige \textit{stages} sind die vier Laufbänder sowie die beiden Schieber, jeweils inklusive aller Sensoren und Aktoren. Der Normalbetrieb erfolgt unter Berücksichtigung einer ganz bestimmten Reihenfolge von Aktionen:
 \begin{enumerate}
 \item Sensoren lesen
 \item Berechnungen jeder \textit{stage} für die Aktoren
@@ -191,7 +189,7 @@ Die Anlage wurde in 6 \textit{stages} unterteilt, die jeweils eigenständig und 
 \subsubsection{Werkstücke und Positionen}
 Damit zu jeder Zeit Staus erkannt und Kollisionen/Berührungen von Werkstücken verhindert werden können, musste eine geeignete Lösung gefunden werden. Damit die Funktionalität der Lichtschranken gewährleistet werden kann, also ein \textit{toggeln} noch stattfindet, muss ein ausreichend großer Abstand zwischen den Werkstücken eingehalten werden. Bei 3 Werkstücken pro Laufband kann dies gerade noch erreicht werden, vorausgesetzt die Abstände sind gleich groß. Die Abstände zwischen den Werkstücken sind ab dem ersten Schieber von den \textit{ready}-Zuständen der einzelnen \textit{stages} abhängig, die im Folgenden beschrieben werden. Ist eine \textit{stage ready}, kann die Vorgänger-\textit{stage} ein Werkstück weitertransportieren und übergeben. \\ \\
 \textbf{Wann ist Laufband 1 ready?} \\
-Die Bestimmung des \textit{ready-flags} des ersten Laufbands ist am trivialsten, weil es schlicht nicht existiert. Das \textit{flag} soll der Vorganger-\textit{stage} signalisieren, dass die \textit{stage} bereit für ein neues Werkstück ist. Laufband 1 hat keine Vorgänger-\textit{stage}; alleine der Bediener der Anlage bestimmt, wann ein neues Werkstück aufgelegt wird. \\ \\
+Die Bestimmung des \textit{ready-flags} des ersten Laufbands ist am trivialsten, weil es schlicht nicht existiert. Das \textit{flag} soll der Vorgänger-\textit{stage} signalisieren, dass die \textit{stage} bereit für ein neues Werkstück ist. Laufband 1 hat keine Vorgänger-\textit{stage}; alleine der Bediener der Anlage bestimmt, wann ein neues Werkstück aufgelegt wird. \\ \\
 \textbf{Wann sind die beiden Schieber \textit{ready}?}
 \begin{lstlisting}[caption={Beispiel: \textit{ready-flag} des ersten Schiebers},label={lst:schieber-ready}]
 if(stageTwo.isOccupied || getFirstPusher()->isBackTriggerActivated != 1)
@@ -225,7 +223,7 @@ if(stageThree.itemCount > stageThree.itemCountBefore)
 }
 \end{lstlisting}
 Als Beispiel eines neuen Werkstücks auf dem zweiten Laufband, kann Listing \ref{lst:neuesItem2} herangezogen werden.
-Soll ein Werkstück an die nächste \textit{stage} übergeben werden, wird einfach deren \lstinline|itemCount| inkrementiert. Die nachfolgende \textit{stage} merkt dies, weil sie stets ihren alten \lstinline|itemCount| kennt (Zeile 2). \\
+Soll ein Werkstück an die nächste \textit{stage} übergeben werden, wird einfach deren \lstinline|itemCount| inkrementiert. Die nachfolgende \textit{stage} merkt dies, weil sie stets ihren alten \lstinline|itemCount| kennt (Zeile 2). \\ \\
 Als nächstes wird ein freier Slot für das neue Werkstück gesucht. Freie Slots haben immer den Wert $-1$ (Zeilen 8 - 10). An dieser Stelle könnte man nun die neue Position des Werkstücks auf $0$ setzten, weil es sich schließlich am Anfang des Laufbands befinden muss. Alle Positionen die größer als $-1$ sind werden automatisch inkrementiert, wenn sich das Laufband bewegt. In diesem Fall wäre das aus den oben genannten Gründen aber problematisch. Deshalb bekommt das neue Werkstück die Platzhalter-Position $-2$ (Zeile 12). Diese bedeutet, dass sich ein Werkstück auf dem Laufband, genauer, vor der zentralen Lichtschranke befindet. 
 Sobald das Werkstück die Mitte der Lichtschranke (wo sich der Bohrer befindet) erreicht, kann die Position des Werkstücks sehr genau bestimmt und gesetzt werden. \\ \\
 Doch was hat das mit dem \textit{ready-flag} zu tun? 
@@ -277,8 +275,8 @@ if((stageOne.itemCount == 0 || stageOne.itemCount == 1 && stageOne.hasItemPassed
 \end{lstlisting}
 Als Beispiel für eine unerwartet ausgelöste Lichtschranke soll Listing \ref{lst:unexpectedItem} herangezogen werden. Wird die zweite Lichtschranke des ersten Laufbands \underline{unerwartet} ausgelöst, liegt entweder kein Werkstück auf dem Laufband oder es liegt genau ein Werkstück auf dem Laufband, und zwar hinter der zweiten Lichtschranke (Zeile 1). Ist dies der Fall, wir die Funktion \lstinline|unexpectedItem()| ausgeführt, die abermals zu einem Notaus führt.
 
-\subsection{Pause und Stopp (\manu)}
-Um Gegensatz zu den anderen Modi muss bei den Modi Pause und Stopp der aktuelle Zustand des laufenden Betriebs erhalten bleiben. Es hat sich deshalb angeboten, beide Modi als Teil des laufenden Betriebs zu etablieren.
+\subsection{Pause und Stopp - \manu}
+Im Gegensatz zu den anderen Modi muss bei den Modi Pause und Stopp der aktuelle Zustand des laufenden Betriebs erhalten bleiben. Es hat sich deshalb angeboten, beide Modi als Teil des laufenden Betriebs zu etablieren.
 
 \begin{lstlisting}[caption={Die Funktion \lstinline|runningComputeActions|},label={lst:runningComputeActions}]
 void runningComputeActions() {
@@ -318,14 +316,14 @@ void computeStopState()
 	}
 }
 \end{lstlisting}
-Die Anlage wird kontrolliert und ohne Ausschluss leer gefahren. Sobald das erste Laufband frei ist werden keine weiteren Werkstücke mehr angenommen (siehe Listing \ref{lst:stop}).
+Die Anlage wird kontrolliert und ohne Ausschluss leer gefahren. Sobald das erste Laufband frei ist, werden keine weiteren Werkstücke mehr angenommen (siehe Listing \ref{lst:stop}).
 
-\subsection{Inbetriebnahme (\chris)}
-Bei der Inbetriebnahme muss die Anforderungen beachtet werden, dass sich die Anlage in einem undefinierten Zustand befindet. Das bedeutet, dass sich die Schieber nicht auf ihren Endpositionen befinden müssen und sich Werkstücke verteilt innerhalb der Anlage befinden können. Aus diesen Grund besteht der Modus der Inbetriebnahme aus zwei wesentlichen Schritten. Erstens Anlage leerfahren und zweitens sie in einen definierten Zustand, dem Startzustand, überführen.\\
+\subsection{Inbetriebnahme - \chris}
+Bei der Inbetriebnahme muss die Anforderung beachtet werden, dass sich die Anlage in einem undefinierten Zustand befinden kann. Das bedeutet, dass sich die Schieber nicht auf ihren Endpositionen befinden müssen und Werkstücke an allen Stellen der Anlage liegen können. Aus diesen Grund besteht der Modus der Inbetriebnahme aus zwei wesentlichen Schritten. Als erstes muss die Anlage leer gefahren und anschließend in einen definierten Zustand, dem Startzustand, gebracht werden.\\
 \\
-Für das Leerfahren wurde die Anlage in 6 Stages eingeteilt. Die Anlage wird von hinten nach vorne leergefahren, dass bedeutet das zuerst Stage 6 leergefahren wird, danach Stage 5 usw. Die Stage 4 und 3 sind zweigeteilt, in einem Bereich vor der Lichtschranke und einem Bereich hinter der Lichtschranke. Der Algorithmus für den hinteren Abschnitt von Stage 4 und 3 übergeben auf alle Fälle ein Werkstück, bei dem vorderen Abschnitt wird abgewartet ob ein Werkstück die Lichtbarriere auslöst und damit eine Übergabe notwendig ist.\\
+Für das Leerfahren wurde die Anlage in 6 Stages eingeteilt. Die Anlage wird von hinten nach vorne leer gefahren, dass bedeutet das zuerst Stage 6 leer gefahren wird, danach Stage 5 usw. Die Stage 4 und 3 sind zweigeteilt, in einem Bereich vor der Lichtschranke und einem Bereich hinter der Lichtschranke. Der Algorithmus für den hinteren Abschnitt von Stage 4 und 3 übergibt auf alle Fälle ein Werkstück. Beim vorderen Abschnitt wird abgewartet, ob ein Werkstück die Lichtbarriere auslöst und damit eine Übergabe notwendig ist.\\
 \\
-Das Herzstück des Leerfahrens ist ein Stack der Funktionszeiger speichert. Der oberste Funktionszeiger wird ausgeführt, ist der Stack leer ist das Leerfahren ebenfalls abgeschlossen. Initial befinden sich alle 6 Stages auf dem Stack. Wenn eine Stage abgeschlossen ist, wird der dazugehörige Funktionszeiger von dem Stack genommen. Sollte eine Stage feststellen dass ein Werkstück zu einer nachfolgenden Stage übergeben werden muss, wird der entsprechende Funktionszeiger auf den Stack abgelegt.\\
+Das Herzstück des Leerfahrens ist ein \textit{stack} der Funktionszeiger speichert. Es wird immer der oberste Funktionszeiger ausgeführt. Ist der Stack leer, terminiert der Algorithmus und das Leerfahren ist abgeschlossen. Initial befinden sich alle 6 Stages auf dem Stack. Wenn eine Stage abgeschlossen ist, wird der dazugehörige Funktionszeiger vom Stack entfernt. Sollte eine Stage feststellen, dass ein Werkstück zu einer nachfolgenden Stage übergeben werden muss, wird der entsprechende Funktionszeiger auf den Stack abgelegt.\\
 \\
 Für den Startzustand müssen die Schieber auf ihren hinteren Endpositionen ruhen. Alle Laufbänder und Werkzeuge sind deaktiviert. Nachdem die Inbetriebnahme abgeschlossen ist, kann auf den Normalbetrieb gewechselt werden.
 
